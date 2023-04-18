@@ -2,16 +2,14 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-    provider = "sqlite"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
 model Example {
@@ -63,4 +61,96 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+//Below is the table Monthly Index 
+
+model monthly_index {
+    record_id        String @id @default(cuid())
+    month            String @db.VarChar(255) //example for this: January 
+    year             Int    @default(0) //example for this: every row of this column will display the same year 
+    inverse_month    String @db.VarChar(255)
+    probability_rate Int    @default(0) //this is a percentage number 
+}
+
+//Below is the Seasonal Index 
+
+model seasonal_index {
+    record_id        String @id @default(cuid())
+    season           String @db.VarChar(255) //One example for this would be 2022/2023 season and I wanted to treat this as a String as I don't have to do any calculations with it
+    inverse_year     String @db.VarChar(255)
+    probability_rate Int    @default(0)
+}
+
+//Below is the Comparison Chart 
+
+model comparison_chart {
+    record_id                String   @id @default(cuid())
+    date_of_close            DateTime @db.Date
+    cotton_spot_price        Decimal? @default(0) @db.Decimal(16, 4)
+    dollar_basket_spot_price Decimal? @default(0) @db.Decimal(16, 4)
+    crude_oil_spot_price     Decimal? @default(0) @db.Decimal(16, 4)
+
+    //Example for price of cotton is 61.24 (two decimal points);
+    //Example for price dollar basket is 93.682 (three decimal points);
+    //Example for price crude oil is 42.45 (two decimal points):
+}
+
+//Below is the 30 Seconds Snapshot Strategy 
+
+model snapshot_strategy {
+    record_id                  String   @id @default(cuid())
+    title_of_snapshot_strategy String   @db.VarChar(255)
+    image_of_snapshot_strategy String   @db.VarChar(255) //here i wanted to upload an image or pull in-house graph similar to this - https://www.tradingview.com/chart/USDBRL/W62o6aQ2-Gold-China-BRICS-vs-US-Dollar-Hegemony/
+    text_of_snapshot_strategy  String   @db.Text
+    date_of_snapshot_strategy  DateTime @db.Date
+}
+
+//Below is the Basis Cost 
+
+model basis_comparison {
+    record_id              String   @id @default(cuid())
+    date_of_basis_report   DateTime @db.Date
+    country                String   @db.VarChar(255)
+    contract_december_2023 Int      @default(0)
+    contract_december_2024 Int      @default(0)
+}
+
+//Below is In Country News 
+
+model in_country_news {
+    record_id                String   @id @default(cuid())
+    image_of_in_country_news String   @db.VarChar(255)
+    title_of_in_country_news String   @db.VarChar(255)
+    text_of_in_country_news  String   @db.Text
+    date_of_in_country_news  DateTime @db.Date
+}
+
+//Below is the Comparison Charts with 17 Months Year 
+
+model comparison_charts_with_17_months_year {
+    record_id                  String   @id @default(cuid())
+    season                     String   @db.VarChar(255)
+    low_price                  Decimal? @default(0) @db.Decimal(16, 4)
+    date_of_low                DateTime @db.Date
+    month_of_low               Int      @default(0)
+    calendar_week_of_low       Int      @default(0)
+    high_price                 Decimal? @default(0) @db.Decimal(16, 4)
+    date_of_high               DateTime @db.Date
+    month_of_high              Int      @default(0)
+    calendar_week_of_high      Int      @default(0)
+    range_between_high_low     Decimal? @default(0) @db.Decimal(16, 4)
+    rank_of_price_range        Int      @default(0)
+    percentage_rate_to_low     Decimal? @default(0) @db.Decimal(16, 4) //this is a percentage move from high to low during the season 
+    day_range_between_high_low Int      @default(0)
+    rank_between_high_low      Int      @default(0)
+    inverse_season             String   @db.VarChar(255)
+    us_seasonal_inflation      Decimal? @default(0) @db.Decimal(16, 4)
+    us_inflation_cumm          Decimal? @default(0) @db.Decimal(16, 4)
+    us_interest_rate_mov       Decimal? @default(0) @db.Decimal(16, 4)
+    us_interest_cumm           Decimal? @default(0) @db.Decimal(16, 4)
+    world_population_cumm      Int      @default(0)
+    world_population_mov       Int      @default(0)
+    world_acreage              Int      @default(0)
+    world_acreage_movement     Int      @default(0)
 }
