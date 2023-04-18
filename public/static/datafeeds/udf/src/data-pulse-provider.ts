@@ -115,11 +115,11 @@ export class DataPulseProvider {
 		const lastBar = bars[bars.length - 1];
 		const subscriptionRecord = this._subscribers[listenerGuid];
 
-		if (subscriptionRecord!.lastBarTime !== null && lastBar.time < subscriptionRecord!.lastBarTime) {
+		if (subscriptionRecord!.lastBarTime !== null && lastBar!.time < subscriptionRecord!.lastBarTime) {
 			return;
 		}
 
-		const isNewBar = subscriptionRecord!.lastBarTime !== null && lastBar.time > subscriptionRecord!.lastBarTime;
+		const isNewBar = subscriptionRecord!.lastBarTime !== null && lastBar!.time > subscriptionRecord!.lastBarTime;
 
 		// Pulse updating may miss some trades data (ie, if pulse period = 10 secods and new bar is started 5 seconds later after the last update, the
 		// old bar's last 5 seconds trades will be lost). Thus, at fist we should broadcast old bar updates when it's ready.
@@ -132,7 +132,7 @@ export class DataPulseProvider {
 			subscriptionRecord!.listener(previousBar);
 		}
 
-		subscriptionRecord!.lastBarTime = lastBar.time;
+		subscriptionRecord!.lastBarTime = lastBar!.time;
 		subscriptionRecord!.listener(lastBar);
 	}
 }
