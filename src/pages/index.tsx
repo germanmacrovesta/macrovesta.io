@@ -61,7 +61,7 @@ const Home: NextPage = ({ usersData }) => {
     </>
   );
 };
-
+//some random shit
 export const getServerSideProps = async (context: any) => {
   const users = await prisma?.user.findMany({
   });
