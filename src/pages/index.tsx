@@ -118,7 +118,7 @@ const Home: NextPage = (props) => {
     </>
   );
 };
-
+//some random shit
 export const getServerSideProps = async (context: any) => {
   const monthlyindex = await prisma?.monthly_index.findFirst({
     // where: {
