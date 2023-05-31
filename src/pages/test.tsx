@@ -3,7 +3,7 @@ import React from "react";
 
 
 
-export default function GraphPage() {
+export default function TestPage() {
     return (
         <>
             <Head>
