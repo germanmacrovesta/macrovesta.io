@@ -6,11 +6,38 @@ import Sidebar from '../components/sidebar';
 import Breadcrumbs from '../components/breadcrumbs';
 import TabMenu from '../components/tabmenu';
 import { useRouter } from "next/router";
-import { TabMenuArray } from '../components/tabMenuArray'
+import { TabMenuArray } from '../components/tabMenuArray';
+import React from "react";
 
+const selectAppropriateImage = (inv, value) => {
+  let imagesrc = "";
+  if (inv == "Y") {
+    if (value < 15) {
 
-//@ts-expect-error
-const Home: NextPage = ({ usersData }) => {
+      imagesrc = "/Index_Neutral.jpg"
+
+    } else if (value < 50) {
+      imagesrc = "/Index_Inverse_Likely.jpg"
+    } else {
+      imagesrc = "/Index_Inverse_High.jpg"
+    }
+  } else {
+    if (value < 15) {
+
+      imagesrc = "/Index_Neutral.jpg"
+
+    } else if (value < 50) {
+      imagesrc = "/Index_Non_Likely.jpg"
+    } else {
+      imagesrc = "/Index_Non_High.jpg"
+    }
+  }
+  return (
+    <img className="w-[400px]" src={imagesrc} />
+  )
+}
+
+const Home: NextPage = (props) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -38,6 +65,8 @@ const Home: NextPage = ({ usersData }) => {
   }
   splitUrl(urlArray, 1)
 
+  const [degrees, setDegrees] = React.useState(0)
+
   return (
     <>
       <Head>
@@ -54,21 +83,52 @@ const Home: NextPage = ({ usersData }) => {
             <TabMenu data={TabMenuArray} urlPath={urlPath} />
           </header>
           <div className="p-6">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. At, facilis temporibus! Odit assumenda cupiditate possimus animi soluta natus vitae, provident dolores laboriosam corrupti. Sint ad, dolor dignissimos voluptatem iure quod.
+            Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
+            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <div>
+                The Macrovesta Index
+              </div>
+              <div className="flex justify-around gap-8">
+                <div className="relative">
+                  <div>
+                    Monthly Index
+                  </div>
+                  {selectAppropriateImage(JSON.parse(props.monthlyIndexData).inverse_month, parseFloat(JSON.parse(props.monthlyIndexData).probability_rate))}
+                  {/* <img className="w-[400px]" src="/Index_Inverse_High.jpg" /> */}
+                  <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2" style={{
+                    transform: `rotate(${90 - (parseFloat(JSON.parse(props.monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(props.monthlyIndexData).inverse_month == "Y" ? 1 : -1)}deg)`
+                  }}>
+                    {/* <div className="origin-right bg-turquoise w-[150px] ml-[50px] bottom-[28px] h-2" style={{ transform: `rotate(${degrees}deg)` }}>
+                    </div> */}
+                  </div>
+                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(props.monthlyIndexData).probability_rate}</div>
+                </div>
+                <div>
+                  <div>
+                    Seasonal Index
+                  </div>
+                  <img className="w-[400px]" src="/Draft_Index_indicator.svg" />
+                </div>
+              </div>
+            </div>
           </div>
+          <div onClick={() => setDegrees(degrees + 10)}>Add 10 degrees</div>
         </div>
-      </main>
+      </main >
     </>
   );
 };
 
 export const getServerSideProps = async (context: any) => {
-  const users = await prisma?.user.findMany({
+  const monthlyindex = await prisma?.monthly_index.findFirst({
+    // where: {
+    //   inverse_month: "N"
+    // }
   });
-  const usersData = JSON.stringify(users);
-  console.log(usersData)
+  const monthlyIndexData = JSON.stringify(monthlyindex);
+  console.log(monthlyIndexData)
   return {
-    props: { usersData },
+    props: { monthlyIndexData },
   };
 };
 

@@ -70,7 +70,7 @@ model monthly_index {
     month            String @db.VarChar(255) //example for this: January 
     year             Int    @default(0) //example for this: every row of this column will display the same year 
     inverse_month    String @db.VarChar(255)
-    probability_rate Int    @default(0) //this is a percentage number 
+    probability_rate String @db.VarChar(255) // Int    @default(0) //this is a percentage number 
 }
 
 //Below is the Seasonal Index 
@@ -79,7 +79,7 @@ model seasonal_index {
     record_id        String @id @default(cuid())
     season           String @db.VarChar(255) //One example for this would be 2022/2023 season and I wanted to treat this as a String as I don't have to do any calculations with it
     inverse_year     String @db.VarChar(255)
-    probability_rate Int    @default(0)
+    probability_rate String @db.VarChar(255) // Int    @default(0)
 }
 
 //Below is the Comparison Chart 
