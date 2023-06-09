@@ -95,8 +95,8 @@ const Sidebar = (props) => {
     // };
 
     return (
-        <div className="fixed print:hidden text-md">
-            <div className="flex flex-col justify-between bg-gradient-to-br from-navy to-deep_blue w-36 h-screen px-4 ">
+        <div className="fixed print:hidden h-screen text-md">
+            <div className="flex flex-col justify-between bg-gradient-to-br from-navy to-deep_blue w-40 h-full px-4 ">
                 <div>
                     <div className="flex justify-center p-4 pb-8">
                         <Link href={{ pathname: `${root}/home` }} >

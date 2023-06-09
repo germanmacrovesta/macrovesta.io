@@ -1,5 +1,6 @@
 import Head from "next/head";
 import React from "react";
+import ContactForm from '../components/contactForm'
 
 
 
@@ -10,7 +11,7 @@ export default function TestPage() {
                 <title>Test Page</title>
             </Head>
             <main>
-                <div>This is a Test Page</div>
+                <ContactForm />
             </main>
         </>
     );
