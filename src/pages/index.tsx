@@ -14,6 +14,7 @@ import {
   ChartingLibraryWidgetOptions,
   ResolutionString,
 } from "../../public/static/charting_library/charting_library";
+import GroupedBarChart from '../components/groupedBarChart'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -103,15 +104,24 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
   const [season2, setSeason2] = React.useState('')
   const [season3, setSeason3] = React.useState('')
 
+  const [countryNewsPopup, setCountryNewsPopup] = React.useState(null)
+  const [snapshotPopup, setSnapshotPopup] = React.useState(null)
+
   React.useEffect(() => {
-    setSeason1(JSON.parse(seasonsData)[0]?.season ?? '')
+    setSeason1(JSON.parse(seasonsData)[2]?.season ?? '')
     setSeason2(JSON.parse(seasonsData)[1]?.season ?? '')
-    setSeason3(JSON.parse(seasonsData)[2]?.season ?? '')
+    setSeason3(JSON.parse(seasonsData)[0]?.season ?? '')
   }, [seasonsData])
 
   React.useEffect(() => {
     setDegrees(90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? 1 : -1))
   }, [monthlyIndexData])
+
+  const data = [
+    { name: 'Group1', propertyOne: 10, propertyTwo: 20 },
+    { name: 'Group2', propertyOne: 30, propertyTwo: 40 },
+    // ...
+  ];
 
   return (
     <>
@@ -132,6 +142,7 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
           <div className="p-6 bg-slate-200">
             Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <GroupedBarChart data={data} />
               <div className="text-center">
                 The Macrovesta Index
               </div>
@@ -250,12 +261,33 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
               <div className="text-center">
                 30 Seconds Snapshot
               </div>
-              <div className="flex flex-col justify-around items-start gap-8">
-                {JSON.parse(snapshotsData).map((snapshot) => (
+              <div className="grid grid-cols-2 justify-around items-start gap-x-8 gap-y-4 mt-4">
+                {/* {JSON.parse(snapshotsData).map((snapshot) => (
                   <div>
                     {snapshot.title_of_snapshot_strategy}
                   </div>
+                ))} */}
+                {JSON.parse(snapshotsData).filter((object: any, index: number) => index < 10).map((snapshot) => (
+                  <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
+                    {snapshot.title_of_snapshot_strategy}
+                  </div>
                 ))}
+                {snapshotPopup != null && (
+                  <div className='absolute modal left-0 top-0 z-40'>
+                    <div className=' fixed grid place-content-center inset-0 z-40'>
+                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                        <img className="w-3/4" src={snapshotPopup.image_of_snapshot_strategy} />
+                        <div className="my-4 font-semibold text-lg">
+                          {snapshotPopup.title_of_snapshot_strategy}
+                        </div>
+                        <div className="">
+                          {snapshotPopup.text_of_snapshot_strategy}
+                        </div>
+                      </div>
+                      <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
@@ -266,12 +298,29 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
                 <div className="text-center">
                   In Country News
                 </div>
-                <div className="flex flex-col justify-around items-start gap-8">
-                  {JSON.parse(countryNewsData).map((news) => (
-                    <div>
+                <div className="flex flex-col justify-around items-start gap-4 mt-4">
+                  {JSON.parse(countryNewsData).filter((object: any, index: number) => index < 6).map((news) => (
+                    <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setCountryNewsPopup(news)}>
                       {news.title_of_in_country_news}
                     </div>
                   ))}
+                  {countryNewsPopup != null && (
+                    <div className='absolute modal left-0 top-0 z-40'>
+                      <div className=' fixed grid place-content-center inset-0 z-40'>
+                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                          <img className="w-3/4" src={countryNewsPopup.image_of_in_country_news} />
+                          <div className="my-4 font-semibold text-lg">
+                            {countryNewsPopup.title_of_in_country_news}
+                          </div>
+                          <div className="">
+                            {countryNewsPopup.text_of_in_country_news}
+                          </div>
+                        </div>
+                        <div onClick={() => setCountryNewsPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                      </div>
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>
