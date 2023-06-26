@@ -14,7 +14,8 @@ import {
   ChartingLibraryWidgetOptions,
   ResolutionString,
 } from "../../public/static/charting_library/charting_library";
-import GroupedBarChart from '../components/groupedBarChart'
+import GroupedBarChart from '../components/groupedBarChart';
+import LineGraph from '../components/lineGraph';
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -118,9 +119,41 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
   }, [monthlyIndexData])
 
   const data = [
-    { name: 'Group1', propertyOne: 10, propertyTwo: 20 },
-    { name: 'Group2', propertyOne: 30, propertyTwo: 40 },
+    { name: 'Brazil', CTZ23: 10, CTZ24: 20 },
+    { name: 'USA', CTZ23: 30, CTZ24: 40 },
+    { name: 'WAF', CTZ23: 20, CTZ24: 40 },
+    { name: 'Australia', CTZ23: 30, CTZ24: 50 },
     // ...
+  ];
+
+  const linedata = [
+    {
+      name: "Series 1",
+      data: [
+        { time: "2023-01-01T00:00:00Z", value: 12 },
+        { time: "2023-01-08T00:00:00Z", value: 12 },
+        { time: "2023-02-01T00:00:00Z", value: 22 },
+        { time: "2023-02-08T00:00:00Z", value: 22 },
+        { time: "2023-03-01T00:00:00Z", value: 21 },
+        { time: "2023-04-01T00:00:00Z", value: 23 },
+        { time: "2025-01-01T00:00:00Z", value: 26 },
+        // more data...
+      ],
+    },
+    {
+      name: "Series 2",
+      data: [
+        { time: "2023-01-01T00:00:00Z", value: 15 },
+        { time: "2023-01-08T00:00:00Z", value: 15 },
+        { time: "2023-02-01T00:00:00Z", value: 18 },
+        { time: "2023-02-08T00:00:00Z", value: 18 },
+        { time: "2023-03-01T00:00:00Z", value: 11 },
+        { time: "2023-04-01T00:00:00Z", value: 13 },
+        { time: "2025-01-01T00:00:00Z", value: 16 },
+        // more data...
+      ],
+    },
+    // more series...
   ];
 
   return (
@@ -142,7 +175,10 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
           <div className="p-6 bg-slate-200">
             Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-              <GroupedBarChart data={data} />
+              {/* <div>
+                <LineGraph data={linedata} />
+              </div> */}
+
               <div className="text-center">
                 The Macrovesta Index
               </div>
@@ -288,6 +324,29 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  ">
+              <div className="relative flex flex-col items-center">
+                <div className='absolute top-2 right-2 remove-me group' >
+
+                  <img className=' w-[15px] h-[15px] self-center opacity-100 group-hover:hidden' width="15" height="15" src={"/i_G_SQ.png"}></img>
+                  <img className=' w-[15px] h-[15px] self-center opacity-100 hidden group-hover:block' width="15" height="15" src={"/i.png"}></img>
+                  <div className="z-50 pointer-events-none absolute flex flex-col justify-end left-1/2 w-[300px] h-[600px] -translate-x-full -translate-y-[615px] invisible group-hover:visible origin-bottom-right scale-0 group-hover:scale-100 transition-all duration-300 ">
+                    <div className="shadow-center-2xl flex flex-col items-center px-4 pt-2 pb-4 rounded-2xl bg-deep_blue text-white text-center text-xs">
+                      <img className="opacity-70" width="30px" src="/i_White.png" />
+                      <div className="mt-2">
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>Current Basis Cost</div>
+                <GroupedBarChart data={data} />
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="-mb-2">Historical Basis Cost</div>
+                <LineGraph data={linedata} />
               </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
