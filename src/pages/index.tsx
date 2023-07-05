@@ -16,6 +16,7 @@ import {
 } from "../../public/static/charting_library/charting_library";
 import GroupedBarChart from '../components/groupedBarChart';
 import LineGraph from '../components/lineGraph';
+import FormSubmit from '../components/formSubmit';
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -155,6 +156,105 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
     },
     // more series...
   ];
+
+  const [openBasisCostForm, setOpenBasisCostForm] = React.useState(false)
+
+  const [selectedCountry, setSelectedCountry] = React.useState(undefined)
+
+  const handleBasisFormSubmit = async (e: any) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault();
+    setSubmitting(true);
+
+    let country = "";
+    let contractOneBasis = e.target["ctz23"].value;
+    let contractTwoBasis = e.target["ctz24"].value;
+    let errorMessage = "";
+    let warningMessage = "";
+
+    if (selectedCountry != null && selectedCountry != "Select Country") {
+      country = selectedCountry;
+    } else {
+      errorMessage += "Please select a Country. ";
+    }
+
+    if (contractOneBasis == null || contractOneBasis == "") {
+      errorMessage += "Please enter Estimate for CTZ23. ";
+    }
+    if (contractTwoBasis == null || contractTwoBasis == "") {
+      errorMessage += "Please enter Estimate for CTZ24. ";
+    }
+
+
+
+    if (warningMessage !== "") {
+      setWarning_Message(warningMessage);
+      // throw new Error(errorMessage)
+    } else {
+      if (warning_Message != "") {
+        setWarning_Message("")
+      }
+    }
+
+    if (errorMessage != "") {
+      setError_Message(errorMessage);
+      setWarningSubmit(false);
+      setSubmitting(false);
+    } else {
+
+      if (error_Message != "") {
+        setError_Message("")
+      }
+
+      if (warningSubmit == false && warningMessage != "") {
+        setWarningSubmit(true);
+        setSubmitting(false);
+      } else {
+        // Get data from the form.
+        const data = {
+          country,
+          contractOneBasis,
+          contractTwoBasis
+        };
+
+        console.log(data);
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data);
+
+        // API endpoint where we send form data.
+        const endpoint = "/api/add-basis-cost-estimate";
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: "POST",
+          // Tell the server we're sending JSON.
+          headers: {
+            "Content-Type": "application/json"
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        };
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options);
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) });
+        // setSubmitted(true); setSubmitting(false)
+        // console.log(result);
+      }
+    }
+
+  };
+
+  const [error_Message, setError_Message] = React.useState("");
+  const [submitted, setSubmitted] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [warning_Message, setWarning_Message] = React.useState("");
+  const [warningSubmit, setWarningSubmit] = React.useState(false);
 
   return (
     <>
@@ -347,6 +447,75 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
               <div className="flex flex-col items-center">
                 <div className="-mb-2">Historical Basis Cost</div>
                 <LineGraph data={linedata} />
+              </div>
+              <div className="col-span-2 grid place-content-center mt-4 mb-2">
+                <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenBasisCostForm(true)}>
+                  Add Basis Cost Estimate
+                </div>
+                {openBasisCostForm && (
+                  <div className='absolute modal left-0 top-0 z-40'>
+                    <div className=' fixed grid place-content-center inset-0 z-40'>
+                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                        <div className="my-4 font-semibold text-lg">
+                          Add Basis Cost Estimate
+                        </div>
+                        <div className="w-full">
+                          <SingleSelectDropdown
+                            options={[{ country: "Brazil" }, { country: "USA" }, { country: "WAF" }, { country: "Australia" }]}
+                            label="Country"
+                            variable="country"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setSelectedCountry(e.country)}
+                            placeholder="Select Country"
+                            searchPlaceholder="Search Countries"
+                            includeLabel={false}
+                          />
+                          <form className="mt-4 mb-4 pl-4 grid grid-cols-2 gap-x-4 w-full" onSubmit={handleBasisFormSubmit}>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="ctz23"
+                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                              >
+                                CTZ23 Basis Estimate
+                              </label>
+                              <input
+                                type="number"
+                                id="ctz23"
+                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter your estimate"
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="ctz24"
+                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                              >
+                                CTZ24 Basis Estimate
+                              </label>
+                              <input
+                                type="number"
+                                id="ctz24"
+                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter your estimate"
+                              />
+                            </div>
+
+                            <div className="col-span-2 flex justify-center">
+                              {/* <button
+                                type="submit"
+                                className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+                              >
+                                Submit
+                              </button> */}
+                              <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div onClick={() => setOpenBasisCostForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">

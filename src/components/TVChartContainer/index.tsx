@@ -8,6 +8,7 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
 
 	useEffect(() => {
 		const widgetOptions: ChartingLibraryWidgetOptions = {
+			debug: true,
 			symbol: props.symbol,
 			// BEWARE: no trailing slash is expected in feed URL
 			datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
@@ -29,7 +30,8 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
 			client_id: props.client_id,
 			user_id: props.user_id,
 			fullscreen: props.fullscreen,
-			autosize: props.autosize
+			autosize: props.autosize,
+			toolbar_bg: '#FFC0CB'
 		};
 
 		const tvWidget = new widget(widgetOptions);
