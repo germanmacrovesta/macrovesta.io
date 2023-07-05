@@ -63,30 +63,30 @@ const SymbolInfo = async (req: NextApiRequest, res: NextApiResponse) => {
         //         volume_precision: definedValueOrDefault(extractField(data, 'volume-precision', symbolIndex), 0),
         //         format: 'price',
         //     }
-            // {
-            //     full_name: "NYSE:AAPLUSD",
-            //     name: "AAPL",
-            //     description: "Apple Inc",
-            //     exchange: "NYSE",
-            //     listed_exchange: "NYSE",
-            //     exchange_traded: "NYSE",
-            //     format: "price",
-            //     minmovement: 1,
-            //     minmovement2: 0,
-            //     pricescale: 1,
-            //     has_dwm: true,
-            //     has_intraday: true,
-            //     has_no_volume: false,
-            //     type: "stock",
-            //     ticker: "AAPL~0",
-            //     timezone: "America/New_York",
-            //     session_regular: "0900-1600",
-            // }
-        );
+        // {
+        //     full_name: "NYSE:AAPLUSD",
+        //     name: "AAPL",
+        //     description: "Apple Inc",
+        //     exchange: "NYSE",
+        //     listed_exchange: "NYSE",
+        //     exchange_traded: "NYSE",
+        //     format: "price",
+        //     minmovement: 1,
+        //     minmovement2: 0,
+        //     pricescale: 1,
+        //     has_dwm: true,
+        //     has_intraday: true,
+        //     has_no_volume: false,
+        //     type: "stock",
+        //     ticker: "AAPL~0",
+        //     timezone: "America/New_York",
+        //     session_regular: "0900-1600",
+        // }
+        // );
 
     } else {
-    res.status(405).json({ message: 'Method not allowed.' });
-}
+        res.status(405).json({ message: 'Method not allowed.' });
+    }
 };
 
 export default SymbolInfo;
