@@ -73,7 +73,7 @@ const parseDateString = (dateString) => {
 
 };
 
-const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seasonsData }) => {
+const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seasonsData, basisData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -120,10 +120,10 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
   }, [monthlyIndexData])
 
   const data = [
-    { name: 'Brazil', CTZ23: 10, CTZ24: 20 },
-    { name: 'USA', CTZ23: 30, CTZ24: 40 },
-    { name: 'WAF', CTZ23: 20, CTZ24: 40 },
-    { name: 'Australia', CTZ23: 30, CTZ24: 50 },
+    { country: 'Brazil', CTZ23: 10, CTZ24: 20 },
+    { country: 'USA', CTZ23: 30, CTZ24: 40 },
+    { country: 'WAF', CTZ23: 20, CTZ24: 40 },
+    { country: 'Australia', CTZ23: 30, CTZ24: 50 },
     // ...
   ];
 
@@ -255,6 +255,209 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
   const [submitting, setSubmitting] = React.useState(false);
   const [warning_Message, setWarning_Message] = React.useState("");
   const [warningSubmit, setWarningSubmit] = React.useState(false);
+
+  interface CountryData {
+    country: string;
+    CTZ23: number;
+    CTZ24: number;
+  }
+
+  type formattedBasis = {
+    country: string;
+    date_of_basis_report: string;
+    CTZ23: number;
+    CTZ24: number;
+  }[]
+
+  const basisBarChartData = (originalData: formattedBasis) => {
+    const today = new Date(); // Current date
+    const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const data: formattedBasis = originalData.filter((basis: formattedBasis[number]) => basis.date_of_basis_report > oneWeekAgo.toISOString());
+    const result: CountryData[] = Object.values(data.reduce((accumulator: { [key: string]: CountryData }, current) => {
+      const { country, CTZ23, CTZ24 } = current;
+
+      if (!accumulator[country]) {
+        accumulator[country] = {
+          country,
+          CTZ23: CTZ23 || 0,
+          CTZ24: CTZ24 || 0,
+        };
+      } else {
+        accumulator[country]!.CTZ23 += CTZ23 || 0;
+        accumulator[country]!.CTZ24 += CTZ24 || 0;
+      }
+
+      return accumulator;
+    }, {})).map((countryData: CountryData) => {
+      const { country, CTZ23, CTZ24 } = countryData;
+      const count = data.filter(obj => obj.country === country).length;
+
+      return {
+        country,
+        CTZ23: CTZ23 / count,
+        CTZ24: CTZ24 / count
+      };
+    });
+
+    console.log(result);
+    return result
+  }
+
+  // function transformData(input) {
+  //   // Create a container for the new data structure
+  //   let output = {};
+
+  //   // Iterate over the input data
+  //   for (let item of input) {
+  //     // For each contract date, add data to the output
+  //     for (let key of Object.keys(item)) {
+  //       if (key.startsWith("CTZ")) {
+  //         let contractName = `${item.country} CTZ${key.slice(-2)}`;
+
+  //         // If this contract name hasn't been added to the output yet, initialize it
+  //         if (!output[contractName]) {
+  //           output[contractName] = [];
+  //         }
+
+  //         // Add the data point
+  //         output[contractName].push({ time: item.date_of_basis_report, value: item[key] });
+  //       }
+  //     }
+  //   }
+
+  //   // Convert the output object to an array
+  //   output = Object.keys(output).map(name => {
+  //     return { name: name, data: output[name] };
+  //   });
+
+  //   return output;
+  // }
+
+  // function transformData(input) {
+  //   // Create a container for the new data structure
+  //   let output = {};
+
+  //   // Container to keep track of the sum and count for each contract and date
+  //   let averages = {};
+
+  //   // Iterate over the input data
+  //   for (let item of input) {
+  //     // For each contract date, add data to the output
+  //     for (let key of Object.keys(item)) {
+  //       if (key.startsWith("CTZ")) {
+  //         let contractName = `${item.country} CTZ${key.slice(-2)}`;
+
+  //         // If this contract name hasn't been added to the output yet, initialize it
+  //         if (!output[contractName]) {
+  //           output[contractName] = [];
+  //           averages[contractName] = {};
+  //         }
+
+  //         let date = item.date_of_basis_report;
+
+  //         // If this date hasn't been added to the averages for this contract yet, initialize it
+  //         if (!averages[contractName][date]) {
+  //           averages[contractName][date] = { sum: 0, count: 0 };
+  //         }
+
+  //         // Add the data point to the averages
+  //         averages[contractName][date].sum += item[key];
+  //         averages[contractName][date].count++;
+  //       }
+  //     }
+  //   }
+
+  //   // Convert the averages to actual averages and add them to the output
+  //   for (let contractName of Object.keys(averages)) {
+  //     for (let date of Object.keys(averages[contractName])) {
+  //       let average = averages[contractName][date].sum / averages[contractName][date].count;
+  //       output[contractName].push({ time: date, value: average });
+  //     }
+  //   }
+
+  //   // Convert the output object to an array
+  //   output = Object.keys(output).map(name => {
+  //     return { name: name, data: output[name] };
+  //   });
+
+  //   return output;
+  // }
+
+  // function getWeek(date) {
+  //   const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  //   tempDate.setUTCDate(tempDate.getUTCDate() + 3 - (tempDate.getUTCDay() + 6) % 7);
+  //   const week1 = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4));
+  //   return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7);
+  // }
+
+  function getWeek(date, startDay) {
+    const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    tempDate.setUTCDate(tempDate.getUTCDate() + 3 - (tempDate.getUTCDay() + 6 - startDay + 7) % 7);
+    const week1 = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4));
+    return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7);
+  }
+
+
+  function transformData(input) {
+    // Create a container for the new data structure
+    let output = {};
+    const start_day = 1
+
+    // Container to keep track of the sum and count for each contract and week
+    let averages = {};
+
+    // Iterate over the input data
+    for (let item of input) {
+      // For each contract date, add data to the output
+      for (let key of Object.keys(item)) {
+        if (key.startsWith("CTZ")) {
+          let contractName = `${item.country} CTZ${key.slice(-2)}`;
+
+          // If this contract name hasn't been added to the output yet, initialize it
+          if (!output[contractName]) {
+            output[contractName] = [];
+            averages[contractName] = {};
+          }
+
+          let date = new Date(item.date_of_basis_report);
+          let week = getWeek(date, start_day);
+
+          // If this week hasn't been added to the averages for this contract yet, initialize it
+          if (!averages[contractName][week]) {
+            averages[contractName][week] = { sum: 0, count: 0 };
+          }
+
+          // Add the data point to the averages
+          averages[contractName][week].sum += item[key];
+          averages[contractName][week].count++;
+        }
+      }
+    }
+
+    // Convert the averages to actual averages and add them to the output
+    for (let contractName of Object.keys(averages)) {
+      for (let week of Object.keys(averages[contractName])) {
+        let average = averages[contractName][week].sum / averages[contractName][week].count;
+        // Assume the first day of the week (Monday) for the time
+        let date = new Date(new Date().getFullYear(), 0, 1 + (week - 1) * 7);
+        output[contractName].push({ time: date.toISOString(), value: average });
+      }
+    }
+
+    // Convert the output object to an array
+    output = Object.keys(output).map(name => {
+      return { name: name, data: output[name] };
+    });
+
+    return output;
+  }
+
+
+  console.log("Basis Data", JSON.parse(basisData).filter((basis) => basis.country == "Brazil"))
+  console.log("Line Data", transformData(JSON.parse(basisData).filter((basis) => basis.country == "Brazil")))
+
+  const [basisCountry, setBasisCountry] = React.useState("Brazil")
+
 
   return (
     <>
@@ -427,6 +630,23 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
               </div>
             </div>
             <div className="grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  ">
+              <div className="col-span-2 grid grid-cols-2 mb-4">
+                <div className="col-start-2 flex justify-center">
+                  <div className="w-[200px]">
+                    <SingleSelectDropdown
+                      options={[{ country: "Brazil" }, { country: "USA" }, { country: "WAF" }, { country: "Australia" }]}
+                      label="Country"
+                      variable="country"
+                      colour="bg-deep_blue"
+                      onSelectionChange={(e) => setBasisCountry(e.country)}
+                      placeholder="Select Country"
+                      searchPlaceholder="Search Countries"
+                      includeLabel={false}
+                      defaultValue="Brazil"
+                    />
+                  </div>
+                </div>
+              </div>
               <div className="relative flex flex-col items-center">
                 <div className='absolute top-2 right-2 remove-me group' >
 
@@ -442,11 +662,11 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
                   </div>
                 </div>
                 <div>Current Basis Cost</div>
-                <GroupedBarChart data={data} />
+                <GroupedBarChart data={basisBarChartData(JSON.parse(basisData))} />
               </div>
               <div className="flex flex-col items-center">
                 <div className="-mb-2">Historical Basis Cost</div>
-                <LineGraph data={linedata} />
+                <LineGraph data={transformData(JSON.parse(basisData).filter((basis) => basis.country == basisCountry))} />
               </div>
               <div className="col-span-2 grid place-content-center mt-4 mb-2">
                 <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenBasisCostForm(true)}>
@@ -565,6 +785,26 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
 };
 //some random shit
 export const getServerSideProps = async (context: any) => {
+  const today = new Date(); // Current date
+  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const basis = await prisma?.basis_comparison.findMany({
+    // where: {
+    //   date_of_basis_report: {
+    //     gte: oneWeekAgo.toISOString(), // Filtering records greater than or equal to one week ago
+    //     lte: today.toISOString() // Filtering records less than or equal to the current date
+    //   }
+    // }
+  })
+
+  const formattedBasis = basis.map((basis) => {
+    const { country, date_of_basis_report, contract_december_2023: CTZ23, contract_december_2024: CTZ24 } = basis;
+    console.log(date_of_basis_report)
+    return { country, date_of_basis_report, CTZ23, CTZ24 }
+  })
+
+  const basisData = JSON.stringify(formattedBasis)
+
   const season = await prisma?.comparison_charts_with_17_months_year.findMany({
     orderBy: {
       date_of_low: 'desc'
@@ -590,7 +830,7 @@ export const getServerSideProps = async (context: any) => {
   const monthlyIndexData = JSON.stringify(monthlyindex);
   console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, snapshotsData, countryNewsData, seasonsData },
+    props: { monthlyIndexData, snapshotsData, countryNewsData, seasonsData, basisData },
   };
 };
 

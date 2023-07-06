@@ -5,6 +5,8 @@ const LineGraph = ({ data }) => {
     const ref = useRef();
 
     useEffect(() => {
+        d3.select(ref.current).selectAll("*").remove();
+
         const margin = { top: 20, right: 30, bottom: 40, left: 60 },
             width = 550 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
@@ -87,7 +89,7 @@ const LineGraph = ({ data }) => {
         const yearFormat = d3.timeFormat("%Y");
 
         const xAxis = d3.axisBottom(x)
-            .ticks(d3.timeMonth.every(4))
+            .ticks(d3.timeMonth.every(1))
             .tickFormat(d => `${monthFormat(d)}${d.getMonth() === 0 ? ` ${yearFormat(d)}` : ""}`);
 
         svg.append("g")

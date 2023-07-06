@@ -188,7 +188,7 @@ function GroupedBarChart({ data }) {
 
         const keys = ['CTZ23', 'CTZ24'];
 
-        x0.domain(data.map((d) => d.name));
+        x0.domain(data.map((d) => d.country));
         x1.domain(keys).rangeRound([0, x0.bandwidth()]);
         y.domain([0, d3.max(data, (d) => d3.max(keys, (key) => d[key])) + 5]).nice();
 
@@ -198,7 +198,7 @@ function GroupedBarChart({ data }) {
             .data(data)
             .enter()
             .append('g')
-            .attr('transform', (d) => 'translate(' + x0(d.name) + ',0)');
+            .attr('transform', (d) => 'translate(' + x0(d.country) + ',0)');
 
         bar.selectAll('rect')
             .data((d) => keys.map((key) => ({ key: key, value: d[key] })))
