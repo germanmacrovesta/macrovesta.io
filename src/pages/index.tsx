@@ -593,9 +593,9 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
                 </div>
               </div>
             </div>
-            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+            {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <TVChartContainer {...defaultWidgetProps} />
-            </div>
+            </div> */}
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <div className="text-center">
                 30 Seconds Snapshot
