@@ -19,6 +19,10 @@ const SingleSelectDropdown = ({
     urlPath = undefined,
     router = undefined,
     theme = 'default',
+    textCenter = true,
+    textColour = "text-white",
+    border = false,
+    borderStyle = "border border-grey"
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -146,7 +150,7 @@ const SingleSelectDropdown = ({
             {addButton && includeLabel && router != undefined && urlPath != undefined && (
                 <button type='button' onClick={() => router.push(urlPath)} className=" bg-white px-4 my-3 py-2 text-black rounded-lg text-xs mr-4">{addLabel}</button>
             )}
-            <div className={`flex ${colour} w-full justify-between rounded-lg mx-4 `}>
+            <div className={`flex ${colour} w-full justify-between rounded-lg `}>
                 {includeLabel && (
                     <div className='px-8 py-2'>
                         <label htmlFor={label}>{label}</label>
@@ -155,7 +159,7 @@ const SingleSelectDropdown = ({
                 <div className={`relative w-full rounded-lg `}>
                     <button type='button'
                         onClick={() => setIsOpen(!isOpen)}
-                        className={`w-full h-full capitalize text-white font-semibold     ${includeLabel ? '' : ' py-2 text-center appearance-none'}`}
+                        className={`w-full h-full capitalize ${textColour} font-semibold ${border ? `${borderStyle}` : ``} ${includeLabel ? '' : ` py-2 ${textCenter ? 'text-center' : 'text-left px-3'} appearance-none`}`}
                     >
                         {selectedOption ? selectedOption[`${variable}`] : placeholder}
                     </button>
@@ -166,13 +170,13 @@ const SingleSelectDropdown = ({
                                 placeholder={searchPlaceholder}
                                 value={searchText}
                                 onChange={handleSearchChange}
-                                className="text-center bg-[#f6f6f6] border-b border-grey w-full px-3 py-2 rounded-t-lg"
+                                className={`${textCenter ? 'text-center' : 'text-left px-3'}} bg-[#f6f6f6] border-b border-grey w-full px-3 py-2 rounded-t-lg`}
                             />
                             <ul className="max-h-60 overflow-y-auto">
                                 <li
                                     key={"placeholder"}
                                     onClick={() => handleOptionClick({ [variable]: `${placeholder}` })}
-                                    className={`text-center capitalize px-3 cursor-pointer`}
+                                    className={`${textCenter ? 'text-center' : 'text-left px-3'}} capitalize px-3 cursor-pointer`}
                                 >
                                     {placeholder}
                                 </li>
@@ -180,7 +184,7 @@ const SingleSelectDropdown = ({
                                     <li
                                         key={option[`${variable}`]}
                                         onClick={() => handleOptionClick(option)}
-                                        className={`text-center capitalize px-3 cursor-pointer ${selectedOption && selectedOption[`${variable}`] === option[`${variable}`] ? 'bg-[#7571e1] text-white' : ''} ${index == filteredOptions.length - 1 ? 'rounded-b-lg' : ''}`}
+                                        className={`${textCenter ? 'text-center' : 'text-left px-3'}} capitalize px-3 cursor-pointer ${selectedOption && selectedOption[`${variable}`] === option[`${variable}`] ? 'bg-[#7571e1] text-white' : ''} ${index == filteredOptions.length - 1 ? 'rounded-b-lg' : ''}`}
                                     >
                                         {option[`${variable}`]}
                                     </li>

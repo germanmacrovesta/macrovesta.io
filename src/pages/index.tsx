@@ -73,9 +73,17 @@ const parseDateString = (dateString) => {
 
 };
 
-const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seasonsData, basisData }) => {
+const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData }) => {
   const router = useRouter();
   const url = router.pathname;
+
+  const [sentimentData, setSentimentData] = React.useState(() => {
+    try {
+      return JSON.parse(initialSentimentData);
+    } catch {
+      return [];
+    }
+  })
 
   const baseUrlArray = url.split('/');
   let urlArray: any = [];
@@ -160,6 +168,112 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
   const [openBasisCostForm, setOpenBasisCostForm] = React.useState(false)
 
   const [selectedCountry, setSelectedCountry] = React.useState(undefined)
+
+  const [bullishBearish, setBullishBearish] = React.useState(undefined)
+
+  const handleSentimentFormSubmit = async (e: any) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault();
+    setSubmitting(true);
+
+    let bullish_or_bearish = "";
+    let high = e.target["high"].value;
+    let low = e.target["low"].value;
+    let intraday_average_points = e.target["intraday"].value;
+    let open_interest = e.target["open_interest"].value;
+    let errorMessage = "";
+    let warningMessage = "";
+
+    if (bullishBearish != null && bullishBearish != "Select an Option") {
+      bullish_or_bearish = bullishBearish;
+    } else {
+      errorMessage += "Please select bullish or bearish. ";
+    }
+
+    if (high == null || high == "") {
+      errorMessage += "Please enter Estimate for high. ";
+    }
+    if (low == null || low == "") {
+      errorMessage += "Please enter Estimate for low. ";
+    }
+    if (intraday_average_points == null || intraday_average_points == "") {
+      errorMessage += "Please enter Estimate for intraday average in points. ";
+    }
+    if (open_interest == null || open_interest == "") {
+      errorMessage += "Please enter Estimate for open interest. ";
+    }
+
+
+
+    if (warningMessage !== "") {
+      setWarning_Message(warningMessage);
+      // throw new Error(errorMessage)
+    } else {
+      if (warning_Message != "") {
+        setWarning_Message("")
+      }
+    }
+
+    if (errorMessage != "") {
+      setError_Message(errorMessage);
+      setWarningSubmit(false);
+      setSubmitting(false);
+    } else {
+
+      if (error_Message != "") {
+        setError_Message("")
+      }
+
+      if (warningSubmit == false && warningMessage != "") {
+        setWarningSubmit(true);
+        setSubmitting(false);
+      } else {
+        // Get data from the form.
+        const data = {
+          bullish_or_bearish,
+          high,
+          low,
+          intraday_average_points,
+          open_interest
+        };
+
+        console.log(data);
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data);
+
+        // API endpoint where we send form data.
+        const endpoint = "/api/add-sentiment-survey-results";
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: "POST",
+          // Tell the server we're sending JSON.
+          headers: {
+            "Content-Type": "application/json"
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        };
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options);
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => {
+          setSubmitted(true);
+          setSubmitting(false);
+          setCurrentStage(1);
+          // setSentimentData([...sentimentData, { record_id: "dummyid", bullish_or_bearish, high, low, intraday_average_points, open_interest }])
+        });
+        // setSubmitted(true); setSubmitting(false)
+        // console.log(result);
+      }
+    }
+
+  };
 
   const handleBasisFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
@@ -294,101 +408,14 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
 
       return {
         country,
-        CTZ23: CTZ23 / count,
-        CTZ24: CTZ24 / count
+        CTZ23: parseFloat((CTZ23 / count).toFixed(0)),
+        CTZ24: parseFloat((CTZ24 / count).toFixed(0))
       };
     });
 
     console.log(result);
     return result
   }
-
-  // function transformData(input) {
-  //   // Create a container for the new data structure
-  //   let output = {};
-
-  //   // Iterate over the input data
-  //   for (let item of input) {
-  //     // For each contract date, add data to the output
-  //     for (let key of Object.keys(item)) {
-  //       if (key.startsWith("CTZ")) {
-  //         let contractName = `${item.country} CTZ${key.slice(-2)}`;
-
-  //         // If this contract name hasn't been added to the output yet, initialize it
-  //         if (!output[contractName]) {
-  //           output[contractName] = [];
-  //         }
-
-  //         // Add the data point
-  //         output[contractName].push({ time: item.date_of_basis_report, value: item[key] });
-  //       }
-  //     }
-  //   }
-
-  //   // Convert the output object to an array
-  //   output = Object.keys(output).map(name => {
-  //     return { name: name, data: output[name] };
-  //   });
-
-  //   return output;
-  // }
-
-  // function transformData(input) {
-  //   // Create a container for the new data structure
-  //   let output = {};
-
-  //   // Container to keep track of the sum and count for each contract and date
-  //   let averages = {};
-
-  //   // Iterate over the input data
-  //   for (let item of input) {
-  //     // For each contract date, add data to the output
-  //     for (let key of Object.keys(item)) {
-  //       if (key.startsWith("CTZ")) {
-  //         let contractName = `${item.country} CTZ${key.slice(-2)}`;
-
-  //         // If this contract name hasn't been added to the output yet, initialize it
-  //         if (!output[contractName]) {
-  //           output[contractName] = [];
-  //           averages[contractName] = {};
-  //         }
-
-  //         let date = item.date_of_basis_report;
-
-  //         // If this date hasn't been added to the averages for this contract yet, initialize it
-  //         if (!averages[contractName][date]) {
-  //           averages[contractName][date] = { sum: 0, count: 0 };
-  //         }
-
-  //         // Add the data point to the averages
-  //         averages[contractName][date].sum += item[key];
-  //         averages[contractName][date].count++;
-  //       }
-  //     }
-  //   }
-
-  //   // Convert the averages to actual averages and add them to the output
-  //   for (let contractName of Object.keys(averages)) {
-  //     for (let date of Object.keys(averages[contractName])) {
-  //       let average = averages[contractName][date].sum / averages[contractName][date].count;
-  //       output[contractName].push({ time: date, value: average });
-  //     }
-  //   }
-
-  //   // Convert the output object to an array
-  //   output = Object.keys(output).map(name => {
-  //     return { name: name, data: output[name] };
-  //   });
-
-  //   return output;
-  // }
-
-  // function getWeek(date) {
-  //   const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  //   tempDate.setUTCDate(tempDate.getUTCDate() + 3 - (tempDate.getUTCDay() + 6) % 7);
-  //   const week1 = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4));
-  //   return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7);
-  // }
 
   function getWeek(date, startDay) {
     const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -437,7 +464,7 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
     // Convert the averages to actual averages and add them to the output
     for (let contractName of Object.keys(averages)) {
       for (let week of Object.keys(averages[contractName])) {
-        let average = averages[contractName][week].sum / averages[contractName][week].count;
+        let average = parseFloat((averages[contractName][week].sum / averages[contractName][week].count).toFixed(0));
         // Assume the first day of the week (Monday) for the time
         let date = new Date(new Date().getFullYear(), 0, 1 + (week - 1) * 7);
         output[contractName].push({ time: date.toISOString(), value: average });
@@ -452,12 +479,306 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
     return output;
   }
 
+  // function transformSurveyData(inputArray, propertyUsed) {
+  //   const outputArray = [];
+
+  //   // Group the objects based on bullish_or_bearish property
+  //   const groups = inputArray.reduce((result, obj) => {
+  //     const key = obj.bullish_or_bearish;
+  //     if (!result[key]) {
+  //       result[key] = [];
+  //     }
+  //     result[key].push(obj);
+  //     return result;
+  //   }, {});
+
+  //   // Convert each group into the desired format
+  //   for (const groupName in groups) {
+  //     const group = groups[groupName];
+  //     const data = group.map(obj => {
+  //       return {
+  //         time: obj.date_of_survey,
+  //         value: parseFloat(obj[propertyUsed])
+  //       };
+  //     });
+
+  //     outputArray.push({
+  //       name: groupName,
+  //       data: data
+  //     });
+  //   }
+
+  //   return outputArray;
+  // }
+
+  // function transformSurveyData(inputArray, propertyUsed) {
+  //   const outputArray = [];
+  //   const averages = {};
+
+  //   for (const obj of inputArray) {
+  //     const groupName = obj.bullish_or_bearish;
+
+  //     if (!averages[groupName]) {
+  //       averages[groupName] = {};
+  //     }
+
+  //     const date = new Date(obj.date_of_survey);
+  //     const dateString = date.toISOString().split("T")[0];
+
+  //     if (!averages[groupName][dateString]) {
+  //       averages[groupName][dateString] = {
+  //         sum: 0,
+  //         count: 0
+  //       };
+  //     }
+
+  //     averages[groupName][dateString].sum += parseFloat(obj[propertyUsed]);
+  //     averages[groupName][dateString].count++;
+  //   }
+
+  //   for (const groupName in averages) {
+  //     const group = averages[groupName];
+  //     const data = [];
+
+  //     for (const dateString in group) {
+  //       const average =
+  //         group[dateString].sum / group[dateString].count;
+  //       const date = new Date(dateString);
+
+  //       data.push({
+  //         time: date.toISOString(),
+  //         value: average
+  //       });
+  //     }
+
+  //     outputArray.push({
+  //       name: groupName,
+  //       data: data
+  //     });
+  //   }
+
+  //   return outputArray;
+  // }
+
+  function transformSurveyData(inputArray, propertyUsed) {
+    const outputArray = [];
+    const averages = {};
+    // const combinedSeries = {
+    //   name: "Combined",
+    //   data: []
+    // };
+
+    for (const obj of inputArray) {
+      const groupName = obj.bullish_or_bearish;
+
+      if (!averages[groupName]) {
+        averages[groupName] = {};
+      }
+      if (!averages["Average"]) {
+        averages["Average"] = {};
+      }
+
+      const date = new Date(obj.date_of_survey);
+      const dateString = date.toISOString().split("T")[0];
+
+      if (!averages[groupName][dateString]) {
+        averages[groupName][dateString] = {
+          sum: 0,
+          count: 0
+        };
+      }
+      if (!averages["Average"][dateString]) {
+        averages["Average"][dateString] = {
+          sum: 0,
+          count: 0
+        };
+      }
+
+      averages[groupName][dateString].sum += parseFloat(obj[propertyUsed]);
+      averages[groupName][dateString].count++;
+      averages["Average"][dateString].sum += parseFloat(obj[propertyUsed]);
+      averages["Average"][dateString].count++;
+
+      // Add the values to the combined series
+      // if (!isNaN(parseFloat(obj[propertyUsed]))) {
+      //   if (!combinedSeries.data[dateString]) {
+      //     combinedSeries.data[dateString] = {
+      //       sum: 0,
+      //       count: 0
+      //     };
+      //   }
+
+      //   combinedSeries.data[dateString].sum += parseFloat(obj[propertyUsed]);
+      //   combinedSeries.data[dateString].count++;
+      // }
+    }
+
+    for (const groupName in averages) {
+      const group = averages[groupName];
+      const data = [];
+
+      for (const dateString in group) {
+        const average =
+          group[dateString].sum / group[dateString].count;
+        const date = new Date(dateString);
+
+        data.push({
+          time: date.toISOString(),
+          value: average
+        });
+      }
+
+      outputArray.push({
+        name: groupName,
+        data: data
+      });
+    }
+
+    // Calculate the average for the combined series
+    // for (const dateString in combinedSeries.data) {
+    //   const average =
+    //     combinedSeries.data[dateString].sum / combinedSeries.data[dateString].count;
+    //   const date = new Date(dateString);
+
+    //   combinedSeries.data[dateString] = {
+    //     time: date.toISOString(),
+    //     value: average
+    //   };
+    // }
+
+    // outputArray.push(combinedSeries);
+
+    return outputArray;
+  }
+
+
+
+
 
   console.log("Basis Data", JSON.parse(basisData).filter((basis) => basis.country == "Brazil"))
   console.log("Line Data", transformData(JSON.parse(basisData).filter((basis) => basis.country == "Brazil")))
 
-  const [basisCountry, setBasisCountry] = React.useState("Brazil")
+  const [basisCountry, setBasisCountry] = React.useState("Brazil");
 
+  const [currentStage, setCurrentStage] = React.useState(0);
+
+  const goNext = () => {
+    if (currentStage < stages.length - 1) {
+      setCurrentStage(currentStage + 1);
+    }
+  };
+
+  const goPrevious = () => {
+    if (currentStage > 0) {
+      setCurrentStage(currentStage - 1);
+    }
+  };
+
+  const StageOne = () =>
+    <div className="grid grid-cols-2">
+      <div className="col-span-2 mb-4 text-center text-xl font-semibold">Macrovesta Sentiment Survey</div>
+      <div className="col-span-2 grid grid-cols-2 gap-x-4 pl-4">
+        <div className="flex flex-col justify-end items-end">
+          <div className="w-full">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+            >
+              What is your feeling of the market?
+            </label>
+            <SingleSelectDropdown
+              options={[{ option: "Bullish" }, { option: "Bearish" }]}
+              label="BullishBearish"
+              variable="option"
+              colour="bg-[#ffffff]"
+              onSelectionChange={(e) => setBullishBearish(e.option)}
+              placeholder="Select an Option"
+              searchPlaceholder="Search Options"
+              includeLabel={false}
+              textCenter={false}
+              textColour="text-black"
+              border={true}
+              borderStyle="rounded-md border border-gray-300"
+            />
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div className="font-semibold leading-4 mb-3">Please submit your guesstimates to view the unanimous opinions of our other partners</div>
+          <div className="text-sm leading-4">This new feature displays unanimously the opinion of our partners about December 2023 Futures for the week ahead, offering a view of market sentiment for both short and long-term seasonal trends in the cotton industry.</div>
+        </div>
+      </div>
+      <form className="mt-4 mb-4 pl-4 grid grid-cols-2 col-span-2 gap-x-4 w-full" onSubmit={handleSentimentFormSubmit}>
+        <div className="mb-4">
+          <label
+            htmlFor="high"
+            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+          >
+            High
+          </label>
+          <input
+            type="number"
+            id="high"
+            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+            placeholder="Enter your estimate"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="low"
+            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+          >
+            Low
+          </label>
+          <input
+            type="number"
+            id="low"
+            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+            placeholder="Enter your estimate"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="intraday"
+            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+          >
+            Intraday Average in Points
+          </label>
+          <input
+            type="number"
+            id="intraday"
+            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+            placeholder="Enter your estimate"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="open_interest"
+            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+          >
+            Open Interest
+          </label>
+          <input
+            type="number"
+            id="open_interest"
+            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+            placeholder="Enter your estimate"
+          />
+        </div>
+
+        <div className="col-span-2 flex justify-center">
+          {/* <button
+  type="submit"
+  className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+>
+  Submit
+</button> */}
+          <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
+        </div>
+      </form>
+    </div>;
+
+  const StageTwo = () => <div>Stage Two</div>;
+
+  const stages = [<StageOne />, <StageTwo />];
 
   return (
     <>
@@ -475,6 +796,7 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
             <Breadcrumbs title={"Macrovesta Demo"} urlPath={urlPath} />
             <TabMenu data={TabMenuArray} urlPath={urlPath} />
           </header>
+          {JSON.stringify(sentimentData)}
           <div className="p-6 bg-slate-200">
             Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
@@ -596,6 +918,142 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
             {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <TVChartContainer {...defaultWidgetProps} />
             </div> */}
+            <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+              {/* {stages[currentStage]} */}
+              {currentStage == 0 && (
+                <div className="grid grid-cols-2">
+                  <div className="col-span-2 mb-4 text-center text-xl font-semibold">Macrovesta Sentiment Survey</div>
+                  <div className="col-span-2 grid grid-cols-2 gap-x-4 pl-4">
+                    <div className="flex flex-col justify-end items-end">
+                      <div className="w-full">
+                        <label
+                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                        >
+                          What is your feeling of the market?
+                        </label>
+                        <SingleSelectDropdown
+                          options={[{ option: "Bullish" }, { option: "Bearish" }]}
+                          label="BullishBearish"
+                          variable="option"
+                          colour="bg-[#ffffff]"
+                          onSelectionChange={(e) => setBullishBearish(e.option)}
+                          placeholder="Select an Option"
+                          searchPlaceholder="Search Options"
+                          includeLabel={false}
+                          textCenter={false}
+                          textColour="text-black"
+                          border={true}
+                          borderStyle="rounded-md border border-gray-300"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <div className="font-semibold leading-4 mb-3">Please submit your guesstimates to view the unanimous opinions of our other partners</div>
+                      <div className="text-sm leading-4">This new feature displays unanimously the opinion of our partners about December 2023 Futures for the week ahead, offering a view of market sentiment for both short and long-term seasonal trends in the cotton industry.</div>
+                    </div>
+                  </div>
+                  <form className="mt-4 mb-4 pl-4 grid grid-cols-2 col-span-2 gap-x-4 w-full" onSubmit={handleSentimentFormSubmit}>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="high"
+                        className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                      >
+                        High
+                      </label>
+                      <input
+                        type="number"
+                        id="high"
+                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                        placeholder="Enter your estimate"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="low"
+                        className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                      >
+                        Low
+                      </label>
+                      <input
+                        type="number"
+                        id="low"
+                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                        placeholder="Enter your estimate"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="intraday"
+                        className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                      >
+                        Intraday Average in Points
+                      </label>
+                      <input
+                        type="number"
+                        id="intraday"
+                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                        placeholder="Enter your estimate"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="open_interest"
+                        className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                      >
+                        Open Interest
+                      </label>
+                      <input
+                        type="number"
+                        id="open_interest"
+                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                        placeholder="Enter your estimate"
+                      />
+                    </div>
+
+                    <div className="col-span-2 flex justify-center">
+                      {/* <button
+            type="submit"
+            className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+          >
+            Submit
+          </button> */}
+                      <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
+                    </div>
+                  </form>
+                </div>
+              )}
+              {currentStage == 1 && (
+                <div className="grid grid-cols-2">
+                  <div className="flex flex-col items-center">
+                    <div className="-mb-2">High</div>
+                    <LineGraph data={transformSurveyData(sentimentData, 'high')} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="-mb-2">Low</div>
+                    <LineGraph data={transformSurveyData(sentimentData, 'low')} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="-mb-2">Intraday Average in Points</div>
+                    <LineGraph data={transformSurveyData(sentimentData, 'intraday_average_points')} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="-mb-2">Open Interest</div>
+                    <LineGraph data={transformSurveyData(sentimentData, 'open_interest')} />
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-between px-8">
+                {currentStage == 0 && (
+                  <div></div>
+                )}
+                {currentStage > 0 && (
+                  <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={goPrevious}>Previous</button>
+                )}
+                {currentStage < (stages.length - 1) && (
+                  <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={goNext}>Next</button>
+                )}
+              </div>
+            </div>
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <div className="text-center">
                 30 Seconds Snapshot
@@ -630,23 +1088,6 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
               </div>
             </div>
             <div className="grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  ">
-              <div className="col-span-2 grid grid-cols-2 mb-4">
-                <div className="col-start-2 flex justify-center">
-                  <div className="w-[200px]">
-                    <SingleSelectDropdown
-                      options={[{ country: "Brazil" }, { country: "USA" }, { country: "WAF" }, { country: "Australia" }]}
-                      label="Country"
-                      variable="country"
-                      colour="bg-deep_blue"
-                      onSelectionChange={(e) => setBasisCountry(e.country)}
-                      placeholder="Select Country"
-                      searchPlaceholder="Search Countries"
-                      includeLabel={false}
-                      defaultValue="Brazil"
-                    />
-                  </div>
-                </div>
-              </div>
               <div className="relative flex flex-col items-center">
                 <div className='absolute top-2 right-2 remove-me group' >
 
@@ -668,74 +1109,91 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
                 <div className="-mb-2">Historical Basis Cost</div>
                 <LineGraph data={transformData(JSON.parse(basisData).filter((basis) => basis.country == basisCountry))} />
               </div>
-              <div className="col-span-2 grid place-content-center mt-4 mb-2">
-                <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenBasisCostForm(true)}>
-                  Add Basis Cost Estimate
-                </div>
-                {openBasisCostForm && (
-                  <div className='absolute modal left-0 top-0 z-40'>
-                    <div className=' fixed grid place-content-center inset-0 z-40'>
-                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                        <div className="my-4 font-semibold text-lg">
-                          Add Basis Cost Estimate
-                        </div>
-                        <div className="w-full">
-                          <SingleSelectDropdown
-                            options={[{ country: "Brazil" }, { country: "USA" }, { country: "WAF" }, { country: "Australia" }]}
-                            label="Country"
-                            variable="country"
-                            colour="bg-deep_blue"
-                            onSelectionChange={(e) => setSelectedCountry(e.country)}
-                            placeholder="Select Country"
-                            searchPlaceholder="Search Countries"
-                            includeLabel={false}
-                          />
-                          <form className="mt-4 mb-4 pl-4 grid grid-cols-2 gap-x-4 w-full" onSubmit={handleBasisFormSubmit}>
-                            <div className="mb-4">
-                              <label
-                                htmlFor="ctz23"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                CTZ23 Basis Estimate
-                              </label>
-                              <input
-                                type="number"
-                                id="ctz23"
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div className="mb-4">
-                              <label
-                                htmlFor="ctz24"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                CTZ24 Basis Estimate
-                              </label>
-                              <input
-                                type="number"
-                                id="ctz24"
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
+              <div className="col-span-2 grid grid-cols-2 mb-4">
+                <div className="grid place-content-center">
+                  <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenBasisCostForm(true)}>
+                    Add Basis Cost Estimate
+                  </div>
+                  {openBasisCostForm && (
+                    <div className='absolute modal left-0 top-0 z-40'>
+                      <div className=' fixed grid place-content-center inset-0 z-40'>
+                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                          <div className="my-4 font-semibold text-lg">
+                            Add Basis Cost Estimate
+                          </div>
+                          <div className="w-full">
+                            <SingleSelectDropdown
+                              options={[{ country: "Brazil" }, { country: "USA" }, { country: "WAF" }, { country: "Australia" }]}
+                              label="Country"
+                              variable="country"
+                              colour="bg-deep_blue"
+                              onSelectionChange={(e) => setSelectedCountry(e.country)}
+                              placeholder="Select Country"
+                              searchPlaceholder="Search Countries"
+                              includeLabel={false}
+                            />
+                            <form className="mt-4 mb-4 pl-4 grid grid-cols-2 gap-x-4 w-full" onSubmit={handleBasisFormSubmit}>
+                              <div className="mb-4">
+                                <label
+                                  htmlFor="ctz23"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                >
+                                  CTZ23 Basis Estimate
+                                </label>
+                                <input
+                                  type="number"
+                                  id="ctz23"
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter your estimate"
+                                />
+                              </div>
+                              <div className="mb-4">
+                                <label
+                                  htmlFor="ctz24"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                >
+                                  CTZ24 Basis Estimate
+                                </label>
+                                <input
+                                  type="number"
+                                  id="ctz24"
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter your estimate"
+                                />
+                              </div>
 
-                            <div className="col-span-2 flex justify-center">
-                              {/* <button
+                              <div className="col-span-2 flex justify-center">
+                                {/* <button
                                 type="submit"
                                 className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
                               >
                                 Submit
                               </button> */}
-                              <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
-                            </div>
-                          </form>
+                                <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
+                              </div>
+                            </form>
+                          </div>
                         </div>
+                        <div onClick={() => setOpenBasisCostForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
                       </div>
-                      <div onClick={() => setOpenBasisCostForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
                     </div>
+                  )}
+                </div>
+                <div className="flex justify-center">
+                  <div className="w-[200px]">
+                    <SingleSelectDropdown
+                      options={[{ country: "Brazil" }, { country: "USA" }, { country: "WAF" }, { country: "Australia" }]}
+                      label="Country"
+                      variable="country"
+                      colour="bg-deep_blue"
+                      onSelectionChange={(e) => setBasisCountry(e.country)}
+                      placeholder="Select Country"
+                      searchPlaceholder="Search Countries"
+                      includeLabel={false}
+                      defaultValue="Brazil"
+                    />
                   </div>
-                )}
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
@@ -785,6 +1243,13 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
 };
 //some random shit
 export const getServerSideProps = async (context: any) => {
+  const sentiment = await prisma?.sentiment_survey.findMany({
+
+  })
+  const initialSentimentData = JSON.stringify(sentiment)
+
+  console.log("intitalData", initialSentimentData)
+
   const today = new Date(); // Current date
   const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 
@@ -830,7 +1295,7 @@ export const getServerSideProps = async (context: any) => {
   const monthlyIndexData = JSON.stringify(monthlyindex);
   console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, snapshotsData, countryNewsData, seasonsData, basisData },
+    props: { monthlyIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData },
   };
 };
 

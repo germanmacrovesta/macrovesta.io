@@ -184,7 +184,7 @@ function GroupedBarChart({ data }) {
 
         const y = d3.scaleLinear().rangeRound([height, 0]);
 
-        const z = d3.scaleOrdinal().range(['#051D6D', '#051D38']);
+        const z = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC']);
 
         const keys = ['CTZ23', 'CTZ24'];
 

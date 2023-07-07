@@ -11,7 +11,8 @@ const LineGraph = ({ data }) => {
             width = 550 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
-        const colors = d3.scaleOrdinal(d3.schemeCategory10);
+        // const colors = d3.scaleOrdinal(d3.schemeCategory10);
+        const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549']);
 
         const svg = d3.select(ref.current)
             .attr("width", width + margin.left + margin.right)

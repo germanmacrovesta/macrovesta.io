@@ -126,6 +126,18 @@ model in_country_news {
     date_of_in_country_news  DateTime @db.Date
 }
 
+//Below is Macrovesta Sentiment Survey
+
+model sentiment_survey {
+    record_id               String    @id @default(cuid())
+    bullish_or_bearish      String    @db.VarChar(255)
+    high                    Decimal?  @default(0) @db.Decimal(16, 4)
+    low                     Decimal?  @default(0) @db.Decimal(16, 4)
+    intraday_average_points Decimal?  @default(0) @db.Decimal(16, 4)
+    open_interest           Decimal?  @default(0) @db.Decimal(16, 4)
+    date_of_survey          DateTime? @db.Date
+}
+
 //Below is the Comparison Charts with 17 Months Year 
 
 model comparison_charts_with_17_months_year {
