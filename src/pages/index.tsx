@@ -17,6 +17,10 @@ import {
 import GroupedBarChart from '../components/groupedBarChart';
 import LineGraph from '../components/lineGraph';
 import FormSubmit from '../components/formSubmit';
+import ReactMarkdown from 'react-markdown';
+import { render } from "react-dom";
+import BullishBearishDonut from '../components/bullishBearishDonut';
+import { useSession, getSession } from "next-auth/react";
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -73,9 +77,24 @@ const parseDateString = (dateString) => {
 
 };
 
+const renderers = {
+  h1: ({ node, ...props }) => <h1 {...props} />,
+  h2: ({ node, ...props }) => <h2 {...props} />,
+  h3: ({ node, ...props }) => <h3 {...props} />,
+  h4: ({ node, ...props }) => <h4 {...props} />,
+  h5: ({ node, ...props }) => <h5 {...props} />,
+  h6: ({ node, ...props }) => <h6 {...props} />
+}
+
 const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData }) => {
   const router = useRouter();
   const url = router.pathname;
+
+  const { data: session } = useSession();
+  console.log("session", session)
+  console.log("session.submittedSurvey", session?.submittedSurvey)
+
+  const todaysDate = new Date()
 
   const [sentimentData, setSentimentData] = React.useState(() => {
     try {
@@ -174,7 +193,7 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
   const handleSentimentFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
     e.preventDefault();
-    setSubmitting(true);
+    setSentimentSubmitting(true);
 
     let bullish_or_bearish = "";
     let high = e.target["high"].value;
@@ -206,27 +225,27 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
 
 
     if (warningMessage !== "") {
-      setWarning_Message(warningMessage);
+      setSentimentWarning_Message(warningMessage);
       // throw new Error(errorMessage)
     } else {
       if (warning_Message != "") {
-        setWarning_Message("")
+        setSentimentWarning_Message("")
       }
     }
 
     if (errorMessage != "") {
-      setError_Message(errorMessage);
-      setWarningSubmit(false);
-      setSubmitting(false);
+      setSentimentError_Message(errorMessage);
+      setSentimentWarningSubmit(false);
+      setSentimentSubmitting(false);
     } else {
 
       if (error_Message != "") {
-        setError_Message("")
+        setSentimentError_Message("")
       }
 
       if (warningSubmit == false && warningMessage != "") {
-        setWarningSubmit(true);
-        setSubmitting(false);
+        setSentimentWarningSubmit(true);
+        setSentimentSubmitting(false);
       } else {
         // Get data from the form.
         const data = {
@@ -234,7 +253,8 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
           high,
           low,
           intraday_average_points,
-          open_interest
+          open_interest,
+          email: session?.user.email
         };
 
         console.log(data);
@@ -263,8 +283,8 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
         const result = await response.json().then(() => {
-          setSubmitted(true);
-          setSubmitting(false);
+          setSentimentSubmitted(true);
+          setSentimentSubmitting(false);
           setCurrentStage(1);
           // setSentimentData([...sentimentData, { record_id: "dummyid", bullish_or_bearish, high, low, intraday_average_points, open_interest }])
         });
@@ -369,6 +389,12 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
   const [submitting, setSubmitting] = React.useState(false);
   const [warning_Message, setWarning_Message] = React.useState("");
   const [warningSubmit, setWarningSubmit] = React.useState(false);
+
+  const [sentimentError_Message, setSentimentError_Message] = React.useState("");
+  const [sentimentSubmitted, setSentimentSubmitted] = React.useState(false);
+  const [sentimentSubmitting, setSentimentSubmitting] = React.useState(false);
+  const [sentimentWarning_Message, setSentimentWarning_Message] = React.useState("");
+  const [sentimentWarningSubmit, setSentimentWarningSubmit] = React.useState(false);
 
   interface CountryData {
     country: string;
@@ -627,11 +653,19 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
           value: average
         });
       }
+      if (groupName == "Average") {
+        outputArray.push({
+          name: groupName,
+          data: data,
+          dottedLine: true
+        });
+      } else {
+        outputArray.push({
+          name: groupName,
+          data: data
+        });
+      }
 
-      outputArray.push({
-        name: groupName,
-        data: data
-      });
     }
 
     // Calculate the average for the combined series
@@ -780,12 +814,26 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
 
   const stages = [<StageOne />, <StageTwo />];
 
+  const markdown = `# Ira media medius induit deum
+
+  ## Exaudire enim ad sit
+  
+  Lorem markdownum colores, se gravatum flet vulnera: dum in, onusque parvumque geminata quoque. Expositum valentes nobis capax opes rapidas quas. Iudicis miserande prius ea iubet cupidine? Inde sua amo latis amantis: Hiberis sinus fervet fecit ex ullis circumfluit furor turbida, mox inque, infera? Nec lumina maneret: patrios etiamnum modum et modo generum quamvis in verbis, si, hic rerum.
+  
+  > Inhibente proceresque morata paelice, precor veri; umeris Tereu sic constitit in harenosae ut diva est, hoc. Cruore cremat, quam cornua verba. In forte defluit valuisse gaudens faciem: luctisono et vulnere, tuo ordine navigii. Agenore fuso sidera; sacra exit: est modo, ibi saxa aetate domitis enim.
+  
+  ## Protinus clara
+  
+  Rhoetus arcusque; in coma nosti fratrem ipse abstulerat fassurae satyri: nil dextra corripitur saetae, expositum sententia scelus. Latentia sua progenuit nam enim lyramque amori post, Ilithyiam datis per vestris ferrugine quorum, admirantibus. Novos iter ut: ego omnes, campis memini.
+  
+  `
+
   return (
     <>
       <Head>
-        <title>Create T3 App</title>
+        <title>Macrovesta</title>
         <meta name="description" content="Generated by create-t3-app" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/Logo_White.svg" />
         <script src="/static/datafeeds/udf/dist/bundle.js" async />
       </Head>
       <main className="grid grid-cols-[160px_auto] h-screen items-center">
@@ -793,10 +841,9 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
           <header className="z-50 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={"Macrovesta Demo"} urlPath={urlPath} />
+            <Breadcrumbs title={"Macrovesta Demo"} urlPath={urlPath} user={session?.user.name} />
             <TabMenu data={TabMenuArray} urlPath={urlPath} />
           </header>
-          {JSON.stringify(sentimentData)}
           <div className="p-6 bg-slate-200">
             Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
@@ -805,7 +852,7 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
               </div> */}
 
               <div className="text-center">
-                The Macrovesta Index
+                The Macrovesta Index {session?.user.id}
               </div>
               <div className="flex justify-around gap-8">
                 <div className="relative">
@@ -822,17 +869,26 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
                   </div>
                   <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(monthlyIndexData).probability_rate}</div>
                 </div>
-                <div>
+                <div className="relative">
                   <div className="text-center">
                     Seasonal Index
                   </div>
-                  <img className="w-[400px]" src="/Draft_Index_indicator.svg" />
+                  {selectAppropriateImage(JSON.parse(monthlyIndexData).inverse_month, parseFloat(JSON.parse(monthlyIndexData).probability_rate))}
+                  {/* <img className="w-[400px]" src="/Index_Inverse_High.jpg" /> */}
+                  <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
+                    transform: `rotate(${90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? 1 : -1)}deg)`
+                  }}>
+                    {/* <div className="origin-right bg-turquoise w-[150px] ml-[50px] bottom-[28px] h-2" style={{ transform: `rotate(${degrees}deg)` }}>
+                    </div> */}
+                  </div>
+                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(monthlyIndexData).probability_rate}</div>
                 </div>
+
               </div>
             </div>
             <div className="flex flex-col">
               <div className="flex flex-col bg-[#ffffff] shadow-center-lg text-black rounded-xl px-4 py-2 mb-8 mx-8">
-                <img className="w-fit" src="/example-chart.png" />
+                <img className="w-fit" src="/Charts_Under_Construction_Wide.png" />
               </div>
               <div className="text-center text-2xl">Please Select the Seasons you want to compare</div>
               <div className="grid grid-cols-3 justify-center gap-8 mx-8 mt-4 text-xl">
@@ -918,142 +974,157 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
             {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <TVChartContainer {...defaultWidgetProps} />
             </div> */}
-            <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
-              {/* {stages[currentStage]} */}
-              {currentStage == 0 && (
-                <div className="grid grid-cols-2">
-                  <div className="col-span-2 mb-4 text-center text-xl font-semibold">Macrovesta Sentiment Survey</div>
-                  <div className="col-span-2 grid grid-cols-2 gap-x-4 pl-4">
-                    <div className="flex flex-col justify-end items-end">
-                      <div className="w-full">
-                        <label
-                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                        >
-                          What is your feeling of the market?
-                        </label>
-                        <SingleSelectDropdown
-                          options={[{ option: "Bullish" }, { option: "Bearish" }]}
-                          label="BullishBearish"
-                          variable="option"
-                          colour="bg-[#ffffff]"
-                          onSelectionChange={(e) => setBullishBearish(e.option)}
-                          placeholder="Select an Option"
-                          searchPlaceholder="Search Options"
-                          includeLabel={false}
-                          textCenter={false}
-                          textColour="text-black"
-                          border={true}
-                          borderStyle="rounded-md border border-gray-300"
-                        />
+            {((session?.submittedSurvey == true) || ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1))) && (
+              <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+                {/* {stages[currentStage]} */}
+                {(currentStage == 0) && (session?.submittedSurvey != true) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && (
+                  <div className="grid grid-cols-2">
+                    <div className="col-span-2 mb-4 text-center text-xl font-semibold">Macrovesta Sentiment Survey</div>
+                    <div className="col-span-2 grid grid-cols-2 gap-x-4 pl-4">
+                      <div className="flex flex-col justify-end items-end">
+                        <div className="w-full">
+                          <label
+                            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                          >
+                            What is your feeling of the market?
+                          </label>
+                          <SingleSelectDropdown
+                            options={[{ option: "Bullish" }, { option: "Bearish" }]}
+                            label="BullishBearish"
+                            variable="option"
+                            colour="bg-[#ffffff]"
+                            onSelectionChange={(e) => setBullishBearish(e.option)}
+                            placeholder="Select an Option"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            textCenter={false}
+                            textColour="text-black"
+                            border={true}
+                            borderStyle="rounded-md border border-gray-300"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <div className="font-semibold leading-4 mb-3">Please submit your guesstimates to view the unanimous opinions of our other partners</div>
+                        <div className="text-sm leading-4">This new feature displays unanimously the opinion of our partners about December 2023 Futures for the week ahead, offering a view of market sentiment for both short and long-term seasonal trends in the cotton industry.</div>
                       </div>
                     </div>
-                    <div className="flex flex-col">
-                      <div className="font-semibold leading-4 mb-3">Please submit your guesstimates to view the unanimous opinions of our other partners</div>
-                      <div className="text-sm leading-4">This new feature displays unanimously the opinion of our partners about December 2023 Futures for the week ahead, offering a view of market sentiment for both short and long-term seasonal trends in the cotton industry.</div>
-                    </div>
-                  </div>
-                  <form className="mt-4 mb-4 pl-4 grid grid-cols-2 col-span-2 gap-x-4 w-full" onSubmit={handleSentimentFormSubmit}>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="high"
-                        className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                      >
-                        High
-                      </label>
-                      <input
-                        type="number"
-                        id="high"
-                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                        placeholder="Enter your estimate"
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="low"
-                        className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                      >
-                        Low
-                      </label>
-                      <input
-                        type="number"
-                        id="low"
-                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                        placeholder="Enter your estimate"
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="intraday"
-                        className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                      >
-                        Intraday Average in Points
-                      </label>
-                      <input
-                        type="number"
-                        id="intraday"
-                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                        placeholder="Enter your estimate"
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="open_interest"
-                        className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                      >
-                        Open Interest
-                      </label>
-                      <input
-                        type="number"
-                        id="open_interest"
-                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                        placeholder="Enter your estimate"
-                      />
-                    </div>
+                    <form className="mt-4 mb-4 pl-4 grid grid-cols-2 col-span-2 gap-x-4 w-full" onSubmit={handleSentimentFormSubmit}>
+                      <div className="mb-4">
+                        <label
+                          htmlFor="high"
+                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                        >
+                          High
+                        </label>
+                        <input
+                          type="number"
+                          step=".01"
+                          id="high"
+                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                          placeholder="Enter your estimate"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label
+                          htmlFor="low"
+                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                        >
+                          Low
+                        </label>
+                        <input
+                          type="number"
+                          step=".01"
+                          id="low"
+                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                          placeholder="Enter your estimate"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label
+                          htmlFor="intraday"
+                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                        >
+                          Intraday Average in Points
+                        </label>
+                        <input
+                          type="number"
+                          step=".01"
+                          id="intraday"
+                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                          placeholder="Enter your estimate"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label
+                          htmlFor="open_interest"
+                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                        >
+                          Open Interest
+                        </label>
+                        <input
+                          type="number"
+                          step=".01"
+                          id="open_interest"
+                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                          placeholder="Enter your estimate"
+                        />
+                      </div>
 
-                    <div className="col-span-2 flex justify-center">
-                      {/* <button
+                      <div className="col-span-2 flex justify-center">
+                        {/* <button
             type="submit"
             className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
           >
             Submit
           </button> */}
-                      <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
+                        <FormSubmit errorMessage={sentimentError_Message} warningMessage={sentimentWarning_Message} submitted={sentimentSubmitted} submitting={sentimentSubmitting} warningSubmit={sentimentWarningSubmit} />
+                      </div>
+                    </form>
+                  </div>
+                )}
+                {((currentStage == 1) || (session?.submittedSurvey === true)) && (
+                  <div className="grid grid-cols-2 mb-12">
+                    <div className="col-span-2 grid grid-cols-2">
+                      <div className="flex flex-col items-center">
+                        <div className="">Bullish or Bearish</div>
+                        <BullishBearishDonut Bullish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bullish").length} Bearish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bearish").length} />
+                      </div>
+                      <div className="flex justify-center">
+                        Here is some text that explains these graphs
+                      </div>
                     </div>
-                  </form>
+                    <div className="flex flex-col items-center">
+                      <div className="mt-6 -mb-2">High</div>
+                      <LineGraph data={transformSurveyData(sentimentData, 'high')} />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="mt-6 -mb-2">Low</div>
+                      <LineGraph data={transformSurveyData(sentimentData, 'low')} />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="mt-6 -mb-2">Intraday Average in Points</div>
+                      <LineGraph data={transformSurveyData(sentimentData, 'intraday_average_points')} />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="mt-6 -mb-2">Open Interest</div>
+                      <LineGraph data={transformSurveyData(sentimentData, 'open_interest')} />
+                    </div>
+                  </div>
+                )}
+                <div className="flex justify-between px-8">
+                  {currentStage == 0 && (
+                    <div></div>
+                  )}
+                  {currentStage > 0 && (
+                    <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={goPrevious}>Previous</button>
+                  )}
+                  {currentStage < (stages.length - 1) && submitted && session?.submittedSurvey == false && (
+                    <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={goNext}>Next</button>
+                  )}
                 </div>
-              )}
-              {currentStage == 1 && (
-                <div className="grid grid-cols-2">
-                  <div className="flex flex-col items-center">
-                    <div className="-mb-2">High</div>
-                    <LineGraph data={transformSurveyData(sentimentData, 'high')} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="-mb-2">Low</div>
-                    <LineGraph data={transformSurveyData(sentimentData, 'low')} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="-mb-2">Intraday Average in Points</div>
-                    <LineGraph data={transformSurveyData(sentimentData, 'intraday_average_points')} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="-mb-2">Open Interest</div>
-                    <LineGraph data={transformSurveyData(sentimentData, 'open_interest')} />
-                  </div>
-                </div>
-              )}
-              <div className="flex justify-between px-8">
-                {currentStage == 0 && (
-                  <div></div>
-                )}
-                {currentStage > 0 && (
-                  <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={goPrevious}>Previous</button>
-                )}
-                {currentStage < (stages.length - 1) && (
-                  <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={goNext}>Next</button>
-                )}
               </div>
-            </div>
+            )}
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <div className="text-center">
                 30 Seconds Snapshot
@@ -1111,9 +1182,11 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
               </div>
               <div className="col-span-2 grid grid-cols-2 mb-4">
                 <div className="grid place-content-center">
-                  <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenBasisCostForm(true)}>
-                    Add Basis Cost Estimate
-                  </div>
+                  {session?.role == "partner" && (
+                    <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenBasisCostForm(true)}>
+                      Add Basis Cost Estimate
+                    </div>
+                  )}
                   {openBasisCostForm && (
                     <div className='absolute modal left-0 top-0 z-40'>
                       <div className=' fixed grid place-content-center inset-0 z-40'>
@@ -1198,7 +1271,7 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
               <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
-                <img src="/example-bar-chart.png" />
+                <img src="/Charts_Under_Construction_Half_width.png" />
               </div>
               <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
                 <div className="text-center">
@@ -1219,7 +1292,19 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
                             {countryNewsPopup.title_of_in_country_news}
                           </div>
                           <div className="">
-                            {countryNewsPopup.text_of_in_country_news}
+                            {/* <ReactMarkdown children={countryNewsPopup.text_of_in_country_news} /> */}
+                            {/* <ReactMarkdown components={renderers}>{markdown}</ReactMarkdown> */}
+                            {/* {(countryNewsPopup.text_of_in_country_news).replace('[newline]', '\n\n')} */}
+                            {countryNewsPopup.text_of_in_country_news.split('[newline]').map((paragraph, index) => (
+                              <>
+                                <p>{paragraph}</p>
+                                {index != countryNewsPopup.text_of_in_country_news.split('[newline]').length - 1 && (
+                                  <>
+                                    <br />
+                                  </>
+                                )}
+                              </>
+                            ))}
                           </div>
                         </div>
                         <div onClick={() => setCountryNewsPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
@@ -1241,8 +1326,19 @@ const Home: NextPage = ({ monthlyIndexData, snapshotsData, countryNewsData, seas
     </>
   );
 };
-//some random shit
+//some random shit added by Vic
 export const getServerSideProps = async (context: any) => {
+  const session = await getSession({ req: context.req })
+
+  if (!session) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/auth/signin`,
+      }
+    }
+  }
+
   const sentiment = await prisma?.sentiment_survey.findMany({
 
   })

@@ -1,4 +1,3 @@
-// pages/api/import-csv.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import csvParser from 'csv-parser';
@@ -15,30 +14,39 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         try {
             const data: Record<string, unknown>[] = [];
             const parser = csvParser();
+
+            console.log("Started Parsing")
+
             parser.write(req.body.csvData);
             parser.end();
 
-            parser.on('data', async (row: Record<string, unknown>) => {
-                data.push(row);
+            let isFirstRow = true;
+            parser.on('data', (row: Record<string, unknown>) => {
+                if (isFirstRow) {
+                    isFirstRow = false;
+                    return;
+                }
+
+                if (row['Date Time'] !== undefined && row['Open'] !== undefined) { // Ignore the last row
+                    const formattedRow: Record<string, unknown> = {};
+                    formattedRow['datetime'] = new Date(row['Date Time']); // Convert "Date Time" to datetime
+
+                    for (const [key, value] of Object.entries(row)) {
+                        if (key !== 'MA-Simple') { // Remove last 3 columns
+                            formattedRow[key.toLowerCase()] = isNaN(Number(value)) ? value : Number(value); // Convert columns to lowercase and handle numeric values
+                        }
+                    }
+                    console.log(formattedRow)
+                    data.push(formattedRow);
+                }
             });
+
+            console.log("Data[1]", data[1])
 
             parser.on('end', async () => {
                 for (const row of data) {
-                    // Map CSV row to Prisma model data
-                    const modelData = Object.entries(row).reduce(
-                        (acc, [key, value]) => {
-                            if (key != "record_id" && key != "MA-Simple" && key != "datetime") {
-                                acc[key] = isNaN(Number(value)) ? value : Number(value);
-                            } else if (key == "datetime") {
-                                acc[key] = new Date(value)
-                            }
-                            return acc;
-                        },
-                        {} as Record<string, unknown>
-                    );
-
                     await prisma[`${req.body.table}`].create({
-                        data: modelData,
+                        data: row,
                     });
                 }
                 res.status(200).json({ message: 'CSV data imported successfully.' });

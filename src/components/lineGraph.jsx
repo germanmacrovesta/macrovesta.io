@@ -49,8 +49,45 @@ const LineGraph = ({ data }) => {
             .attr("class", "tooltip")
             .style("opacity", 0);
 
+        // data.forEach((series, i) => {
+        //     svg.append("path")
+        //         .datum(series.data)
+        //         .attr("fill", "none")
+        //         .attr("stroke", colors(i))
+        //         .attr("stroke-width", 1.5)
+        //         .attr("class", `line line-${i}`)
+        //         .attr("d", line);
+
+        //     series.data.forEach((d) => {
+        //         svg.append("circle")
+        //             .attr("class", "dot")
+        //             .attr("cx", x(new Date(d.time)))
+        //             .attr("cy", y(d.value))
+        //             .attr("r", 7)
+        //             .style("fill", colors(i))
+        //             .on("mouseover", function (e) {
+        //                 const pointTime = new Date(d.time);
+        //                 const month = pointTime.toLocaleString('default', { month: 'long' });
+        //                 const year = pointTime.toLocaleString('default', { year: 'numeric' });
+        //                 tooltip.transition()
+        //                     .duration(200)
+        //                     .style("opacity", .9);
+        //                 tooltip.html(`${month} ${year}: ${d.value}`)
+        //                     // .style("left", (x(new Date(d.time))) + "px")
+        //                     // .style("top", (y(d.value)) + "px");
+        //                     .style("left", (e.pageX - 65) + "px")
+        //                     .style("top", (e.pageY - 35) + "px");
+        //             })
+        //             .on("mouseout", function (e) {
+        //                 tooltip.transition()
+        //                     .duration(500)
+        //                     .style("opacity", 0);
+        //             });
+        //     });
+        // });
+
         data.forEach((series, i) => {
-            svg.append("path")
+            let path = svg.append("path")
                 .datum(series.data)
                 .attr("fill", "none")
                 .attr("stroke", colors(i))
@@ -58,33 +95,36 @@ const LineGraph = ({ data }) => {
                 .attr("class", `line line-${i}`)
                 .attr("d", line);
 
-            series.data.forEach((d) => {
-                svg.append("circle")
-                    .attr("class", "dot")
-                    .attr("cx", x(new Date(d.time)))
-                    .attr("cy", y(d.value))
-                    .attr("r", 7)
-                    .style("fill", colors(i))
-                    .on("mouseover", function (e) {
-                        const pointTime = new Date(d.time);
-                        const month = pointTime.toLocaleString('default', { month: 'long' });
-                        const year = pointTime.toLocaleString('default', { year: 'numeric' });
-                        tooltip.transition()
-                            .duration(200)
-                            .style("opacity", .9);
-                        tooltip.html(`${month} ${year}: ${d.value}`)
-                            // .style("left", (x(new Date(d.time))) + "px")
-                            // .style("top", (y(d.value)) + "px");
-                            .style("left", (e.pageX - 65) + "px")
-                            .style("top", (e.pageY - 35) + "px");
-                    })
-                    .on("mouseout", function (e) {
-                        tooltip.transition()
-                            .duration(500)
-                            .style("opacity", 0);
-                    });
-            });
+            if (series.dottedLine) {
+                path.attr("stroke-dasharray", ("3, 3")) // this will create a dotted line
+            } else {
+                series.data.forEach((d) => {
+                    svg.append("circle")
+                        .attr("class", "dot")
+                        .attr("cx", x(new Date(d.time)))
+                        .attr("cy", y(d.value))
+                        .attr("r", 7)
+                        .style("fill", colors(i))
+                        .on("mouseover", function (e) {
+                            const pointTime = new Date(d.time);
+                            const month = pointTime.toLocaleString('default', { month: 'long' });
+                            const year = pointTime.toLocaleString('default', { year: 'numeric' });
+                            tooltip.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                            tooltip.html(`${month} ${year}: ${d.value}`)
+                                .style("left", (e.pageX - 65) + "px")
+                                .style("top", (e.pageY - 35) + "px");
+                        })
+                        .on("mouseout", function (e) {
+                            tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
+                });
+            }
         });
+
 
         const monthFormat = d3.timeFormat("%B");
         const yearFormat = d3.timeFormat("%Y");

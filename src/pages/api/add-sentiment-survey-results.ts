@@ -10,11 +10,22 @@ const AddSentimentSurveyResults = async (req: NextApiRequest, res: NextApiRespon
         await prisma?.sentiment_survey.create({
             data: {
                 bullish_or_bearish: req.body.bullish_or_bearish,
-                high: parseInt(req.body.high),
-                low: parseInt(req.body.low),
-                intraday_average_points: parseInt(req.body.intraday_average_points),
-                open_interest: parseInt(req.body.open_interest),
+                high: parseFloat(req.body.high),
+                low: parseFloat(req.body.low),
+                intraday_average_points: parseFloat(req.body.intraday_average_points),
+                open_interest: parseFloat(req.body.open_interest),
                 date_of_survey: new Date()
+            }
+        })
+
+        console.log(req.body.email)
+
+        await prisma?.user.update({
+            where: {
+                email: req.body.email
+            },
+            data: {
+                submittedSurvey: true
             }
         })
 

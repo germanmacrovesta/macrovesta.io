@@ -98,17 +98,19 @@ const Sidebar = (props) => {
         <div className="fixed print:hidden h-screen text-md">
             <div className="flex flex-col justify-between bg-gradient-to-br from-navy to-deep_blue w-40 h-full px-4 ">
                 <div>
-                    <div className="flex justify-center p-4 pb-8">
-                        <Link href={{ pathname: `${root}/home` }} >
-                            <img className="" width="100%" src="/Portal_Icon.png" />
+                    <div className="flex justify-center pt-4 py-4 pb-8 -mr-8">
+                        <Link href={{ pathname: `/` }} >
+                            <div className="flex justify-center w-full">
+                                <img className="" width="100%" src="/Full_Logo.svg" />
+                            </div>
                         </Link>
                     </div>
                     <div className="flex flex-col gap-3 justify-center text-white -mx-4 px-4 pb-4">
 
                         <div className="relative flex items-center">
-                            <img height="20px" className="h-[20px] z-20" src={"favicon.ico"} />
-                            <img className={'absolute h-[35px] z-10 -left-[7px]'} src="/Active_Underlay.png" />
-                            <Link href={{ pathname: `/Home` }} >
+                            <img height="20px" className="h-[20px] z-20" src={"Dash_W_SQ.png"} />
+                            {/* <img className={'absolute h-[35px] z-10 -left-[7px]'} src="/Active_Underlay.png" /> */}
+                            <Link href={{ pathname: `/` }} >
                                 <p className={'pl-2 rounded-lg bg-gradient-to-r from-secondary to-primary pr-2'}  >{"Home"}</p>
                             </Link>
                         </div>
@@ -116,14 +118,14 @@ const Sidebar = (props) => {
                     </div>
                 </div>
                 <div className="flex flex-col border-t-2 border-grey-700 -mx-4 px-4 pb-3 pt-1">
-                    <button className="bg-white text-black px-2 mt-2 text-[10px] w-full rounded-md font-semibold">I Need Some Help</button>
-                    <div className="flex justify-between  mt-2">
+                    {/* <button className="bg-white text-black px-2 mt-2 text-[10px] w-full rounded-md font-semibold">I Need Some Help</button> */}
+                    <div className="flex flex-col items-center  mt-2">
                         <div className="text-[10px] text-white leading-[12px]">
-                            Powered by The Rubbish Portal
+                            Powered by
                         </div>
                         <div>
                             <Link href={{ pathname: '/about' }} >
-                                <img className="w-[48px] aspect-square" src="/Portal_Icon.png" />
+                                <img className="" src="/EAPshortlogo.png" />
                             </Link>
                         </div>
                     </div>

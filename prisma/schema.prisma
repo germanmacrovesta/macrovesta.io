@@ -46,13 +46,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+    id              String    @id @default(cuid())
+    name            String?
+    email           String?   @unique
+    emailVerified   DateTime?
+    role            String?
+    submittedSurvey Boolean?  @default(false)
+    image           String?
+    accounts        Account[]
+    sessions        Session[]
 }
 
 model VerificationToken {
@@ -61,6 +63,22 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+//Below is the table Cotton Contracts
+
+model cotton_contracts {
+    record_id               String   @id @default(cuid())
+    datetime                DateTime @db.DateTime()
+    contract                String   @db.VarChar(255)
+    high                    Decimal? @default(0) @db.Decimal(16, 4)
+    low                     Decimal? @default(0) @db.Decimal(16, 4)
+    open                    Decimal? @default(0) @db.Decimal(16, 4)
+    close                   Decimal? @default(0) @db.Decimal(16, 4)
+    change                  Decimal? @default(0) @db.Decimal(16, 4)
+    rolling_average_200_day Decimal? @default(0) @db.Decimal(16, 4)
+    rolling_average_100_day Decimal? @default(0) @db.Decimal(16, 4)
+    rolling_average_50_day  Decimal? @default(0) @db.Decimal(16, 4)
 }
 
 //Below is the table Monthly Index 

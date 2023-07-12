@@ -26,7 +26,7 @@ export default function Breadcrumbs(props) {
         <div className="px-8 py-4">
             <h5 className="text-2xl">{props.title}</h5>
             <h6>
-                Welcome [clientName] to Macrovesta.ai
+                Welcome {props?.user?.split(' ')[0]} to Macrovesta.ai
                 {/* <Link href={{ pathname: `/` }} >
                     <span>
                         Portal&nbsp;
