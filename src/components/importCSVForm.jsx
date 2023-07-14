@@ -24,7 +24,7 @@ export default function ImportCsvForm() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ csvData, table }),
+                    body: JSON.stringify({ csvData, table, contract: "CTZ24" }),
                 });
 
                 if (response.ok) {

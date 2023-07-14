@@ -130,7 +130,7 @@ const LineGraph = ({ data }) => {
         const yearFormat = d3.timeFormat("%Y");
 
         const xAxis = d3.axisBottom(x)
-            .ticks(d3.timeMonth.every(1))
+            .ticks(d3.timeMonth.every(3))
             .tickFormat(d => `${monthFormat(d)}${d.getMonth() === 0 ? ` ${yearFormat(d)}` : ""}`);
 
         svg.append("g")

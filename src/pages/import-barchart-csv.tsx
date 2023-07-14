@@ -43,7 +43,7 @@ export default function GraphPage() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ csvData, table: "cotton_contracts" }),
+                    body: JSON.stringify({ csvData, table: "cotton_contracts", contract: "CTZ23" }),
                 });
 
                 // if (response.ok) {

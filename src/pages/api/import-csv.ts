@@ -36,6 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                         },
                         {} as Record<string, unknown>
                     );
+                    // modelData.contract = req.body.contract
 
                     await prisma[`${req.body.table}`].create({
                         data: modelData,
