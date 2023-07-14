@@ -65,11 +65,28 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+//Below is the table future_contracts_study
+
+model future_contracts_study {
+    record_id                        String    @id @default(cuid())
+    year                             String
+    month_of_high                    Int?
+    date_of_high                     DateTime? @db.Date()
+    high                             Decimal?  @default(0) @db.Decimal(16, 4)
+    month_of_low                     Int?
+    date_of_low                      DateTime? @db.Date()
+    low                              Decimal?  @default(0) @db.Decimal(16, 4)
+    price_range_between_high_and_low Decimal?  @default(0) @db.Decimal(16, 4)
+    day_range_between_high_and_low   Decimal?  @default(0) @db.Decimal(16, 4)
+    inverse                          String?
+    comments                         String?   @db.Text
+}
+
 //Below is the table Cotton Contracts
 
 model cotton_contracts {
     record_id               String   @id @default(cuid())
-    datetime                DateTime @db.DateTime()
+    datetime                DateTime @db.DateTime(0)
     contract                String   @db.VarChar(255)
     high                    Decimal? @default(0) @db.Decimal(16, 4)
     low                     Decimal? @default(0) @db.Decimal(16, 4)

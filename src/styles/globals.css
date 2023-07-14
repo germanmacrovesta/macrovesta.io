@@ -7,9 +7,12 @@
     position: absolute;
     text-align: center;
     width: 130px;
-    padding: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
     font: 12px sans-serif;
-    background: lightsteelblue;
+    background: rgb(220, 230, 244);
     border: 0px;
     border-radius: 8px;
     pointer-events: none;

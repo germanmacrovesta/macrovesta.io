@@ -5,6 +5,14 @@ import csvParser from 'csv-parser';
 
 const prisma = new PrismaClient();
 
+function excelDateToJSDate(serial) {
+    var utc_days = Math.floor(serial - 25569);
+    var utc_value = utc_days * 86400;
+    var date_info = new Date(utc_value * 1000);
+
+    return date_info.toISOString().split('T')[0];  // returns date in YYYY-MM-DD format
+}
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
         if (!req.body.csvData) {
@@ -27,10 +35,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     // Map CSV row to Prisma model data
                     const modelData = Object.entries(row).reduce(
                         (acc, [key, value]) => {
-                            if (key != "record_id" && key != "MA-Simple" && key != "datetime") {
-                                acc[key] = isNaN(Number(value)) ? value : Number(value);
-                            } else if (key == "datetime") {
+                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments") {
+                                acc[key] = (value != null || value != undefined) ? isNaN(Number(value)) ? value : Number(value) : null;
+                            } else if ((key == "datetime")) {
                                 acc[key] = new Date(value)
+                            } else if ((key == "date_of_high") || (key == "date_of_low")) {
+                                // let dateString = value;
+                                // let parts = dateString.split("/");
+                                // let dateRecord = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                                // console.log("Date Record", `${parts[2]}-${parts[1]}-${parts[0]}`)
+                                acc[key] = new Date(excelDateToJSDate(value))
+                            } else if (key == "comments") {
+                                acc[key] = `${value}`
                             }
                             return acc;
                         },
