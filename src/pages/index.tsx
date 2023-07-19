@@ -868,7 +868,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="grid grid-cols-2 gap-x-8 gap-y-4 pb-12 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-4 py-2 mb-8 mx-8">
                 <div className="flex flex-col col-span-2 items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23</div>
-                  <LineGraph data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data), noCircles: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1200} graphHeight={400} />
+                  <LineGraph data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data), noCircles: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
                   <div className="flex justify-center mt-8">
                     <div className="w-[200px]">
                       <SingleSelectDropdown
@@ -1267,10 +1267,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
               </div>
             </div>
-            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
+            <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
-              <LineGraphNotTime data={(contract1 && contract2 && contract3) ? getStudyData(JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract1), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract2), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract3)) : []} graphWidth={1300} graphHeight={600} />
+              <LineGraphNotTime data={(contract1 && contract2 && contract3) ? getStudyData(JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract1), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract2), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract3)) : []} graphWidth={1000} graphHeight={600} />
             </div>
             <div className="text-center text-2xl mt-4">Please Select the Seasons you want to compare</div>
             <div className="grid grid-cols-3 justify-center gap-8 mx-8 mt-4 text-xl">
@@ -1374,10 +1374,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 <div>Average Price Range (2000-2023): {(averageFutureContract(JSON.parse(futureContractsStudyData), "price_range_between_high_and_low")).toFixed(2)}</div>
               </div>
             </div>
-            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
+            <div className="flex flex-col items-center bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">V4</div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
-              <LineGraphNotTime data={(season1 && season2 && season3) ? getSeasonData(JSON.parse(seasonsData).find((season) => season.season == season1), JSON.parse(seasonsData).find((season) => season.season == season2), JSON.parse(seasonsData).find((season) => season.season == season3)) : []} graphWidth={1300} graphHeight={600} />
+              <LineGraphNotTime data={(season1 && season2 && season3) ? getSeasonData(JSON.parse(seasonsData).find((season) => season.season == season1), JSON.parse(seasonsData).find((season) => season.season == season2), JSON.parse(seasonsData).find((season) => season.season == season3)) : []} graphWidth={1000} graphHeight={600} />
             </div>
             <div className="text-center text-2xl mt-4">Please Select the Seasons you want to compare</div>
             <div className="grid grid-cols-3 justify-center gap-8 mx-8 mt-4 text-xl">

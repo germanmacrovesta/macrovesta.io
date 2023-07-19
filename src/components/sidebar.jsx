@@ -124,7 +124,7 @@ const Sidebar = (props) => {
                             Powered by
                         </div>
                         <div>
-                            <Link href={{ pathname: '/about' }} >
+                            <Link href={{ pathname: 'https://eapconsult.com/' }} >
                                 <img className="" src="/EAPshortlogo.png" />
                             </Link>
                         </div>
