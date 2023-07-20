@@ -14,7 +14,8 @@ const AddSentimentSurveyResults = async (req: NextApiRequest, res: NextApiRespon
                 low: parseFloat(req.body.low),
                 intraday_average_points: parseFloat(req.body.intraday_average_points),
                 open_interest: parseFloat(req.body.open_interest),
-                date_of_survey: new Date()
+                date_of_survey: new Date(),
+                added_by: req.body.user
             }
         })
 

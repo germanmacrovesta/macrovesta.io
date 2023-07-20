@@ -22,6 +22,7 @@ import ReactMarkdown from 'react-markdown';
 import { render } from "react-dom";
 import BullishBearishDonut from '../components/bullishBearishDonut';
 import { useSession, getSession } from "next-auth/react";
+import Comments from '../components/comments'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -87,7 +88,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData }) => {
+const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -200,6 +201,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   ];
 
   const [openBasisCostForm, setOpenBasisCostForm] = React.useState(false)
+  const [openSnapshotForm, setOpenSnapshotForm] = React.useState(false)
+  const [openCountryNewsForm, setOpenCountryNewsForm] = React.useState(false)
 
   const [selectedCountry, setSelectedCountry] = React.useState(undefined)
 
@@ -243,7 +246,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       setSentimentWarning_Message(warningMessage);
       // throw new Error(errorMessage)
     } else {
-      if (warning_Message != "") {
+      if (sentimentWarning_Message != "") {
         setSentimentWarning_Message("")
       }
     }
@@ -254,11 +257,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       setSentimentSubmitting(false);
     } else {
 
-      if (error_Message != "") {
+      if (sentimentError_Message != "") {
         setSentimentError_Message("")
       }
 
-      if (warningSubmit == false && warningMessage != "") {
+      if (sentimentWarningSubmit == false && warningMessage != "") {
         setSentimentWarningSubmit(true);
         setSentimentSubmitting(false);
       } else {
@@ -269,7 +272,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
           low,
           intraday_average_points,
           open_interest,
-          email: session?.user.email
+          email: session?.user.email,
+          user: session?.user?.name
         };
 
         console.log(data);
@@ -363,7 +367,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
         const data = {
           country,
           contractOneBasis,
-          contractTwoBasis
+          contractTwoBasis,
+          user: session?.user?.name
         };
 
         console.log(data);
@@ -399,6 +404,188 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   };
 
+  const handleSnapshotFormSubmit = async (e: any) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault();
+    setSnapshotSubmitting(true);
+
+    let title = e.target["title"].value;
+    let text = e.target["text"].value;
+    let image = e.target["image"].value;
+    let errorMessage = "";
+    let warningMessage = "";
+
+    // console.log("textarea", text == "")
+
+    if (title == null || title == "") {
+      errorMessage += "Please enter a title. ";
+    }
+    if (text == null || text == "") {
+      errorMessage += "Please enter a text. ";
+    }
+    if (image == null || image == "") {
+      warningMessage += "You can add an image as well. If you don't want to just click confirm. ";
+    }
+
+    if (warningMessage !== "") {
+      setSnapshotWarning_Message(warningMessage);
+      // throw new Error(errorMessage)
+    } else {
+      if (snapshotWarning_Message != "") {
+        setSnapshotWarning_Message("")
+      }
+    }
+
+    if (errorMessage != "") {
+      setSnapshotError_Message(errorMessage);
+      setSnapshotWarningSubmit(false);
+      setSnapshotSubmitting(false);
+    } else {
+
+      if (snapshotError_Message != "") {
+        setSnapshotError_Message("")
+      }
+
+      if (snapshotWarningSubmit == false && warningMessage != "") {
+        setSnapshotWarningSubmit(true);
+        setSnapshotSubmitting(false);
+      } else {
+        // Get data from the form.
+        const data = {
+          title,
+          text,
+          image,
+          user: session?.user?.name
+        };
+
+        console.log(data);
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data);
+
+        // API endpoint where we send form data.
+        const endpoint = "/api/add-snapshot";
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: "POST",
+          // Tell the server we're sending JSON.
+          headers: {
+            "Content-Type": "application/json"
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        };
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options);
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => { setSnapshotSubmitted(true); setSnapshotSubmitting(false) });
+        // setSnapshotSubmitted(true); setSnapshotSubmitting(false)
+      }
+    }
+
+  };
+  const [snapshotError_Message, setSnapshotError_Message] = React.useState("");
+  const [snapshotSubmitted, setSnapshotSubmitted] = React.useState(false);
+  const [snapshotSubmitting, setSnapshotSubmitting] = React.useState(false);
+  const [snapshotWarning_Message, setSnapshotWarning_Message] = React.useState("");
+  const [snapshotWarningSubmit, setSnapshotWarningSubmit] = React.useState(false);
+
+  const handleCountryNewsFormSubmit = async (e: any) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault();
+    setCountryNewsSubmitting(true);
+
+    let title = e.target["title"].value;
+    let text = e.target["text"].value;
+    let image = e.target["image"].value;
+    let errorMessage = "";
+    let warningMessage = "";
+
+    // console.log("textarea", text == "")
+
+    if (title == null || title == "") {
+      errorMessage += "Please enter a title. ";
+    }
+    if (text == null || text == "") {
+      errorMessage += "Please enter a text. ";
+    }
+    if (image == null || image == "") {
+      warningMessage += "You can add an image as well. If you don't want to just click confirm. ";
+    }
+
+    if (warningMessage !== "") {
+      setCountryNewsWarning_Message(warningMessage);
+      // throw new Error(errorMessage)
+    } else {
+      if (countryNewsWarning_Message != "") {
+        setCountryNewsWarning_Message("")
+      }
+    }
+
+    if (errorMessage != "") {
+      setCountryNewsError_Message(errorMessage);
+      setCountryNewsWarningSubmit(false);
+      setCountryNewsSubmitting(false);
+    } else {
+
+      if (countryNewsError_Message != "") {
+        setCountryNewsError_Message("")
+      }
+
+      if (countryNewsWarningSubmit == false && warningMessage != "") {
+        setCountryNewsWarningSubmit(true);
+        setCountryNewsSubmitting(false);
+      } else {
+        // Get data from the form.
+        const data = {
+          title,
+          text,
+          image,
+          user: session?.user?.name
+        };
+
+        console.log(data);
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data);
+
+        // API endpoint where we send form data.
+        const endpoint = "/api/add-country-news";
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: "POST",
+          // Tell the server we're sending JSON.
+          headers: {
+            "Content-Type": "application/json"
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        };
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options);
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => { setCountryNewsSubmitted(true); setCountryNewsSubmitting(false) });
+        // setCountryNewsSubmitted(true); setCountryNewsSubmitting(false)
+      }
+    }
+
+  };
+  const [countryNewsError_Message, setCountryNewsError_Message] = React.useState("");
+  const [countryNewsSubmitted, setCountryNewsSubmitted] = React.useState(false);
+  const [countryNewsSubmitting, setCountryNewsSubmitting] = React.useState(false);
+  const [countryNewsWarning_Message, setCountryNewsWarning_Message] = React.useState("");
+  const [countryNewsWarningSubmit, setCountryNewsWarningSubmit] = React.useState(false);
+
   const [error_Message, setError_Message] = React.useState("");
   const [submitted, setSubmitted] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
@@ -410,6 +597,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [sentimentSubmitting, setSentimentSubmitting] = React.useState(false);
   const [sentimentWarning_Message, setSentimentWarning_Message] = React.useState("");
   const [sentimentWarningSubmit, setSentimentWarningSubmit] = React.useState(false);
+
 
   interface CountryData {
     country: string;
@@ -884,22 +1072,27 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       />
                     </div>
                   </div>
+                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Current Contract")} session={session} section="Current Contract" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTH24 Spread</div>
                   <LineGraph data={calculateSpread(JSON.parse(CTZ23Data), JSON.parse(CTH24Data), "CTZ23 / CTH24 Spread")} monthsTicks={6} />
+                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Nearby Spread")} session={session} section="Nearby Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTK24 Spread</div>
                   <LineGraph data={calculateSpread(JSON.parse(CTZ23Data), JSON.parse(CTK24Data), "CTZ23 / CTK24 Spread")} monthsTicks={6} />
+                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Second Spread")} session={session} section="Second Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTN24 Spread</div>
                   <LineGraph data={calculateSpread(JSON.parse(CTZ23Data), JSON.parse(CTN24Data), "CTZ23 / CTN24 Spread")} />
+                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Third Spread")} session={session} section="Third Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTZ24 Spread</div>
                   <LineGraph data={calculateSpread(JSON.parse(CTZ23Data), JSON.parse(CTZ24Data), "CTZ23 / CTZ24 Spread")} />
+                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Fourth Spread")} session={session} section="Fourth Spread" />
                 </div>
               </div>
             </div>
@@ -1068,7 +1261,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
               </div>
             )}
-            {((session?.submittedSurvey != true) || ((todaysDate.getDay() != 0) || (todaysDate.getDay() != 1))) && (
+            {((session?.submittedSurvey != true) && ((todaysDate.getDay() != 0) && (todaysDate.getDay() != 1))) && (
               <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
                 <div className="col-span-2 mb-4 text-center text-xl font-semibold">Macrovesta Sentiment Survey</div>
                 <div className="px-8">
@@ -1100,6 +1293,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         <div className="my-4 font-semibold text-lg">
                           {snapshotPopup.title_of_snapshot_strategy}
                         </div>
+                        <div className="-mt-4 mb-2">
+                          {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
+                        </div>
                         <div className="">
                           {snapshotPopup.text_of_snapshot_strategy}
                         </div>
@@ -1109,6 +1305,76 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   </div>
                 )}
               </div>
+              {(session?.role == "partner" || session?.role == "admin") && (
+                <div className="flex justify-center">
+                  <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenSnapshotForm(true)}>
+                    Add 30 Seconds Snapshot
+                  </div>
+                </div>
+              )}
+              {openSnapshotForm && (
+                <div className='absolute modal left-0 top-0 z-40'>
+                  <div className=' fixed grid place-content-center inset-0 z-40'>
+                    <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                      <div className="my-4 font-semibold text-lg">
+                        Add 30 Seconds Snapshot
+                      </div>
+                      <div className="w-full">
+                        <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleSnapshotFormSubmit}>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="image"
+                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                            >
+                              Image (optional)
+                            </label>
+                            <input
+                              type="text"
+                              id="image"
+                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                              placeholder="Enter a url to an image e.g. https://picsum.photos/200"
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="title"
+                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                            >
+                              Title
+                            </label>
+                            <input
+                              type="text"
+                              id="title"
+                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                              placeholder="Enter title"
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="text"
+                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                            >
+                              Text
+                            </label>
+                            <textarea id="text" placeholder="Enter text" name="text" rows={6} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
+                          </div>
+
+                          <div className="col-span-2 flex justify-center">
+                            {/* <button
+                                type="submit"
+                                className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+                              >
+                                Submit
+                              </button> */}
+                            <FormSubmit errorMessage={snapshotError_Message} warningMessage={snapshotWarning_Message} submitted={snapshotSubmitted} submitting={snapshotSubmitting} warningSubmit={snapshotWarningSubmit} />
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    <div onClick={() => setOpenSnapshotForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  ">
               <div className="relative flex flex-col items-center">
@@ -1134,7 +1400,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
               <div className="col-span-2 grid grid-cols-2 mb-4">
                 <div className="grid place-content-center">
-                  {session?.role == "partner" && (
+                  {(session?.role == "partner" || session?.role == "admin") && (
                     <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenBasisCostForm(true)}>
                       Add Basis Cost Estimate
                     </div>
@@ -1220,6 +1486,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   </div>
                 </div>
               </div>
+              <div className="col-span-1">
+                <Comments styling="mt-2 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Recent Basis")} session={session} section="Recent Basis" />
+              </div>
+              <div className="col-span-1">
+                <Comments styling="mt-2 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Historical Basis")} session={session} section="Historical Basis" />
+              </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
               <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
@@ -1243,6 +1515,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           <div className="my-4 font-semibold text-lg">
                             {countryNewsPopup.title_of_in_country_news}
                           </div>
+                          <div className="-mt-4 mb-2">
+                            {parseDateString(countryNewsPopup.date_of_in_country_news)}
+                          </div>
                           <div className="">
                             {/* <ReactMarkdown children={countryNewsPopup.text_of_in_country_news} /> */}
                             {/* <ReactMarkdown components={renderers}>{markdown}</ReactMarkdown> */}
@@ -1265,6 +1540,76 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )}
 
                 </div>
+                {(session?.role == "partner" || session?.role == "admin") && (
+                  <div className="flex justify-center">
+                    <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenCountryNewsForm(true)}>
+                      Add in country news
+                    </div>
+                  </div>
+                )}
+                {openCountryNewsForm && (
+                  <div className='absolute modal left-0 top-0 z-40'>
+                    <div className=' fixed grid place-content-center inset-0 z-40'>
+                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                        <div className="my-4 font-semibold text-lg">
+                          Add 30 in country news
+                        </div>
+                        <div className="w-full">
+                          <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleCountryNewsFormSubmit}>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="image"
+                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                              >
+                                Image (optional)
+                              </label>
+                              <input
+                                type="text"
+                                id="image"
+                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter a url to an image e.g. https://picsum.photos/200"
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="title"
+                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                              >
+                                Title
+                              </label>
+                              <input
+                                type="text"
+                                id="title"
+                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter title"
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="text"
+                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                              >
+                                Text
+                              </label>
+                              <textarea id="text" placeholder="Enter text" name="text" rows={6} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
+                            </div>
+
+                            <div className="col-span-2 flex justify-center">
+                              {/* <button
+                                type="submit"
+                                className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+                              >
+                                Submit
+                              </button> */}
+                              <FormSubmit errorMessage={countryNewsError_Message} warningMessage={countryNewsWarning_Message} submitted={countryNewsSubmitted} submitting={countryNewsSubmitting} warningSubmit={countryNewsWarningSubmit} />
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div onClick={() => setOpenCountryNewsForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
@@ -1473,8 +1818,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             </div>
             <div className="text-xl text-center mt-8">Learn More with Macrovesta</div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-24 text-lg">
-              <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg text-center">Learning Dash</div>
-              <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg text-center">Market Reports</div>
+              <Link href={{ pathname: 'https://eapconsult.com/dashboard/' }} >
+                <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg text-center">Learning Dash</div>
+              </Link>
+              <Link href={{ pathname: 'https://eapconsult.com/market-reports-2/' }} >
+                <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg text-center">Market Reports</div>
+              </Link>
             </div>
           </div>
         </div>
@@ -1561,12 +1910,16 @@ export const getServerSideProps = async (context: any) => {
   const futureContractsStudyData = JSON.stringify(future)
 
   const countryNews = await prisma?.in_country_news.findMany({
-
+    where: {
+      verified: true
+    }
   })
   const countryNewsData = JSON.stringify(countryNews)
 
   const snapshot = await prisma?.snapshot_strategy.findMany({
-
+    where: {
+      verified: true
+    }
   })
   const snapshotsData = JSON.stringify(snapshot);
 
@@ -1583,9 +1936,19 @@ export const getServerSideProps = async (context: any) => {
     // }
   });
   const seasonalIndexData = JSON.stringify(seasonalIndex);
+
+  const comment = await prisma?.comments.findMany({
+    where: {
+      date_of_comment: {
+        gt: oneWeekAgo.toISOString()
+      }
+    }
+  })
+  const commentsData = JSON.stringify(comment)
+
   console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData },
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData },
   };
 };
 

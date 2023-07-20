@@ -65,6 +65,16 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+//Below is the table comments
+
+model comments {
+    record_id       String   @id @default(cuid())
+    comment         String   @db.VarChar(255)
+    section         String   @db.VarChar(255)
+    date_of_comment DateTime @db.Date
+    added_by        String   @db.VarChar(255)
+}
+
 //Below is the table future_contracts_study
 
 model future_contracts_study {
@@ -136,9 +146,11 @@ model comparison_chart {
 model snapshot_strategy {
     record_id                  String   @id @default(cuid())
     title_of_snapshot_strategy String   @db.VarChar(255)
-    image_of_snapshot_strategy String   @db.VarChar(255) //here i wanted to upload an image or pull in-house graph similar to this - https://www.tradingview.com/chart/USDBRL/W62o6aQ2-Gold-China-BRICS-vs-US-Dollar-Hegemony/
+    image_of_snapshot_strategy String?  @db.VarChar(255) //here i wanted to upload an image or pull in-house graph similar to this - https://www.tradingview.com/chart/USDBRL/W62o6aQ2-Gold-China-BRICS-vs-US-Dollar-Hegemony/
     text_of_snapshot_strategy  String   @db.Text
     date_of_snapshot_strategy  DateTime @db.Date
+    added_by                   String   @default("Error") @db.VarChar(255)
+    verified                   Boolean  @default(false)
 }
 
 //Below is the Basis Cost 
@@ -149,16 +161,19 @@ model basis_comparison {
     country                String   @db.VarChar(255)
     contract_december_2023 Int      @default(0)
     contract_december_2024 Int      @default(0)
+    added_by               String   @default("Vic") @db.VarChar(255)
 }
 
 //Below is In Country News 
 
 model in_country_news {
     record_id                String   @id @default(cuid())
-    image_of_in_country_news String   @db.VarChar(255)
+    image_of_in_country_news String?  @db.VarChar(255)
     title_of_in_country_news String   @db.VarChar(255)
     text_of_in_country_news  String   @db.Text
     date_of_in_country_news  DateTime @db.Date
+    added_by                 String   @default("Error") @db.VarChar(255)
+    verified                 Boolean  @default(false)
 }
 
 //Below is Macrovesta Sentiment Survey
@@ -171,6 +186,7 @@ model sentiment_survey {
     intraday_average_points Decimal?  @default(0) @db.Decimal(16, 4)
     open_interest           Decimal?  @default(0) @db.Decimal(16, 4)
     date_of_survey          DateTime? @db.Date
+    added_by                String    @default("Vic") @db.VarChar(255)
 }
 
 //Below is the Comparison Charts with 17 Months Year 

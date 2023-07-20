@@ -4,15 +4,14 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from "../../server/db";
 
 
-const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) => {
+const AddSnapshot = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
 
-        await prisma?.basis_comparison.create({
+        await prisma?.comments.create({
             data: {
-                date_of_basis_report: new Date(),
-                country: req.body.country,
-                contract_december_2023: parseInt(req.body.contractOneBasis),
-                contract_december_2024: parseInt(req.body.contractTwoBasis),
+                comment: req.body.comment,
+                section: req.body.section,
+                date_of_comment: new Date(),
                 added_by: req.body.user
             }
         })
@@ -24,4 +23,4 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
     }
 };
 
-export default AddBasisCostEstimate;
+export default AddSnapshot;
