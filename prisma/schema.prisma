@@ -65,6 +65,28 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+//Below is the table cotton_on_call
+
+model cotton_on_call {
+    record_id               String @id @default(cuid())
+    week                    String
+    season                  String
+    october_sales           Int?
+    december_sales          Int?
+    march_sales             Int?
+    may_sales               Int?
+    july_sales              Int?
+    total_on_call_sales     Int?
+    october_purchases       Int?
+    december_purchases      Int?
+    march_purchases         Int?
+    may_purchases           Int?
+    july_purchases          Int?
+    total_on_call_purchases Int?
+    total_net_u_oc_position Int?
+    total_net_change        Int?
+}
+
 //Below is the table comments
 
 model comments {

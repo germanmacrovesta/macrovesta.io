@@ -22,7 +22,9 @@ import ReactMarkdown from 'react-markdown';
 import { render } from "react-dom";
 import BullishBearishDonut from '../components/bullishBearishDonut';
 import { useSession, getSession } from "next-auth/react";
-import Comments from '../components/comments'
+import Comments from '../components/comments';
+import IndexDial from '../components/indexDial';
+import SemiCircleDial from '../components/semiCircleDial';
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -88,7 +90,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData }) => {
+const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -653,60 +655,71 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7);
   }
 
-
   function transformData(input) {
-    // Create a container for the new data structure
-    let output = {};
-    const start_day = 1
+    const contract1Data = { name: "CTZ23", data: [], noCircles: true }
+    const contract2Data = { name: "CTZ24", data: [], noCircles: true }
+    input.forEach((item) => {
+      contract1Data.data.push({ time: (new Date(item.date_of_basis_report)).toISOString(), value: item.CTZ23 })
+      contract2Data.data.push({ time: (new Date(item.date_of_basis_report)).toISOString(), value: item.CTZ24 })
+    })
 
-    // Container to keep track of the sum and count for each contract and week
-    let averages = {};
-
-    // Iterate over the input data
-    for (let item of input) {
-      // For each contract date, add data to the output
-      for (let key of Object.keys(item)) {
-        if (key.startsWith("CTZ")) {
-          let contractName = `${item.country} CTZ${key.slice(-2)}`;
-
-          // If this contract name hasn't been added to the output yet, initialize it
-          if (!output[contractName]) {
-            output[contractName] = [];
-            averages[contractName] = {};
-          }
-
-          let date = new Date(item.date_of_basis_report);
-          let week = getWeek(date, start_day);
-
-          // If this week hasn't been added to the averages for this contract yet, initialize it
-          if (!averages[contractName][week]) {
-            averages[contractName][week] = { sum: 0, count: 0 };
-          }
-
-          // Add the data point to the averages
-          averages[contractName][week].sum += item[key];
-          averages[contractName][week].count++;
-        }
-      }
-    }
-
-    // Convert the averages to actual averages and add them to the output
-    for (let contractName of Object.keys(averages)) {
-      for (let week of Object.keys(averages[contractName])) {
-        let average = parseFloat((averages[contractName][week].sum / averages[contractName][week].count).toFixed(0));
-        // Assume the first day of the week (Monday) for the time
-        let date = new Date(new Date().getFullYear(), 0, 1 + (week - 1) * 7);
-        output[contractName].push({ time: date.toISOString(), value: average });
-      }
-    }
-
-    // Convert the output object to an array
-    output = Object.keys(output).map(name => {
-      return { name: name, data: output[name] };
-    });
-
-    return output;
+    return [contract1Data, contract2Data]
   }
+
+  // function transformData(input) {
+  //   // Create a container for the new data structure
+  //   let output = {};
+  //   const start_day = 1
+
+  //   // Container to keep track of the sum and count for each contract and week
+  //   let averages = {};
+
+  //   // Iterate over the input data
+  //   for (let item of input) {
+  //     // For each contract date, add data to the output
+  //     for (let key of Object.keys(item)) {
+  //       if (key.startsWith("CTZ")) {
+  //         let contractName = `${item.country} CTZ${key.slice(-2)}`;
+
+  //         // If this contract name hasn't been added to the output yet, initialize it
+  //         if (!output[contractName]) {
+  //           output[contractName] = [];
+  //           averages[contractName] = {};
+  //         }
+
+  //         let date = new Date(item.date_of_basis_report);
+  //         let week = getWeek(date, start_day);
+  //         // let week = getWeek(date, start_day);
+
+  //         // If this week hasn't been added to the averages for this contract yet, initialize it
+  //         if (!averages[contractName][week]) {
+  //           averages[contractName][week] = { sum: 0, count: 0 };
+  //         }
+
+  //         // Add the data point to the averages
+  //         averages[contractName][week].sum += item[key];
+  //         averages[contractName][week].count++;
+  //       }
+  //     }
+  //   }
+
+  //   // Convert the averages to actual averages and add them to the output
+  //   for (let contractName of Object.keys(averages)) {
+  //     for (let week of Object.keys(averages[contractName])) {
+  //       let average = parseFloat((averages[contractName][week].sum / averages[contractName][week].count).toFixed(0));
+  //       // Assume the first day of the week (Monday) for the time
+  //       let date = new Date(new Date().getFullYear(), 0, 1 + (week - 1) * 7);
+  //       output[contractName].push({ time: date.toISOString(), value: average });
+  //     }
+  //   }
+
+  //   // Convert the output object to an array
+  //   output = Object.keys(output).map(name => {
+  //     return { name: name, data: output[name] };
+  //   });
+
+  //   return output;
+  // }
 
   // function transformSurveyData(inputArray, propertyUsed) {
   //   const outputArray = [];
@@ -914,8 +927,40 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return [{ name: name, data: merged, noCircles: true }];
   }
 
+  // const getCottonOnCallData = (data) => {
+  //   let october = { name: "october", data: [], noCircles: true }
+  //   let december = { name: "decemeber", data: [], noCircles: true }
+  //   let march = { name: "march", data: [], noCircles: true }
+  //   let may = { name: "may", data: [], noCircles: true }
+  //   let july = { name: "july", data: [], noCircles: true }
+  //   data.forEach((item) => {
+  //     october.data.push({ x: parseInt(item.week), y: parseInt(item.october_sales) })
+  //     december.data.push({ x: parseInt(item.week), y: parseInt(item.december_sales) })
+  //     march.data.push({ x: parseInt(item.week), y: parseInt(item.march_sales) })
+  //     may.data.push({ x: parseInt(item.week), y: parseInt(item.may_sales) })
+  //     july.data.push({ x: parseInt(item.week), y: parseInt(item.july_sales) })
+  //   })
+  //   return [october, december, march, may, july]
+  // }
+  const getCottonOnCallData = (data) => {
+    let october = { name: "october", data: [], noCircles: true }
+    let december = { name: "decemeber", data: [], noCircles: true }
+    let march = { name: "march", data: [], noCircles: true }
+    let may = { name: "may", data: [], noCircles: true }
+    let july = { name: "july", data: [], noCircles: true }
+    data.forEach((item) => {
+      october.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.october_sales) })
+      december.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.december_sales) })
+      march.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.march_sales) })
+      may.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.may_sales) })
+      july.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.july_sales) })
+    })
+    return [october, december, march, may, july]
+  }
+
   console.log("Basis Data", JSON.parse(basisData).filter((basis) => basis.country == "Brazil"))
   console.log("Line Data", transformData(JSON.parse(basisData).filter((basis) => basis.country == "Brazil")))
+  console.log("basis", JSON.parse(basisData))
 
   const [basisCountry, setBasisCountry] = React.useState("Brazil");
 
@@ -1021,12 +1066,15 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 The Macrovesta Index {session?.user.id}
               </div>
               <div className="flex justify-around gap-8">
+                {/* <IndexDial probability={0} /> */}
+                {/* <SemiCircleDial value={-70} /> */}
+
                 <div className="relative">
                   <div className="text-center font-semibold">
                     Monthly Index
                   </div>
                   {selectAppropriateImage(JSON.parse(monthlyIndexData).inverse_month, parseFloat(JSON.parse(monthlyIndexData).probability_rate))}
-                  {/* <img className="w-[400px]" src="/Index_Inverse_High.jpg" /> */}
+
                   <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
                     transform: `rotate(${90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? 1 : -1)}deg)`
                   }}>
@@ -1396,7 +1444,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
               <div className="flex flex-col items-center">
                 <div className="-mb-2 text-center font-semibold text-xl">Historical Basis Cost</div>
-                <LineGraph data={transformData(JSON.parse(basisData).filter((basis) => basis.country == basisCountry))} />
+                <LineGraph data={transformData(JSON.parse(basisData).filter((basis) => basis.country == basisCountry))} xValue="time" yValue="value" monthsTicks={6} />
               </div>
               <div className="col-span-2 grid grid-cols-2 mb-4">
                 <div className="grid place-content-center">
@@ -1612,6 +1660,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 )}
               </div>
             </div>
+            {/* <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
+              <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
+              <img src="/Charts_Under_Construction_Wide.png" />
+              <LineGraphNotTime data={getCottonOnCallData(JSON.parse(cottonOnCallData).filter((data) => data.season == "0102"))} graphWidth={1000} graphHeight={600} xDomain2={52} />
+              <LineGraphNotTime data={getCottonOnCallData(JSON.parse(cottonOnCallData).filter((data) => data.week == "1"))} graphWidth={1000} graphHeight={600} xDomain2={9} />
+            </div> */}
             <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
@@ -1878,6 +1932,9 @@ export const getServerSideProps = async (context: any) => {
   const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   const basis = await prisma?.basis_comparison.findMany({
+    orderBy: {
+      date_of_basis_report: "asc"
+    }
     // where: {
     //   date_of_basis_report: {
     //     gte: oneWeekAgo.toISOString(), // Filtering records greater than or equal to one week ago
@@ -1885,6 +1942,8 @@ export const getServerSideProps = async (context: any) => {
     //   }
     // }
   })
+
+  console.log("basis length", basis.length)
 
   const formattedBasis = basis.map((basis) => {
     const { country, date_of_basis_report, contract_december_2023: CTZ23, contract_december_2024: CTZ24 } = basis;
@@ -1946,9 +2005,15 @@ export const getServerSideProps = async (context: any) => {
   })
   const commentsData = JSON.stringify(comment)
 
-  console.log(monthlyIndexData)
+  const onCall = await prisma?.cotton_on_call.findMany({
+
+  })
+
+  const cottonOnCallData = JSON.stringify(onCall)
+
+  // console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData },
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData },
   };
 };
 

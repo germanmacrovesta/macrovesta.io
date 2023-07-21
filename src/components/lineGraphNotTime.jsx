@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
-const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", graphWidth = 550, graphHeight = 400 }) => {
+const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", graphWidth = 550, graphHeight = 400, xDomain1 = 0, xDomain2 = 17 }) => {
     const ref = useRef();
 
 
@@ -14,7 +14,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                 height = graphHeight - margin.top - margin.bottom;
 
             // const colors = d3.scaleOrdinal(d3.schemeCategory10);
-            const colors = d3.scaleOrdinal().range(['#44B549', '#051D6D', '#3BBCAC']);
+            const colors = d3.scaleOrdinal().range(['#44B549', '#051D6D', '#3BBCAC', '#D060D6', '#051D38']);
 
             const svg = d3.select(ref.current)
                 .attr("width", width + margin.left + margin.right)
@@ -44,7 +44,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
 
             console.log("valueDomain", valueDomain, "valuepadding", valuepadding, data[0].name)
 
-            x.domain([0, 17]);
+            x.domain([xDomain1, xDomain2]);
             y.domain([parseFloat(valueDomain[0]) - valuepadding, parseFloat(valueDomain[1]) + valuepadding]);
 
             console.log("y bottom", valueDomain[0] - valuepadding, "y top", valueDomain[1] + valuepadding, data[0].name)
@@ -140,7 +140,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
             // const yearFormat = d3.timeFormat("%Y");
 
             const xAxis = d3.axisBottom(x)
-                .tickValues(d3.range(0, 18));
+                .tickValues(d3.range(xDomain1, xDomain2 + 1));
 
             // svg.append("g")
             //     .attr("transform", `translate(0, ${height})`)

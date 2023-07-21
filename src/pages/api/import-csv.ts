@@ -13,6 +13,20 @@ function excelDateToJSDate(serial) {
     return date_info.toISOString().split('T')[0];  // returns date in YYYY-MM-DD format
 }
 
+function removeBrackets(str) {
+    str = str.replace('(', '');
+    str = str.replace(')', '');
+    var num = - parseInt(str, 10);
+    return num;
+}
+
+function removeCommas(str) {
+    str = str.replace(/,/g, '');
+    var num = parseInt(str, 10);
+    console.log("remove commas", num)
+    return num;
+}
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
         if (!req.body.csvData) {
@@ -35,8 +49,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     // Map CSV row to Prisma model data
                     const modelData = Object.entries(row).reduce(
                         (acc, [key, value]) => {
-                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments") {
-                                acc[key] = (value != null || value != undefined) ? isNaN(Number(value)) ? value : Number(value) : null;
+                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments" && key != "MY Week" && key != "season" && key != "week" && key != "dead") {
+                                acc[key] = (value != null || value != undefined) ? isNaN(Number(removeCommas(value))) ? String(value)[0] == "(" ? removeBrackets(value) : value : Number(removeCommas(value)) : null;
                             } else if ((key == "datetime")) {
                                 acc[key] = new Date(value)
                             } else if ((key == "date_of_high") || (key == "date_of_low")) {
@@ -45,7 +59,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                                 // let dateRecord = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
                                 // console.log("Date Record", `${parts[2]}-${parts[1]}-${parts[0]}`)
                                 acc[key] = new Date(excelDateToJSDate(value))
-                            } else if (key == "comments") {
+                            } else if (key == "comments" || key == "season" || key == "week") {
                                 acc[key] = `${value}`
                             }
                             return acc;
