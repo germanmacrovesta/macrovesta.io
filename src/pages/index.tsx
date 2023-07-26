@@ -25,6 +25,7 @@ import { useSession, getSession } from "next-auth/react";
 import Comments from '../components/comments';
 import IndexDial from '../components/indexDial';
 import SemiCircleDial from '../components/semiCircleDial';
+import MultipleSelectDropdown from '../components/multipleSelectDropdown';
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -90,7 +91,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData }) => {
+const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -924,39 +925,142 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       }
     }
 
-    return [{ name: name, data: merged, noCircles: true }];
+    return [{ name: name, data: merged, noCircles: true, noHover: true }];
   }
 
-  // const getCottonOnCallData = (data) => {
+  const addFullYear = (twoDigitYear) => {
+    if (twoDigitYear[0] == "0" || twoDigitYear[0] == "1" || twoDigitYear[0] == "2") {
+      const newYear = `20${twoDigitYear}`
+      // return `20${twoDigitYear}`
+      return newYear
+    } else {
+      return `19${twoDigitYear}`
+    }
+  }
+
+  // const getCottonOnCallWeekData = (data, salesOrPurchases) => {
   //   let october = { name: "october", data: [], noCircles: true }
-  //   let december = { name: "decemeber", data: [], noCircles: true }
+  //   let december = { name: "december", data: [], noCircles: true }
   //   let march = { name: "march", data: [], noCircles: true }
   //   let may = { name: "may", data: [], noCircles: true }
   //   let july = { name: "july", data: [], noCircles: true }
   //   data.forEach((item) => {
-  //     october.data.push({ x: parseInt(item.week), y: parseInt(item.october_sales) })
-  //     december.data.push({ x: parseInt(item.week), y: parseInt(item.december_sales) })
-  //     march.data.push({ x: parseInt(item.week), y: parseInt(item.march_sales) })
-  //     may.data.push({ x: parseInt(item.week), y: parseInt(item.may_sales) })
-  //     july.data.push({ x: parseInt(item.week), y: parseInt(item.july_sales) })
+  //     october.data.push({ x: parseInt(item.week), y: parseInt(item[`october_${salesOrPurchases}`]) })
+  //     december.data.push({ x: parseInt(item.week), y: parseInt(item[`december_${salesOrPurchases}`]) })
+  //     march.data.push({ x: parseInt(item.week), y: parseInt(item[`march_${salesOrPurchases}`]) })
+  //     may.data.push({ x: parseInt(item.week), y: parseInt(item[`may_${salesOrPurchases}`]) })
+  //     july.data.push({ x: parseInt(item.week), y: parseInt(item[`july_${salesOrPurchases}`]) })
   //   })
   //   return [october, december, march, may, july]
   // }
-  const getCottonOnCallData = (data) => {
-    let october = { name: "october", data: [], noCircles: true }
-    let december = { name: "decemeber", data: [], noCircles: true }
-    let march = { name: "march", data: [], noCircles: true }
-    let may = { name: "may", data: [], noCircles: true }
-    let july = { name: "july", data: [], noCircles: true }
+  const getCottonOnCallWeekData = (data, propertyArray, datasetNameArray) => {
+    let datasetArray = [];
     data.forEach((item) => {
-      october.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.october_sales) })
-      december.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.december_sales) })
-      march.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.march_sales) })
-      may.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.may_sales) })
-      july.data.push({ x: parseInt(String(item.season).substring(0, 2)), y: parseInt(item.july_sales) })
+      propertyArray.forEach((property, index) => {
+        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
+          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          dataset.data.push({ x: parseInt(item.season_week), y: parseInt(item[property]) })
+        } else {
+          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          dataset.data.push({ x: parseInt(item.season_week), y: parseInt(item[property]) })
+          datasetArray.push(dataset)
+        }
+      })
     })
-    return [october, december, march, may, july]
+    return datasetArray
   }
+  const getCottonOnCallSeasonData = (data, propertyArray, datasetNameArray) => {
+    let datasetArray = [];
+    data.forEach((item) => {
+      propertyArray.forEach((property, index) => {
+        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
+          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          dataset.data.push({ x: parseInt(addFullYear(String(item.season).substring(0, 2))), y: parseInt(item[property]) })
+        } else {
+          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          dataset.data.push({ x: parseInt(addFullYear(String(item.season).substring(0, 2))), y: parseInt(item[property]) })
+          datasetArray.push(dataset)
+        }
+      })
+    })
+    return datasetArray
+  }
+  const getCommitmentOfTradersWeekData = (data, propertyArray, datasetNameArray) => {
+    let datasetArray = [];
+    data.forEach((item) => {
+      propertyArray.forEach((property, index) => {
+        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
+          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
+        } else {
+          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
+          datasetArray.push(dataset)
+        }
+      })
+    })
+    return datasetArray
+  }
+  const getCommitmentOfTradersSeasonData = (data, propertyArray, datasetNameArray) => {
+    let datasetArray = [];
+    data.forEach((item) => {
+      propertyArray.forEach((property, index) => {
+        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
+          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
+        } else {
+          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
+          datasetArray.push(dataset)
+        }
+      })
+    })
+    return datasetArray
+  }
+  // const getCommitmentOfTradersWeekData = (data) => {
+  //   let producer_merchant_net = { name: "Producer Merchant Net", data: [], noCircles: true }
+  //   let open_interest_all = { name: "Open Interest All", data: [], noCircles: true }
+  //   let swap_position_net = { name: "Swap Position Net", data: [], noCircles: true }
+  //   let managed_money_net = { name: "Managed Money Net", data: [], noCircles: true }
+  //   let other_reportables_net = { name: "Other Reportables Net", data: [], noCircles: true }
+  //   let total_reportables_net = { name: "Total Reportables Net", data: [], noCircles: true }
+  //   let non_reportables_net = { name: "Non Reportables Net", data: [], noCircles: true }
+  //   let specs_net = { name: "Specs Net", data: [], noCircles: true }
+  //   data.forEach((item) => {
+  //     producer_merchant_net.data.push({ x: parseInt(item.week), y: parseInt(item.producer_merchant_net) })
+  //     open_interest_all.data.push({ x: parseInt(item.week), y: parseInt(item.open_interest_all) })
+  //     swap_position_net.data.push({ x: parseInt(item.week), y: parseInt(item.swap_position_net) })
+  //     managed_money_net.data.push({ x: parseInt(item.week), y: parseInt(item.managed_money_net) })
+  //     other_reportables_net.data.push({ x: parseInt(item.week), y: parseInt(item.other_reportables_net) })
+  //     total_reportables_net.data.push({ x: parseInt(item.week), y: parseInt(item.total_reportables_net) })
+  //     non_reportables_net.data.push({ x: parseInt(item.week), y: parseInt(item.non_reportables_net) })
+  //     specs_net.data.push({ x: parseInt(item.week), y: parseInt(item.specs_net) })
+  //   })
+  //   console.log("product_merchant_net", producer_merchant_net)
+  //   return [producer_merchant_net, open_interest_all, swap_position_net, managed_money_net, other_reportables_net, total_reportables_net, non_reportables_net, specs_net]
+  // }
+  // const getCommitmentOfTradersSeasonData = (data) => {
+  //   let producer_merchant_net = { name: "Producer Merchant Net", data: [], noCircles: true }
+  //   let open_interest_all = { name: "Open Interest All", data: [], noCircles: true }
+  //   let swap_position_net = { name: "Swap Position Net", data: [], noCircles: true }
+  //   let managed_money_net = { name: "Managed Money Net", data: [], noCircles: true }
+  //   let other_reportables_net = { name: "Other Reportables Net", data: [], noCircles: true }
+  //   let total_reportables_net = { name: "Total Reportables Net", data: [], noCircles: true }
+  //   let non_reportables_net = { name: "Non Reportables Net", data: [], noCircles: true }
+  //   let specs_net = { name: "Specs Net", data: [], noCircles: true }
+  //   data.forEach((item) => {
+  //     producer_merchant_net.data.push({ x: parseInt(item.calendar_year), y: parseInt(item.producer_merchant_net) })
+  //     open_interest_all.data.push({ x: parseInt(item.calendar_year), y: parseInt(item.open_interest_all) })
+  //     swap_position_net.data.push({ x: parseInt(item.calendar_year), y: parseInt(item.swap_position_net) })
+  //     managed_money_net.data.push({ x: parseInt(item.calendar_year), y: parseInt(item.managed_money_net) })
+  //     other_reportables_net.data.push({ x: parseInt(item.calendar_year), y: parseInt(item.other_reportables_net) })
+  //     total_reportables_net.data.push({ x: parseInt(item.calendar_year), y: parseInt(item.total_reportables_net) })
+  //     non_reportables_net.data.push({ x: parseInt(item.calendar_year), y: parseInt(item.non_reportables_net) })
+  //     specs_net.data.push({ x: parseInt(item.calendar_year), y: parseInt(item.specs_net) })
+  //   })
+  //   console.log("product_merchant_net", producer_merchant_net)
+  //   return [producer_merchant_net, open_interest_all, swap_position_net, managed_money_net, other_reportables_net, total_reportables_net, non_reportables_net, specs_net]
+  // }
 
   console.log("Basis Data", JSON.parse(basisData).filter((basis) => basis.country == "Brazil"))
   console.log("Line Data", transformData(JSON.parse(basisData).filter((basis) => basis.country == "Brazil")))
@@ -964,7 +1068,40 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const [basisCountry, setBasisCountry] = React.useState("Brazil");
 
+  const [salesWeekOrYear, setSalesWeekOrYear] = React.useState("Week")
+  const [salesYear, setSalesYear] = React.useState("0102")
+  const [salesWeek, setSalesWeek] = React.useState(1)
+
+  const [purchasesWeekOrYear, setPurchasesWeekOrYear] = React.useState("Week")
+  const [purchasesYear, setPurchasesYear] = React.useState("0102")
+  const [purchasesWeek, setPurchasesWeek] = React.useState(1)
+
+  const [totalOnCallWeekOrYear, setTotalOnCallWeekOrYear] = React.useState("Week")
+  const [totalOnCallYear, setTotalOnCallYear] = React.useState("0102")
+  const [totalOnCallWeek, setTotalOnCallWeek] = React.useState(1)
+
+  const [UOCWeekOrYear, setUOCWeekOrYear] = React.useState("Week")
+  const [UOCYear, setUOCYear] = React.useState("0102")
+  const [UOCWeek, setUOCWeek] = React.useState(1)
+
+  const [commitmentWeekOrYear, setCommitmentWeekOrYear] = React.useState("Week")
+  const [commitmentYear, setCommitmentYear] = React.useState(2010)
+  const [commitmentWeek, setCommitmentWeek] = React.useState(1)
+  const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["open_interest_all", "producer_merchant_net", "swap_position_net", "managed_money_net", "other_reportables_net", "total_reportables_net", "non_reportables_net", "specs_net"])
+  const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Open Interest All", "Producer Merchant Net", "Swap Position Net", "Managed Money Net", "Other Reportables Net", "Total Reportables Net", "Non Reportables Net", "Specs Net"])
+
   const [currentStage, setCurrentStage] = React.useState(0);
+
+  const getUniqueOptions = (data, property) => {
+    let uniqueValues = data.reduce((acc, obj) => {
+      return acc.includes(obj[property]) ? acc : [...acc, obj[property]];
+    }, []);
+    let options = []
+    uniqueValues.forEach((value) => {
+      options.push({ value: String(value) })
+    })
+    return options.sort();
+  }
 
   const goNext = () => {
     if (currentStage < stages.length - 1) {
@@ -1663,9 +1800,345 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             {/* <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
               <img src="/Charts_Under_Construction_Wide.png" />
-              <LineGraphNotTime data={getCottonOnCallData(JSON.parse(cottonOnCallData).filter((data) => data.season == "0102"))} graphWidth={1000} graphHeight={600} xDomain2={52} />
-              <LineGraphNotTime data={getCottonOnCallData(JSON.parse(cottonOnCallData).filter((data) => data.week == "1"))} graphWidth={1000} graphHeight={600} xDomain2={9} />
+              <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == "0102"))} graphWidth={1000} graphHeight={600} xDomain2={52} xAxisTitle="Week" />
+              <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == "1"))} graphWidth={1000} graphHeight={600} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+              <LineGraphNotTime data={getCommitmentOfTradersWeekData(JSON.parse(commitmentData).filter((data) => parseInt(data.calendar_year) == 2010))} graphWidth={1000} graphHeight={600} xDomain2={52} xAxisTitle="Week" />
+              <LineGraphNotTime data={getCommitmentOfTradersSeasonData(JSON.parse(commitmentData).filter((data) => parseInt(data.week) == 1))} graphWidth={1000} graphHeight={600} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
             </div> */}
+            <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+
+              <div className="grid grid-cols-2 gap-y-8 mb-12">
+                <div className="col-span-2 text-center text-xl font-semibold mb-4">
+                  Cotton on Call
+                </div>
+
+                <div className="flex flex-col items-center">
+                  {salesWeekOrYear == "Week" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Sales by week</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == salesYear), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
+                      </div>
+                    </>
+                  )}
+                  {salesWeekOrYear == "Year" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Sales by year</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == salesWeek), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                      </div>
+                    </>
+                  )}
+                  <SingleSelectDropdown
+                    options={[{ name: "Week" }, { name: "Year" }]}
+                    label="Week or Year"
+                    variable="name"
+                    colour="bg-deep_blue"
+                    onSelectionChange={(e) => setSalesWeekOrYear(e.name)}
+                    placeholder="Select Week or Year"
+                    searchPlaceholder="Search Options"
+                    includeLabel={false}
+                    defaultValue="Week"
+                  />
+                  {salesWeekOrYear == "Week" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                        label="Season"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setSalesYear(e.value)}
+                        placeholder="Select a specific season"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="0102"
+                      />
+                    </>
+                  )}
+                  {salesWeekOrYear == "Year" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                        label="Week"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setSalesWeek(parseInt(e.value))}
+                        placeholder="Select a specific week"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="32"
+                      />
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-col items-center">
+                  {purchasesWeekOrYear == "Week" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Purchases by week</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == purchasesYear), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
+                      </div>
+                    </>
+                  )}
+                  {purchasesWeekOrYear == "Year" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Purchases by year</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == purchasesWeek), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                      </div>
+                    </>
+                  )}
+                  <SingleSelectDropdown
+                    options={[{ name: "Week" }, { name: "Year" }]}
+                    label="Week or Year"
+                    variable="name"
+                    colour="bg-deep_blue"
+                    onSelectionChange={(e) => setPurchasesWeekOrYear(e.name)}
+                    placeholder="Select Week or Year"
+                    searchPlaceholder="Search Options"
+                    includeLabel={false}
+                    defaultValue="Week"
+                  />
+                  {purchasesWeekOrYear == "Week" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                        label="Season"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setPurchasesYear(e.value)}
+                        placeholder="Select a specific season"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="0102"
+                      />
+                    </>
+                  )}
+                  {purchasesWeekOrYear == "Year" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                        label="Week"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setPurchasesWeek(parseInt(e.value))}
+                        placeholder="Select a specific week"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="32"
+                      />
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-col items-center">
+                  {totalOnCallWeekOrYear == "Week" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by week</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == totalOnCallYear), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain2={52} xAxisTitle="Week" />
+                      </div>
+                    </>
+                  )}
+                  {totalOnCallWeekOrYear == "Year" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by year</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == totalOnCallWeek), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                      </div>
+                    </>
+                  )}
+                  <SingleSelectDropdown
+                    options={[{ name: "Week" }, { name: "Year" }]}
+                    label="Week or Year"
+                    variable="name"
+                    colour="bg-deep_blue"
+                    onSelectionChange={(e) => setTotalOnCallWeekOrYear(e.name)}
+                    placeholder="Select Week or Year"
+                    searchPlaceholder="Search Options"
+                    includeLabel={false}
+                    defaultValue="Week"
+                  />
+                  {totalOnCallWeekOrYear == "Week" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                        label="Season"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setTotalOnCallYear(e.value)}
+                        placeholder="Select a specific season"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="0102"
+                      />
+                    </>
+                  )}
+                  {totalOnCallWeekOrYear == "Year" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                        label="Week"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setTotalOnCallWeek(parseInt(e.value))}
+                        placeholder="Select a specific week"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="32"
+                      />
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-col items-center">
+                  {UOCWeekOrYear == "Week" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Total net U OC position by week</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == UOCYear), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain2={52} xAxisTitle="Week" />
+                      </div>
+                    </>
+                  )}
+                  {UOCWeekOrYear == "Year" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Total net U OC position by year</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == UOCWeek), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                      </div>
+                    </>
+                  )}
+                  <SingleSelectDropdown
+                    options={[{ name: "Week" }, { name: "Year" }]}
+                    label="Week or Year"
+                    variable="name"
+                    colour="bg-deep_blue"
+                    onSelectionChange={(e) => setUOCWeekOrYear(e.name)}
+                    placeholder="Select Week or Year"
+                    searchPlaceholder="Search Options"
+                    includeLabel={false}
+                    defaultValue="Week"
+                  />
+                  {UOCWeekOrYear == "Week" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                        label="Season"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setUOCYear(e.value)}
+                        placeholder="Select a specific season"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="0102"
+                      />
+                    </>
+                  )}
+                  {UOCWeekOrYear == "Year" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                        label="Week"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setUOCWeek(parseInt(e.value))}
+                        placeholder="Select a specific week"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="32"
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+
+              <div className="grid grid-cols-2 mb-12">
+                <div className="col-span-2 text-center text-xl font-semibold mb-4">
+                  Commitment of Traders
+                </div>
+
+                <div className="col-span-2 flex flex-col items-center">
+                  {commitmentWeekOrYear == "Week" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Week</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCommitmentOfTradersWeekData(JSON.parse(commitmentData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain2={52} xAxisTitle="Week" />
+                      </div>
+                    </>
+                  )}
+                  {commitmentWeekOrYear == "Year" && (
+                    <>
+                      <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Year</div>
+                      <div className="mb-16">
+
+                        <LineGraphNotTime data={getCommitmentOfTradersSeasonData(JSON.parse(commitmentData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
+                      </div>
+                    </>
+                  )}
+                  <SingleSelectDropdown
+                    options={[{ name: "Week" }, { name: "Year" }]}
+                    label="Week or Year"
+                    variable="name"
+                    colour="bg-deep_blue"
+                    onSelectionChange={(e) => setCommitmentWeekOrYear(e.name)}
+                    placeholder="Select Week or Year"
+                    searchPlaceholder="Search Options"
+                    includeLabel={false}
+                    defaultValue="Week"
+                  />
+                  {commitmentWeekOrYear == "Week" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(commitmentData), "calendar_year")}
+                        label="Year"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setCommitmentYear(parseInt(e.value))}
+                        placeholder="Select a specific year"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="2010"
+                      />
+                    </>
+                  )}
+                  {commitmentWeekOrYear == "Year" && (
+                    <>
+                      <SingleSelectDropdown
+                        options={getUniqueOptions(JSON.parse(commitmentData), "week")}
+                        label="Week"
+                        variable="value"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setCommitmentWeek(parseInt(e.value))}
+                        placeholder="Select a specific week"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="1"
+                      />
+                    </>
+                  )}
+                  <MultipleSelectDropdown
+                    options={[{ property: "open_interest_all", name: "Open Interest All" }, { property: "producer_merchant_net", name: "Producer Merchant Net" }, { property: "swap_position_net", name: "Swap Position Net" }, { property: "managed_money_net", name: "Managed Money Net" }, { property: "other_reportables_net", name: "Other Reportables Net" }, { property: "total_reportables_net", name: "Total Reportables Net" }, { property: "non_reportables_net", name: "Non Reportables Net" }, { property: "specs_net", name: "Specs Net" }]}
+                    variable="name"
+                    colour="bg-deep_blue"
+                    label="Variables"
+                    onSelectionChange={(e) => { if (e.length > 0) { setCommitmentPropertiesArray(e.map((selection) => selection.property)); setCommitmentNamesArray(e.map((selection) => selection.name)) } }}
+                    // onSelectionChange={(e) => { setCommitmentPropertiesArray(["open_interest_all"]); setCommitmentNamesArray(["Open Interest All"]) }}
+                    placeholder="Select Variables"
+                    searchPlaceholder="Search Variables"
+                    includeLabel={false}
+                  />
+                </div>
+              </div>
+            </div>
             <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
@@ -2011,9 +2484,15 @@ export const getServerSideProps = async (context: any) => {
 
   const cottonOnCallData = JSON.stringify(onCall)
 
+  const commitment = await prisma?.commitment_of_traders.findMany({
+
+  })
+
+  const commitmentData = JSON.stringify(commitment)
+
   // console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData },
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData },
   };
 };
 

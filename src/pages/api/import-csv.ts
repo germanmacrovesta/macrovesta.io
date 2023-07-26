@@ -23,8 +23,21 @@ function removeBrackets(str) {
 function removeCommas(str) {
     str = str.replace(/,/g, '');
     var num = parseInt(str, 10);
-    console.log("remove commas", num)
+    // console.log("remove commas", num)
     return num;
+}
+
+function ukDateToISO(ukDateString) {
+    var parts = ukDateString.split("/");
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+}
+
+var date = ukDateToISO("30/03/2010");
+console.log("30/03/2010 as ISO", date);
+
+function usDateToISO(dateString) {
+    let parts = dateString.split('/');
+    return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}T00:00:00Z`;
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -49,7 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     // Map CSV row to Prisma model data
                     const modelData = Object.entries(row).reduce(
                         (acc, [key, value]) => {
-                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments" && key != "MY Week" && key != "season" && key != "week" && key != "dead") {
+                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments" && key != "season" && key != "dead" && key != "report_date_as_mm_dd_yyyy" && key != "crop_year" && key != "week_ending") {
                                 acc[key] = (value != null || value != undefined) ? isNaN(Number(removeCommas(value))) ? String(value)[0] == "(" ? removeBrackets(value) : value : Number(removeCommas(value)) : null;
                             } else if ((key == "datetime")) {
                                 acc[key] = new Date(value)
@@ -59,8 +72,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                                 // let dateRecord = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
                                 // console.log("Date Record", `${parts[2]}-${parts[1]}-${parts[0]}`)
                                 acc[key] = new Date(excelDateToJSDate(value))
-                            } else if (key == "comments" || key == "season" || key == "week") {
+                            } else if (key == "report_date_as_mm_dd_yyyy") {
+                                acc[key] = new Date(ukDateToISO(value))
+                                // } else if (key == "comments" || key == "season" || key == "week") {
+                                //     acc[key] = `${value}`
+                                // }
+                            } else if (key == "comments" || key == "season" || key == "crop_year") {
                                 acc[key] = `${value}`
+                            } else if (key == "week_ending") {
+                                acc[key] = new Date(usDateToISO(value))
                             }
                             return acc;
                         },

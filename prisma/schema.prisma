@@ -65,11 +65,44 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+//Below is the table US Export Sales
+
+model us_export_sales {
+    record_id                             String   @id @default(cuid())
+    week_ending                           DateTime @db.Date
+    weekly_exports                        Int?
+    accumluated_exports                   Int?
+    net_sales                             Int?
+    outstanding_sales                     Int?
+    next_marketing_year_net_sales         Int?
+    next_marketing_year_outstanding_sales Int?
+}
+
+//Below is the table Commitment of Traders
+
+model commitment_of_traders {
+    record_id                 String   @id @default(cuid())
+    calendar_year             Int
+    crop_year                 String
+    month                     String
+    week                      Int?
+    report_date_as_mm_dd_yyyy DateTime @db.Date()
+    open_interest_all         Int?
+    producer_merchant_net     Int?
+    swap_position_net         Int?
+    managed_money_net         Int?
+    other_reportables_net     Int?
+    total_reportables_net     Int?
+    non_reportables_net       Int?
+    specs_net                 Int?
+}
+
 //Below is the table cotton_on_call
 
 model cotton_on_call {
     record_id               String @id @default(cuid())
-    week                    String
+    season_week             Int
+    week                    Int
     season                  String
     october_sales           Int?
     december_sales          Int?

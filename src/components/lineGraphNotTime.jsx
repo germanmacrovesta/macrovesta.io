@@ -1,7 +1,13 @@
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
-const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", graphWidth = 550, graphHeight = 400, xDomain1 = 0, xDomain2 = 17 }) => {
+const capitalizeText = (text) => {
+    const firstLetter = text.slice(0, 1).toUpperCase()
+    const rest = text.slice(1)
+    return `${firstLetter}${rest}`
+}
+
+const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", graphWidth = 550, graphHeight = 400, xDomain1 = 0, xDomain2 = 17, xAxisTitle = "", yAxisTitle = "", tickNumber = 15 }) => {
     const ref = useRef();
 
 
@@ -97,15 +103,56 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                     .datum(series.data)
                     .attr("fill", "none")
                     .attr("stroke", colors(i))
-                    .attr("stroke-width", 1.5)
+                    .attr("stroke-width", 3)
                     .attr("class", `line line-${i}`)
-                    .attr("d", line);
+                    .attr("d", line)
+
 
                 if (series.dottedLine) {
                     path.attr("stroke-dasharray", ("3, 3")) // this will create a dotted line
                 } else if (series.noCircles) {
-
+                    path.on("mouseover", function (e, d) {
+                        this.parentNode.appendChild(this);
+                        d3.select(this).transition()
+                            .duration(200)
+                            .attr("stroke-width", 6);
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                        tooltip.html(`${capitalizeText(series.name)}`)
+                            .style("left", (e.pageX - 65) + "px")
+                            .style("top", (e.pageY - 35) + "px")
+                            .style("padding",);
+                    })
+                        .on("mouseout", function (e) {
+                            d3.select(this).transition()
+                                .duration(200)
+                                .attr("stroke-width", 3);
+                            tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
                 } else {
+                    path.on("mouseover", function (e, d) {
+                        d3.select(this).transition()
+                            .duration(200)
+                            .attr("stroke-width", 6);
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                        tooltip.html(`${capitalizeText(series.name)}`)
+                            .style("left", (e.pageX - 65) + "px")
+                            .style("top", (e.pageY - 35) + "px")
+                            .style("padding",);
+                    })
+                        .on("mouseout", function (e) {
+                            d3.select(this).transition()
+                                .duration(200)
+                                .attr("stroke-width", 3);
+                            tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
                     series.data.forEach((d) => {
                         svg.append("circle")
                             .attr("class", "dot")
@@ -140,7 +187,9 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
             // const yearFormat = d3.timeFormat("%Y");
 
             const xAxis = d3.axisBottom(x)
-                .tickValues(d3.range(xDomain1, xDomain2 + 1));
+                .ticks(tickNumber)
+                // .tickValues(d3.range(xDomain1, xDomain2 + 1))
+                .tickFormat(d3.format(".0f"));
 
             // svg.append("g")
             //     .attr("transform", `translate(0, ${height})`)
@@ -155,6 +204,21 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
 
             // svg.append("g")
             //     .call(d3.axisBottom(x));
+
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text(yAxisTitle);
+
+            svg.append("text")
+                .attr("transform",
+                    "translate(" + (width / 2) + " ," +
+                    (height + margin.top + 20) + ")")
+                .style("text-anchor", "middle")
+                .text(xAxisTitle);
 
         }
     }, [data, xValue, yValue]);

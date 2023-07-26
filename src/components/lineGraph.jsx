@@ -1,6 +1,12 @@
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
+const capitalizeText = (text) => {
+    const firstLetter = text.slice(0, 1).toUpperCase()
+    const rest = text.slice(1)
+    return `${firstLetter}${rest}`
+}
+
 const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400 }) => {
     const ref = useRef();
 
@@ -55,6 +61,32 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                 .attr("class", "tooltip")
                 .style("opacity", 0);
 
+            // Create a tooltip div that is hidden by default:
+            var newTooltip = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
+            // Define a mousemove event for the SVG canvas
+            // svg.on("mousemove", function (event) {
+            //     // Get mouse coordinates in SVG-space
+            //     var mouse = d3.pointer(event);
+
+            //     // Convert those coordinates into your graph's domain
+            //     var x0 = x.invert(mouse[0]),
+            //         y0 = y.invert(mouse[1]);
+
+            //     // Update the newTooltip position and value
+            //     newTooltip.style("left", (event.pageX - 65) + "px")
+            //         .style("top", (event.pageY - 35) + "px")
+            //         .style("opacity", 1)
+            //         .html("y: " + y0);
+            // });
+
+            // // Hide newTooltip when mouse leaves the SVG canvas
+            // svg.on("mouseleave", function (event) {
+            //     newTooltip.style("opacity", 0);
+            // });
+
             // data.forEach((series, i) => {
             //     svg.append("path")
             //         .datum(series.data)
@@ -104,8 +136,85 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                 if (series.dottedLine) {
                     path.attr("stroke-dasharray", ("3, 3")) // this will create a dotted line
                 } else if (series.noCircles) {
+                    if (series.noHover) {
+                        path.on("mousemove", function (event) {
+                            // Get mouse coordinates in SVG-space
+                            var mouse = d3.pointer(event);
 
+                            // Convert those coordinates into your graph's domain
+                            var x0 = x.invert(mouse[0]),
+                                y0 = y.invert(mouse[1]);
+
+                            // Update the newTooltip position and value
+                            newTooltip.style("left", (event.pageX - 65) + "px")
+                                .style("top", (event.pageY - 35) + "px")
+                                .style("opacity", 1)
+                                .html("y: " + y0);
+                        })
+                            .on("mouseleave", function (event) {
+                                newTooltip.style("opacity", 0);
+                            });
+                        // path.on("mouseover", function (e, d) {
+                        //     tooltip.transition()
+                        //         .duration(200)
+                        //         .style("opacity", .9);
+                        //     tooltip.html(`${y(e.pageY)}`)
+                        //         .style("left", (e.pageX - 65) + "px")
+                        //         .style("top", (e.pageY - 35) + "px")
+                        //         .style("padding",);
+                        // })
+                        //     .on("mouseout", function (e) {
+                        //         d3.select(this).transition()
+                        //             .duration(200)
+                        //             .attr("stroke-width", 1.5);
+                        //         tooltip.transition()
+                        //             .duration(500)
+                        //             .style("opacity", 0);
+                        //     });
+                    } else {
+                        path.on("mouseover", function (e, d) {
+                            this.parentNode.appendChild(this);
+                            d3.select(this).transition()
+                                .duration(200)
+                                .attr("stroke-width", 6);
+                            tooltip.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                            tooltip.html(`${capitalizeText(series.name)}`)
+                                .style("left", (e.pageX - 65) + "px")
+                                .style("top", (e.pageY - 35) + "px")
+                                .style("padding",);
+                        })
+                            .on("mouseout", function (e) {
+                                d3.select(this).transition()
+                                    .duration(200)
+                                    .attr("stroke-width", 1.5);
+                                tooltip.transition()
+                                    .duration(500)
+                                    .style("opacity", 0);
+                            });
+                    }
                 } else {
+                    path.on("mouseover", function (e, d) {
+                        d3.select(this).transition()
+                            .duration(200)
+                            .attr("stroke-width", 6);
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                        tooltip.html(`${capitalizeText(series.name)}`)
+                            .style("left", (e.pageX - 65) + "px")
+                            .style("top", (e.pageY - 35) + "px")
+                            .style("padding",);
+                    })
+                        .on("mouseout", function (e) {
+                            d3.select(this).transition()
+                                .duration(200)
+                                .attr("stroke-width", 1.5);
+                            tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
                     series.data.forEach((d) => {
                         svg.append("circle")
                             .attr("class", "dot")
