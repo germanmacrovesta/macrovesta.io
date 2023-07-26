@@ -1100,7 +1100,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     uniqueValues.forEach((value) => {
       options.push({ value: String(value) })
     })
-    return options.sort();
+    return options.sort((a, b) => a.value - b.value);
   }
 
   const goNext = () => {
@@ -1813,6 +1813,59 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
 
                 <div className="flex flex-col items-center">
+                  <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
+
+                    <div className="mb-4 w-full">
+
+                      <SingleSelectDropdown
+                        options={[{ name: "Week" }, { name: "Year" }]}
+                        label="Week or Year"
+                        variable="name"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setSalesWeekOrYear(e.name)}
+                        placeholder="Select Week or Year"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="Week"
+                      />
+                    </div>
+                    {salesWeekOrYear == "Week" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                            label="Season"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setSalesYear(e.value)}
+                            placeholder="Select a specific season"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="0102"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {salesWeekOrYear == "Year" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                            label="Week"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setSalesWeek(parseInt(e.value))}
+                            placeholder="Select a specific week"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="32"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
                   {salesWeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Sales by week</div>
@@ -1827,53 +1880,65 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Sales by year</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == salesWeek), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == salesWeek), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={1999} xDomain2={2021} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
-                    </>
-                  )}
-                  <SingleSelectDropdown
-                    options={[{ name: "Week" }, { name: "Year" }]}
-                    label="Week or Year"
-                    variable="name"
-                    colour="bg-deep_blue"
-                    onSelectionChange={(e) => setSalesWeekOrYear(e.name)}
-                    placeholder="Select Week or Year"
-                    searchPlaceholder="Search Options"
-                    includeLabel={false}
-                    defaultValue="Week"
-                  />
-                  {salesWeekOrYear == "Week" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
-                        label="Season"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setSalesYear(e.value)}
-                        placeholder="Select a specific season"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="0102"
-                      />
-                    </>
-                  )}
-                  {salesWeekOrYear == "Year" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
-                        label="Week"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setSalesWeek(parseInt(e.value))}
-                        placeholder="Select a specific week"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="32"
-                      />
                     </>
                   )}
                 </div>
                 <div className="flex flex-col items-center">
+                  <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
+
+                    <div className="mb-4 w-full">
+
+                      <SingleSelectDropdown
+                        options={[{ name: "Week" }, { name: "Year" }]}
+                        label="Week or Year"
+                        variable="name"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setPurchasesWeekOrYear(e.name)}
+                        placeholder="Select Week or Year"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="Week"
+                      />
+                    </div>
+                    {purchasesWeekOrYear == "Week" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                            label="Season"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setPurchasesYear(e.value)}
+                            placeholder="Select a specific season"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="0102"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {purchasesWeekOrYear == "Year" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                            label="Week"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setPurchasesWeek(parseInt(e.value))}
+                            placeholder="Select a specific week"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="32"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
                   {purchasesWeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Purchases by week</div>
@@ -1892,49 +1957,61 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       </div>
                     </>
                   )}
-                  <SingleSelectDropdown
-                    options={[{ name: "Week" }, { name: "Year" }]}
-                    label="Week or Year"
-                    variable="name"
-                    colour="bg-deep_blue"
-                    onSelectionChange={(e) => setPurchasesWeekOrYear(e.name)}
-                    placeholder="Select Week or Year"
-                    searchPlaceholder="Search Options"
-                    includeLabel={false}
-                    defaultValue="Week"
-                  />
-                  {purchasesWeekOrYear == "Week" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
-                        label="Season"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setPurchasesYear(e.value)}
-                        placeholder="Select a specific season"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="0102"
-                      />
-                    </>
-                  )}
-                  {purchasesWeekOrYear == "Year" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
-                        label="Week"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setPurchasesWeek(parseInt(e.value))}
-                        placeholder="Select a specific week"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="32"
-                      />
-                    </>
-                  )}
                 </div>
                 <div className="flex flex-col items-center">
+                  <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
+
+                    <div className="mb-4 w-full">
+
+                      <SingleSelectDropdown
+                        options={[{ name: "Week" }, { name: "Year" }]}
+                        label="Week or Year"
+                        variable="name"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setTotalOnCallWeekOrYear(e.name)}
+                        placeholder="Select Week or Year"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="Week"
+                      />
+                    </div>
+                    {totalOnCallWeekOrYear == "Week" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                            label="Season"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setTotalOnCallYear(e.value)}
+                            placeholder="Select a specific season"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="0102"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {totalOnCallWeekOrYear == "Year" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                            label="Week"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setTotalOnCallWeek(parseInt(e.value))}
+                            placeholder="Select a specific week"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="32"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
                   {totalOnCallWeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by week</div>
@@ -1953,49 +2030,61 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       </div>
                     </>
                   )}
-                  <SingleSelectDropdown
-                    options={[{ name: "Week" }, { name: "Year" }]}
-                    label="Week or Year"
-                    variable="name"
-                    colour="bg-deep_blue"
-                    onSelectionChange={(e) => setTotalOnCallWeekOrYear(e.name)}
-                    placeholder="Select Week or Year"
-                    searchPlaceholder="Search Options"
-                    includeLabel={false}
-                    defaultValue="Week"
-                  />
-                  {totalOnCallWeekOrYear == "Week" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
-                        label="Season"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setTotalOnCallYear(e.value)}
-                        placeholder="Select a specific season"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="0102"
-                      />
-                    </>
-                  )}
-                  {totalOnCallWeekOrYear == "Year" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
-                        label="Week"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setTotalOnCallWeek(parseInt(e.value))}
-                        placeholder="Select a specific week"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="32"
-                      />
-                    </>
-                  )}
                 </div>
                 <div className="flex flex-col items-center">
+                  <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
+
+                    <div className="mb-4 w-full">
+
+                      <SingleSelectDropdown
+                        options={[{ name: "Week" }, { name: "Year" }]}
+                        label="Week or Year"
+                        variable="name"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setUOCWeekOrYear(e.name)}
+                        placeholder="Select Week or Year"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="Week"
+                      />
+                    </div>
+                    {UOCWeekOrYear == "Week" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                            label="Season"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setUOCYear(e.value)}
+                            placeholder="Select a specific season"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="0102"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {UOCWeekOrYear == "Year" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                            label="Week"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setUOCWeek(parseInt(e.value))}
+                            placeholder="Select a specific week"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="32"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
                   {UOCWeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by week</div>
@@ -2014,47 +2103,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       </div>
                     </>
                   )}
-                  <SingleSelectDropdown
-                    options={[{ name: "Week" }, { name: "Year" }]}
-                    label="Week or Year"
-                    variable="name"
-                    colour="bg-deep_blue"
-                    onSelectionChange={(e) => setUOCWeekOrYear(e.name)}
-                    placeholder="Select Week or Year"
-                    searchPlaceholder="Search Options"
-                    includeLabel={false}
-                    defaultValue="Week"
-                  />
-                  {UOCWeekOrYear == "Week" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
-                        label="Season"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setUOCYear(e.value)}
-                        placeholder="Select a specific season"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="0102"
-                      />
-                    </>
-                  )}
-                  {UOCWeekOrYear == "Year" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
-                        label="Week"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setUOCWeek(parseInt(e.value))}
-                        placeholder="Select a specific week"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="32"
-                      />
-                    </>
-                  )}
                 </div>
               </div>
             </div>
@@ -2063,6 +2111,73 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="grid grid-cols-2 mb-12">
                 <div className="col-span-2 text-center text-xl font-semibold mb-4">
                   Commitment of Traders
+                </div>
+                <div className="col-span-3 grid grid-cols-3 w-full gap-x-4 px-8">
+
+                  <div className="mb-4 w-full">
+
+                    <SingleSelectDropdown
+                      options={[{ name: "Week" }, { name: "Year" }]}
+                      label="Week or Year"
+                      variable="name"
+                      colour="bg-deep_blue"
+                      onSelectionChange={(e) => setCommitmentWeekOrYear(e.name)}
+                      placeholder="Select Week or Year"
+                      searchPlaceholder="Search Options"
+                      includeLabel={false}
+                      defaultValue="Week"
+                    />
+                  </div>
+                  {commitmentWeekOrYear == "Week" && (
+                    <>
+                      <div className="mb-4 w-full">
+
+                        <SingleSelectDropdown
+                          options={getUniqueOptions(JSON.parse(commitmentData), "calendar_year")}
+                          label="Year"
+                          variable="value"
+                          colour="bg-deep_blue"
+                          onSelectionChange={(e) => setCommitmentYear(parseInt(e.value))}
+                          placeholder="Select a specific year"
+                          searchPlaceholder="Search Options"
+                          includeLabel={false}
+                          defaultValue="2010"
+                        />
+                      </div>
+                    </>
+                  )}
+                  {commitmentWeekOrYear == "Year" && (
+                    <>
+                      <div className="mb-4 w-full">
+
+                        <SingleSelectDropdown
+                          options={getUniqueOptions(JSON.parse(commitmentData), "week")}
+                          label="Week"
+                          variable="value"
+                          colour="bg-deep_blue"
+                          onSelectionChange={(e) => setCommitmentWeek(parseInt(e.value))}
+                          placeholder="Select a specific week"
+                          searchPlaceholder="Search Options"
+                          includeLabel={false}
+                          defaultValue="1"
+                        />
+                      </div>
+                    </>
+                  )}
+                  <div className="mb-4 w-full">
+
+                    <MultipleSelectDropdown
+                      options={[{ property: "open_interest_all", name: "Open Interest All" }, { property: "producer_merchant_net", name: "Producer Merchant Net" }, { property: "swap_position_net", name: "Swap Position Net" }, { property: "managed_money_net", name: "Managed Money Net" }, { property: "other_reportables_net", name: "Other Reportables Net" }, { property: "total_reportables_net", name: "Total Reportables Net" }, { property: "non_reportables_net", name: "Non Reportables Net" }, { property: "specs_net", name: "Specs Net" }]}
+                      variable="name"
+                      colour="bg-deep_blue"
+                      label="Variables"
+                      onSelectionChange={(e) => { if (e.length > 0) { setCommitmentPropertiesArray(e.map((selection) => selection.property)); setCommitmentNamesArray(e.map((selection) => selection.name)) } }}
+                      // onSelectionChange={(e) => { setCommitmentPropertiesArray(["open_interest_all"]); setCommitmentNamesArray(["Open Interest All"]) }}
+                      placeholder="Select Variables"
+                      searchPlaceholder="Search Variables"
+                      includeLabel={false}
+                    />
+                  </div>
                 </div>
 
                 <div className="col-span-2 flex flex-col items-center">
@@ -2084,58 +2199,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       </div>
                     </>
                   )}
-                  <SingleSelectDropdown
-                    options={[{ name: "Week" }, { name: "Year" }]}
-                    label="Week or Year"
-                    variable="name"
-                    colour="bg-deep_blue"
-                    onSelectionChange={(e) => setCommitmentWeekOrYear(e.name)}
-                    placeholder="Select Week or Year"
-                    searchPlaceholder="Search Options"
-                    includeLabel={false}
-                    defaultValue="Week"
-                  />
-                  {commitmentWeekOrYear == "Week" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(commitmentData), "calendar_year")}
-                        label="Year"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setCommitmentYear(parseInt(e.value))}
-                        placeholder="Select a specific year"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="2010"
-                      />
-                    </>
-                  )}
-                  {commitmentWeekOrYear == "Year" && (
-                    <>
-                      <SingleSelectDropdown
-                        options={getUniqueOptions(JSON.parse(commitmentData), "week")}
-                        label="Week"
-                        variable="value"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setCommitmentWeek(parseInt(e.value))}
-                        placeholder="Select a specific week"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="1"
-                      />
-                    </>
-                  )}
-                  <MultipleSelectDropdown
-                    options={[{ property: "open_interest_all", name: "Open Interest All" }, { property: "producer_merchant_net", name: "Producer Merchant Net" }, { property: "swap_position_net", name: "Swap Position Net" }, { property: "managed_money_net", name: "Managed Money Net" }, { property: "other_reportables_net", name: "Other Reportables Net" }, { property: "total_reportables_net", name: "Total Reportables Net" }, { property: "non_reportables_net", name: "Non Reportables Net" }, { property: "specs_net", name: "Specs Net" }]}
-                    variable="name"
-                    colour="bg-deep_blue"
-                    label="Variables"
-                    onSelectionChange={(e) => { if (e.length > 0) { setCommitmentPropertiesArray(e.map((selection) => selection.property)); setCommitmentNamesArray(e.map((selection) => selection.name)) } }}
-                    // onSelectionChange={(e) => { setCommitmentPropertiesArray(["open_interest_all"]); setCommitmentNamesArray(["Open Interest All"]) }}
-                    placeholder="Select Variables"
-                    searchPlaceholder="Search Variables"
-                    includeLabel={false}
-                  />
                 </div>
               </div>
             </div>

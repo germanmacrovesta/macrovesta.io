@@ -62,7 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     // Map CSV row to Prisma model data
                     const modelData = Object.entries(row).reduce(
                         (acc, [key, value]) => {
-                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments" && key != "season" && key != "dead" && key != "report_date_as_mm_dd_yyyy" && key != "crop_year" && key != "week_ending") {
+                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments" && key != "season" && key != "dead" && key != "report_date_as_mm_dd_yyyy" && key != "crop_year" && key != "week_ending" && key != "") {
                                 acc[key] = (value != null || value != undefined) ? isNaN(Number(removeCommas(value))) ? String(value)[0] == "(" ? removeBrackets(value) : value : Number(removeCommas(value)) : null;
                             } else if ((key == "datetime")) {
                                 acc[key] = new Date(value)

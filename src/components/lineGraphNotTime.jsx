@@ -112,6 +112,11 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                     path.attr("stroke-dasharray", ("3, 3")) // this will create a dotted line
                 } else if (series.noCircles) {
                     path.on("mouseover", function (e, d) {
+                        var mouse = d3.pointer(e);
+
+                        // Convert those coordinates into your graph's domain
+                        let x0 = x.invert(mouse[0]);
+                        let y0 = y.invert(mouse[1]);
                         this.parentNode.appendChild(this);
                         d3.select(this).transition()
                             .duration(200)
@@ -119,7 +124,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                         tooltip.transition()
                             .duration(200)
                             .style("opacity", .9);
-                        tooltip.html(`${capitalizeText(series.name)}`)
+                        tooltip.html(`${capitalizeText(series.name)}\n${y0}`)
                             .style("left", (e.pageX - 65) + "px")
                             .style("top", (e.pageY - 35) + "px")
                             .style("padding",);
