@@ -224,7 +224,7 @@ const MultipleSelectDropdown = ({
                             onClick={() => setIsOpen(!isOpen)}
                             onMouseEnter={() => setIsTooltipVisible(true)}
                             onMouseLeave={() => setIsTooltipVisible(false)}
-                            className={`w-full h-full capitalize truncate ${textColour} font-semibold ${border ? `${borderStyle}` : ``} ${includeLabel ? '' : ` py-2 ${textCenter ? 'text-center px-16' : 'text-left px-3'} appearance-none`}`}
+                            className={`w-full h-full capitalize truncate ${textColour} font-semibold ${border ? `${borderStyle}` : ``} ${includeLabel ? '' : ` py-2 ${textCenter ? 'text-center px-4' : 'text-left px-3'} appearance-none`}`}
                         >
                             {selectedOptions.length === 0 ? placeholder : selectedOptions.map((option) => option[`${variable}`]).join(', ')}
                         </button>

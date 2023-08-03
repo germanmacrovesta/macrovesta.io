@@ -26,6 +26,9 @@ import Comments from '../components/comments';
 import IndexDial from '../components/indexDial';
 import SemiCircleDial from '../components/semiCircleDial';
 import MultipleSelectDropdown from '../components/multipleSelectDropdown';
+import DateField from '../components/dateField';
+import { useDateFormatter, useLocale } from 'react-aria';
+import { parseDate } from '@internationalized/date';
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -39,6 +42,20 @@ const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   fullscreen: false,
   autosize: true,
 };
+
+function getCurrentMonth() {
+  // Create a new Date object
+  let date = new Date();
+
+  // Create an array of month names
+  let monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+  // Get the month number from the Date object and use it to get the month name
+  let monthName = monthNames[date.getMonth()];
+
+  return monthName;
+}
 
 const selectAppropriateImage = (inv, value) => {
   let imagesrc = "";
@@ -82,6 +99,20 @@ const parseDateString = (dateString) => {
 
 };
 
+function getWeekNumber(d) {
+  // Copy date so don't modify original
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  // Get first day of year
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  // Calculate full weeks to nearest Thursday
+  var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  // Return array of year and week number
+  return [d.getUTCFullYear(), weekNo];
+}
+
 const renderers = {
   h1: ({ node, ...props }) => <h1 {...props} />,
   h2: ({ node, ...props }) => <h2 {...props} />,
@@ -91,7 +122,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData }) => {
+const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -1017,6 +1048,55 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     })
     return datasetArray
   }
+
+  const getUSExportSalesData = (data, propertyArray, datasetNameArray) => {
+    let datasetArray = [];
+    data.forEach((item) => {
+      propertyArray.forEach((property, index) => {
+        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
+          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          dataset.data.push({ x: item.week_ending, y: parseInt(item[property]) })
+        } else {
+          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          dataset.data.push({ x: item.week_ending, y: parseInt(item[property]) })
+          datasetArray.push(dataset)
+        }
+      })
+    })
+    return datasetArray
+  }
+  const getUSExportSalesWeekData = (data, propertyArray, datasetNameArray) => {
+    let datasetArray = [];
+    data.forEach((item) => {
+      propertyArray.forEach((property, index) => {
+        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
+          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
+        } else {
+          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
+          datasetArray.push(dataset)
+        }
+      })
+    })
+    return datasetArray
+  }
+  const getUSExportSalesSeasonData = (data, propertyArray, datasetNameArray) => {
+    let datasetArray = [];
+    data.forEach((item) => {
+      propertyArray.forEach((property, index) => {
+        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
+          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
+        } else {
+          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
+          datasetArray.push(dataset)
+        }
+      })
+    })
+    return datasetArray
+  }
   // const getCommitmentOfTradersWeekData = (data) => {
   //   let producer_merchant_net = { name: "Producer Merchant Net", data: [], noCircles: true }
   //   let open_interest_all = { name: "Open Interest All", data: [], noCircles: true }
@@ -1068,6 +1148,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const [basisCountry, setBasisCountry] = React.useState("Brazil");
 
+  const [WeekOrYear, setWeekOrYear] = React.useState("Week")
+  const [Year, setYear] = React.useState("0102")
+  const [Week, setWeek] = React.useState(1)
+
   const [salesWeekOrYear, setSalesWeekOrYear] = React.useState("Week")
   const [salesYear, setSalesYear] = React.useState("0102")
   const [salesWeek, setSalesWeek] = React.useState(1)
@@ -1087,8 +1171,53 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [commitmentWeekOrYear, setCommitmentWeekOrYear] = React.useState("Week")
   const [commitmentYear, setCommitmentYear] = React.useState(2010)
   const [commitmentWeek, setCommitmentWeek] = React.useState(1)
-  const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["open_interest_all", "producer_merchant_net", "swap_position_net", "managed_money_net", "other_reportables_net", "total_reportables_net", "non_reportables_net", "specs_net"])
-  const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Open Interest All", "Producer Merchant Net", "Swap Position Net", "Managed Money Net", "Other Reportables Net", "Total Reportables Net", "Non Reportables Net", "Specs Net"])
+
+  const [exportSalesWeekOrYear, setExportSalesWeekOrYear] = React.useState("Week")
+  const [exportSalesYear, setExportSalesYear] = React.useState(2010)
+  const [exportSalesWeek, setExportSalesWeek] = React.useState(1)
+
+  const locale = useLocale();
+
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+  const formatter = new Intl.DateTimeFormat(locale, options);
+
+  var temp = new Date();
+  temp.setSeconds(0);
+  var dd = String(temp.getDate()).padStart(2, '0');
+  var mm = String(temp.getMonth() + 1).padStart(2, '0'); //January is 0!
+  var yyyy = temp.getFullYear();
+
+  let today = `${yyyy}-${mm}-${dd}`;
+
+  let temp2 = new Date(); // get the current date
+  temp2.setMonth(temp2.getMonth() - 6); // subtract 6 months
+
+  // format the date as yyyy-mm-dd
+  let year = temp2.getFullYear();
+  let month = (temp2.getMonth() + 1).toString(); // JavaScript months are 0-based, so we add 1
+  let day = (temp2.getDate()).toString();
+
+  // ensure month and day are 2 digits
+  if (parseInt(month) < 10) {
+    month = '0' + month;
+  }
+  if (parseInt(day) < 10) {
+    day = '0' + day;
+  }
+
+  let dateSixMonthsAgo = `${year}-${month}-${day}`;
+  const [selectedStartDate, setSelectedStartDate] = React.useState(parseDate(dateSixMonthsAgo));
+  const [selectedEndDate, setSelectedEndDate] = React.useState(parseDate(today));
+
+  // const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["open_interest_all", "producer_merchant_net", "swap_position_net", "managed_money_net", "other_reportables_net", "total_reportables_net", "non_reportables_net", "specs_net"])
+  // const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Open Interest All", "Producer Merchant Net", "Swap Position Net", "Managed Money Net", "Other Reportables Net", "Total Reportables Net", "Non Reportables Net", "Specs Net"])
+  const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["specs_net"])
+  const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Specs Net"])
 
   const [currentStage, setCurrentStage] = React.useState(0);
 
@@ -1241,7 +1370,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="grid grid-cols-2 gap-x-8 gap-y-4 pb-12 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-4 py-2 mb-8 mx-8">
                 <div className="flex flex-col col-span-2 items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23</div>
-                  <LineGraph data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data), noCircles: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
+                  <LineGraph data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
                   <div className="flex justify-center mt-8">
                     <div className="w-[200px]">
                       <SingleSelectDropdown
@@ -1679,9 +1808,116 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
-              <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
-                <img src="/Charts_Under_Construction_Half_width.png" />
+              <div className="flex flex-col col-span-1 bg-[#ffffff] p-4 rounded-xl shadow-lg">
+
+                <div className="grid grid-cols-2 mb-12">
+                  <div className="col-span-2 text-center text-xl font-semibold mb-4">
+                    US Exports Sales
+                  </div>
+                  <div className="col-span-2 grid grid-cols-2 w-full gap-x-4 px-8">
+                    <div className="mb-4 w-full z-50">
+                      <DateField label='Start Date' setDate={setSelectedStartDate} date={selectedStartDate} formatter={formatter} />
+                    </div>
+                    <div className="mb-4 w-full z-50">
+                      <DateField label='Start Date' setDate={setSelectedEndDate} date={selectedEndDate} formatter={formatter} />
+                    </div>
+
+                    {/* <div className="mb-4 w-full">
+
+                      <SingleSelectDropdown
+                        options={[{ name: "Week" }, { name: "Year" }]}
+                        label="Week or Year"
+                        variable="name"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setCommitmentWeekOrYear(e.name)}
+                        placeholder="Select Week or Year"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="Week"
+                      />
+                    </div>
+                    {commitmentWeekOrYear == "Year" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(commitmentData), "calendar_year")}
+                            label="Year"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setCommitmentYear(parseInt(e.value))}
+                            placeholder="Select a specific year"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="2010"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {commitmentWeekOrYear == "Week" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(commitmentData), "week")}
+                            label="Week"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setCommitmentWeek(parseInt(e.value))}
+                            placeholder="Select a specific week"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="1"
+                          />
+                        </div>
+                      </>
+                    )} */}
+                    <div className="col-span-2 mb-4 w-full">
+
+                      <MultipleSelectDropdown
+                        options={[{ property: "net_sales", name: "Net Sales" }, { property: "outstanding_sales", name: "Outstanding Sales" }, { property: "weekly_exports", name: "Weekly Exports" }, { property: "accumulated_exports", name: "Accumulated Exports" }]}
+                        variable="name"
+                        colour="bg-deep_blue"
+                        label="Variables"
+                        onSelectionChange={(e) => { if (e.length > 0) { setCommitmentPropertiesArray(e.map((selection) => selection.property)); setCommitmentNamesArray(e.map((selection) => selection.name)) } }}
+                        // onSelectionChange={(e) => { setCommitmentPropertiesArray(["open_interest_all"]); setCommitmentNamesArray(["Open Interest All"]) }}
+                        placeholder="Select Variables"
+                        searchPlaceholder="Search Variables"
+                        includeLabel={false}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-span-2 flex flex-col items-center">
+                    <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
+                    <div className="mb-16">
+
+                      <LineGraph data={getUSExportSalesData(JSON.parse(exportSalesData).filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), ["net_sales", "next_marketing_year_net_sales"], ["Net Sales", "Next Marketing Year Net Sales"])} xValue="x" yValue="y" xAxisTitle="Week" />
+                    </div>
+                    {/* {commitmentWeekOrYear == "Year" && (
+                      <>
+                        <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
+                        <div className="mb-16">
+
+                          <LineGraph data={getUSExportSalesWeekData(JSON.parse(exportSalesData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} xDomain2={52} xAxisTitle="Week" />
+                        </div>
+                      </>
+                    )}
+                    {commitmentWeekOrYear == "Week" && (
+                      <>
+                        <div className="mt-6 -mb-2 font-semibold">US Export Sales by Year</div>
+                        <div className="mb-16">
+
+                          <LineGraphNotTime data={getUSExportSalesSeasonData(JSON.parse(exportSalesData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
+                        </div>
+                      </>
+                    )} */}
+                  </div>
+                </div>
               </div>
+              {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
+                <img src="/Charts_Under_Construction_Half_width.png" />
+              </div> */}
               <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
                 <div className="text-center font-semibold text-xl">
                   In Country News
@@ -1812,8 +2048,63 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   Cotton on Call
                 </div>
 
-                <div className="flex flex-col items-center">
+                <div className="col-span-2 flex flex-col items-center">
                   <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
+
+                    <div className="mb-4 w-full">
+
+                      <SingleSelectDropdown
+                        options={[{ name: "Week" }, { name: "Year" }]}
+                        label="Week or Year"
+                        variable="name"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setWeekOrYear(e.name)}
+                        placeholder="Select Week or Year"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="Week"
+                      />
+                    </div>
+                    {WeekOrYear == "Year" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                            label="Season"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setYear(e.value)}
+                            placeholder="Select a specific season"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="0102"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {WeekOrYear == "Week" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                            label="Week"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setWeek(parseInt(e.value))}
+                            placeholder="Select a specific week"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="32"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col items-center">
+                  {/* <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
 
@@ -1865,28 +2156,28 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         </div>
                       </>
                     )}
-                  </div>
-                  {salesWeekOrYear == "Week" && (
+                  </div> */}
+                  {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Sales by week</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == salesYear), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
                     </>
                   )}
-                  {salesWeekOrYear == "Year" && (
+                  {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Sales by year</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == salesWeek), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={1999} xDomain2={2021} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={1999} xDomain2={2021} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
                 </div>
                 <div className="flex flex-col items-center">
-                  <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
+                  {/* <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
 
@@ -1938,28 +2229,28 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         </div>
                       </>
                     )}
-                  </div>
-                  {purchasesWeekOrYear == "Week" && (
+                  </div> */}
+                  {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Purchases by week</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == purchasesYear), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
                     </>
                   )}
-                  {purchasesWeekOrYear == "Year" && (
+                  {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Purchases by year</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == purchasesWeek), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
                 </div>
                 <div className="flex flex-col items-center">
-                  <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
+                  {/* <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
 
@@ -2011,28 +2302,28 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         </div>
                       </>
                     )}
-                  </div>
-                  {totalOnCallWeekOrYear == "Week" && (
+                  </div> */}
+                  {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by week</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == totalOnCallYear), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
                     </>
                   )}
-                  {totalOnCallWeekOrYear == "Year" && (
+                  {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by year</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == totalOnCallWeek), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
                 </div>
                 <div className="flex flex-col items-center">
-                  <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
+                  {/* <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
 
@@ -2084,22 +2375,22 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         </div>
                       </>
                     )}
-                  </div>
-                  {UOCWeekOrYear == "Week" && (
+                  </div> */}
+                  {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by week</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == UOCYear), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
                     </>
                   )}
-                  {UOCWeekOrYear == "Year" && (
+                  {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by year</div>
                       <div className="mb-16">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == UOCWeek), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2128,7 +2419,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       defaultValue="Week"
                     />
                   </div>
-                  {commitmentWeekOrYear == "Week" && (
+                  {commitmentWeekOrYear == "Year" && (
                     <>
                       <div className="mb-4 w-full">
 
@@ -2146,7 +2437,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       </div>
                     </>
                   )}
-                  {commitmentWeekOrYear == "Year" && (
+                  {commitmentWeekOrYear == "Week" && (
                     <>
                       <div className="mb-4 w-full">
 
@@ -2167,7 +2458,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   <div className="mb-4 w-full">
 
                     <MultipleSelectDropdown
-                      options={[{ property: "open_interest_all", name: "Open Interest All" }, { property: "producer_merchant_net", name: "Producer Merchant Net" }, { property: "swap_position_net", name: "Swap Position Net" }, { property: "managed_money_net", name: "Managed Money Net" }, { property: "other_reportables_net", name: "Other Reportables Net" }, { property: "total_reportables_net", name: "Total Reportables Net" }, { property: "non_reportables_net", name: "Non Reportables Net" }, { property: "specs_net", name: "Specs Net" }]}
+                      options={[{ property: "open_interest_all", name: "Open Interest All" }, { property: "producer_merchant_net", name: "Producer Merchant Net" }, { property: "swap_position_net", name: "Swap Position Net" }, { property: "managed_money_long", name: "Managed Money Long" }, { property: "managed_money_short", name: "Managed Money Short" }, { property: "managed_money_net", name: "Managed Money Net" }, { property: "other_reportables_net", name: "Other Reportables Net" }, { property: "total_reportables_net", name: "Total Reportables Net" }, { property: "non_reportables_net", name: "Non Reportables Net" }, { property: "specs_net", name: "Specs Net" }]}
                       variable="name"
                       colour="bg-deep_blue"
                       label="Variables"
@@ -2181,7 +2472,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
 
                 <div className="col-span-2 flex flex-col items-center">
-                  {commitmentWeekOrYear == "Week" && (
+                  {commitmentWeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Week</div>
                       <div className="mb-16">
@@ -2190,7 +2481,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       </div>
                     </>
                   )}
-                  {commitmentWeekOrYear == "Year" && (
+                  {commitmentWeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Year</div>
                       <div className="mb-16">
@@ -2519,15 +2810,16 @@ export const getServerSideProps = async (context: any) => {
   const snapshotsData = JSON.stringify(snapshot);
 
   const monthlyindex = await prisma?.monthly_index.findFirst({
-    // where: {
-    //   inverse_month: "N"
-    // }
+    where: {
+      year: new Date().getFullYear(),
+      month: getCurrentMonth()
+    }
   });
   const monthlyIndexData = JSON.stringify(monthlyindex);
 
   const seasonalIndex = await prisma?.seasonal_index.findFirst({
     // where: {
-    //   inverse_month: "N"
+    //   year: new Date().getFullYear()
     // }
   });
   const seasonalIndexData = JSON.stringify(seasonalIndex);
@@ -2553,9 +2845,13 @@ export const getServerSideProps = async (context: any) => {
 
   const commitmentData = JSON.stringify(commitment)
 
+  const exportdata = await prisma?.us_export_sales.findMany({})
+
+  const exportSalesData = JSON.stringify(exportdata)
+
   // console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData },
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData },
   };
 };
 

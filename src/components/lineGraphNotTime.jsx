@@ -124,7 +124,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                         tooltip.transition()
                             .duration(200)
                             .style("opacity", .9);
-                        tooltip.html(`${capitalizeText(series.name)}\n${y0}`)
+                        tooltip.html(`${capitalizeText(series.name)}\n${(y0).toFixed(2)}`)
                             .style("left", (e.pageX - 65) + "px")
                             .style("top", (e.pageY - 35) + "px")
                             .style("padding",);

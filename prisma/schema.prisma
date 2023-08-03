@@ -71,7 +71,7 @@ model us_export_sales {
     record_id                             String   @id @default(cuid())
     week_ending                           DateTime @db.Date
     weekly_exports                        Int?
-    accumluated_exports                   Int?
+    accumulated_exports                   Int?
     net_sales                             Int?
     outstanding_sales                     Int?
     next_marketing_year_net_sales         Int?
@@ -90,6 +90,8 @@ model commitment_of_traders {
     open_interest_all         Int?
     producer_merchant_net     Int?
     swap_position_net         Int?
+    managed_money_long        Int?
+    managed_money_short       Int?
     managed_money_net         Int?
     other_reportables_net     Int?
     total_reportables_net     Int?

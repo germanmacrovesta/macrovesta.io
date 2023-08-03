@@ -149,7 +149,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                             newTooltip.style("left", (event.pageX - 65) + "px")
                                 .style("top", (event.pageY - 35) + "px")
                                 .style("opacity", 1)
-                                .html("y: " + y0);
+                                .html("y: " + (y0).toFixed(2));
                         })
                             .on("mouseleave", function (event) {
                                 newTooltip.style("opacity", 0);
@@ -173,6 +173,12 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                         //     });
                     } else {
                         path.on("mouseover", function (e, d) {
+                            var mouse = d3.pointer(event);
+
+                            // Convert those coordinates into your graph's domain
+                            var x0 = x.invert(mouse[0]),
+                                y0 = y.invert(mouse[1]);
+
                             this.parentNode.appendChild(this);
                             d3.select(this).transition()
                                 .duration(200)
@@ -180,7 +186,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                             tooltip.transition()
                                 .duration(200)
                                 .style("opacity", .9);
-                            tooltip.html(`${capitalizeText(series.name)}`)
+                            tooltip.html(`${capitalizeText(series.name)}<br/>${(y0).toFixed(0)}`)
                                 .style("left", (e.pageX - 65) + "px")
                                 .style("top", (e.pageY - 35) + "px")
                                 .style("padding",);
@@ -230,7 +236,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                                 tooltip.transition()
                                     .duration(200)
                                     .style("opacity", .9);
-                                tooltip.html(`${dayOfMonth} ${month} ${year}: ${d[yValue]}`)
+                                tooltip.html(`${dayOfMonth} ${month} ${year}: ${(d[yValue]).toFixed(2)}`)
                                     .style("left", (e.pageX - 65) + "px")
                                     .style("top", (e.pageY - 35) + "px")
                                     .style("padding",);
@@ -249,7 +255,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
             const yearFormat = d3.timeFormat("%Y");
 
             const xAxis = d3.axisBottom(x)
-                .ticks(d3.timeMonth.every(monthsTicks))
+                .ticks(4)
                 .tickFormat(d => `${monthFormat(d)}${d.getMonth() === 0 ? ` ${yearFormat(d)}` : ""}`);
 
             svg.append("g")
