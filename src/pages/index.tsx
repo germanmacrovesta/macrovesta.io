@@ -1815,10 +1815,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     US Exports Sales
                   </div>
                   <div className="col-span-2 grid grid-cols-2 w-full gap-x-4 px-8">
-                    <div className="mb-4 w-full z-50">
+                    <div className="mb-4 w-full">
                       <DateField label='Start Date' setDate={setSelectedStartDate} date={selectedStartDate} formatter={formatter} />
                     </div>
-                    <div className="mb-4 w-full z-50">
+                    <div className="mb-4 w-full">
                       <DateField label='Start Date' setDate={setSelectedEndDate} date={selectedEndDate} formatter={formatter} />
                     </div>
 

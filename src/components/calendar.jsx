@@ -22,7 +22,7 @@ export default function Calendar({ setIsOpen, ...props }) {
     );
 
     return (
-        <div {...calendarProps} ref={ref} className="border shadow-lg z-40 bg-white w-full h-fit rounded-xl">
+        <div {...calendarProps} ref={ref} className="border shadow-lg bg-white w-full h-fit rounded-xl">
             <div className="p-2 bg-secondarywhite text-black text-center rounded-t-xl">
                 <div className='flex justify-between'>
                     <Button {...prevButtonProps}>&lt;</Button>
