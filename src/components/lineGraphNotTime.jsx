@@ -10,14 +10,38 @@ const capitalizeText = (text) => {
 const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", graphWidth = 550, graphHeight = 400, xDomain1 = 0, xDomain2 = 17, xAxisTitle = "", yAxisTitle = "", tickNumber = 15 }) => {
     const ref = useRef();
 
+    const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
 
     useEffect(() => {
+        if (!ref.current) return;
+
+        const resizeObserver = new ResizeObserver(entries => {
+            if (!Array.isArray(entries)) return;
+            if (!entries.length) return;
+
+            const entry = entries[0];
+
+            setDimensions({
+                width: entry.contentRect.width,
+                height: entry.contentRect.height
+            });
+        });
+
+        resizeObserver.observe(ref.current);
+
+        return () => resizeObserver.disconnect();
+    }, [ref]);
+
+    useEffect(() => {
+        if (!ref.current) return;
+        if (dimensions.width === 0 || dimensions.height === 0) return;
+
         d3.select(ref.current).selectAll("*").remove();
         if (data[0]?.data != undefined) {
 
             const margin = { top: 20, right: 30, bottom: 40, left: 60 },
-                width = graphWidth - margin.left - margin.right,
-                height = graphHeight - margin.top - margin.bottom;
+                width = dimensions.width - margin.left - margin.right,
+                height = dimensions.height - margin.top - margin.bottom;
 
             // const colors = d3.scaleOrdinal(d3.schemeCategory10);
             const colors = d3.scaleOrdinal().range(['#44B549', '#051D6D', '#3BBCAC', '#D060D6', '#051D38']);
@@ -226,11 +250,14 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                 .text(xAxisTitle);
 
         }
-    }, [data, xValue, yValue]);
+    }, [data, xValue, yValue, dimensions]);
 
     return (
-        <div id='lineGraph' className='-mb-10'>
-            <svg ref={ref} />
+        // <div id='lineGraph' className='-mb-10'>
+        //     <svg ref={ref} />
+        // </div>
+        <div id='lineGraph' className='relative w-full h-[400px] px-4'>
+            <svg className="w-full h-full -mb-7" ref={ref} style={{ width: '100%', maxHeight: '450px' }} />
         </div>
     );
 };

@@ -95,6 +95,7 @@ model supply_and_demand {
     carry_out_months_of_supply_eap  Int?
     domestic_use_usda               Int?
     domestic_use_eap                Int?
+    projected                       Boolean?
 }
 
 //Below is the table US Export Sales

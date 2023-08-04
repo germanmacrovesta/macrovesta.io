@@ -1214,6 +1214,18 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [selectedStartDate, setSelectedStartDate] = React.useState(parseDate(dateSixMonthsAgo));
   const [selectedEndDate, setSelectedEndDate] = React.useState(parseDate(today));
 
+  let temp3 = new Date();
+  temp3.setFullYear(temp3.getFullYear() - 1);
+
+  let year2 = temp3.getFullYear();
+  let month2 = (temp3.getMonth() + 1).toString().padStart(2, '0'); // add leading zero if necessary
+  let day2 = temp3.getDate().toString().padStart(2, '0'); // add leading zero if necessary
+
+  let dateOneYearAgo = `${year2}-${month2}-${day2}`;
+
+  const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo));
+  const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today));
+
   // const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["open_interest_all", "producer_merchant_net", "swap_position_net", "managed_money_net", "other_reportables_net", "total_reportables_net", "non_reportables_net", "specs_net"])
   // const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Open Interest All", "Producer Merchant Net", "Swap Position Net", "Managed Money Net", "Other Reportables Net", "Total Reportables Net", "Non Reportables Net", "Specs Net"])
   const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["specs_net"])
@@ -1367,10 +1379,18 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             </div>
             <div className="flex flex-col">
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4 pb-12 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-4 py-2 mb-8 mx-8">
+              <div className="grid grid-cols-2 auto-row-[300px] gap-x-8 gap-y-4 pb-12 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-4 py-2 mb-8 mx-8">
+                <div className="flex col-span-2 gap-x-8 mx-8 mt-4">
+                  <div className="mb-4 w-full">
+                    <DateField label='Start Date' setDate={setSelectedCottonContractsStartDate} date={selectedCottonContractsStartDate} formatter={formatter} />
+                  </div>
+                  <div className="mb-4 w-full">
+                    <DateField label='Start Date' setDate={setSelectedCottonContractsEndDate} date={selectedCottonContractsEndDate} formatter={formatter} />
+                  </div>
+                </div>
                 <div className="flex flex-col col-span-2 items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23</div>
-                  <LineGraph data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
+                  <LineGraph data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
                   <div className="flex justify-center mt-8">
                     <div className="w-[200px]">
                       <SingleSelectDropdown
@@ -1390,22 +1410,22 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTH24 Spread</div>
-                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data), JSON.parse(CTH24Data), "CTZ23 / CTH24 Spread")} monthsTicks={6} />
+                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTH24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTH24 Spread")} monthsTicks={6} />
                   <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Nearby Spread")} session={session} section="Nearby Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTK24 Spread</div>
-                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data), JSON.parse(CTK24Data), "CTZ23 / CTK24 Spread")} monthsTicks={6} />
+                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTK24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTK24 Spread")} monthsTicks={6} />
                   <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Second Spread")} session={session} section="Second Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTN24 Spread</div>
-                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data), JSON.parse(CTN24Data), "CTZ23 / CTN24 Spread")} />
+                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTN24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTN24 Spread")} />
                   <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Third Spread")} session={session} section="Third Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTZ24 Spread</div>
-                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data), JSON.parse(CTZ24Data), "CTZ23 / CTZ24 Spread")} />
+                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTZ24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTZ24 Spread")} />
                   <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Fourth Spread")} session={session} section="Fourth Spread" />
                 </div>
               </div>
@@ -1888,16 +1908,16 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     </div>
                   </div>
 
-                  <div className="col-span-2 flex flex-col items-center">
+                  <div className="col-span-2 flex flex-col items-center w-full">
                     <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
-                    <div className="mb-16">
+                    <div className="mb-16 w-full">
 
                       <LineGraph data={getUSExportSalesData(JSON.parse(exportSalesData).filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), ["net_sales", "next_marketing_year_net_sales"], ["Net Sales", "Next Marketing Year Net Sales"])} xValue="x" yValue="y" xAxisTitle="Week" />
                     </div>
                     {/* {commitmentWeekOrYear == "Year" && (
                       <>
                         <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
-                        <div className="mb-16">
+                        <div className="mb-16 w-full">
 
                           <LineGraph data={getUSExportSalesWeekData(JSON.parse(exportSalesData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} xDomain2={52} xAxisTitle="Week" />
                         </div>
@@ -1906,7 +1926,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     {commitmentWeekOrYear == "Week" && (
                       <>
                         <div className="mt-6 -mb-2 font-semibold">US Export Sales by Year</div>
-                        <div className="mb-16">
+                        <div className="mb-16 w-full">
 
                           <LineGraphNotTime data={getUSExportSalesSeasonData(JSON.parse(exportSalesData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
                         </div>
@@ -2160,7 +2180,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Sales by week</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full w-full">
 
                         <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
@@ -2169,7 +2189,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Sales by year</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full w-full">
 
                         <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={1999} xDomain2={2021} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
@@ -2233,7 +2253,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Purchases by week</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
@@ -2242,7 +2262,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Purchases by year</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
@@ -2306,7 +2326,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by week</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
@@ -2315,7 +2335,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by year</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
@@ -2379,7 +2399,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by week</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
@@ -2388,7 +2408,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by year</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
@@ -2475,7 +2495,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {commitmentWeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Week</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCommitmentOfTradersWeekData(JSON.parse(commitmentData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain2={52} xAxisTitle="Week" />
                       </div>
@@ -2484,7 +2504,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {commitmentWeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Year</div>
-                      <div className="mb-16">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCommitmentOfTradersSeasonData(JSON.parse(commitmentData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
                       </div>
