@@ -4,6 +4,12 @@
  */
 !process.env.SKIP_ENV_VALIDATION && (await import("./src/env.mjs"));
 
+// const headers = [
+//   "Accept", "Accept-Version", "Content-Length",
+//   "Content-MD5", "Content-Type", "Date", "X-Api-Version",
+//   "X-CSRF-Token", "X-Requested-With",
+// ];
+
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -26,5 +32,35 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // env: {
+  //   ALLOWED_NEXT_AUTH_URLS:
+  //     ["https://(.+\\.|)domain.com/?", "https://(.+\\.|)someotherdomain.com/?"], ALLOWED_HEADERS:
+  //     headers.join(", "), CORS_DEFAULTS: {
+  //       methods: [], // making this blank by default - you have to override it per-call
+  //       origin: "*",
+  //       allowedHeaders: headers.join(", "),
+  //       credentials: true,
+  //     },
+  // }, async headers() {
+  //   return [
+  //     {
+  //       source: "/api/(.*)", headers: [
+  //         {
+  //           key: "Access-Control-Allow-Credentials", value:
+  //             "true"
+  //         }, {
+  //           key: "Access-Control-Allow-Origin",
+  //           value: "*"
+  //         }, {
+  //           key: "Access-Control-Allow-Methods", value:
+  //             "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+  //         }, {
+  //           key: "Access-Control-Allow-Headers", value:
+  //             headers.join(", "),
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // }
 };
 export default config;

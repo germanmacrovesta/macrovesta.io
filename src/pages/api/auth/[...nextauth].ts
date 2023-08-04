@@ -119,7 +119,26 @@ export const authOptions: NextAuthOptions = {
         // // error: '/auth/error', // Error code passed in query string as ?error=
         // verifyRequest: '/auth/verify-request', // (used for check email message)
         // newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
-    }
+    },
+    cookies: {
+        sessionToken: {
+            name: `next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'None', // this should be set to 'None' for cross-domain cookies
+                path: '/',
+                secure: true, // this should be true for production websites
+                domain: '.macrovesta.ai', // specify your domain, this is crucial
+            },
+        },
+    },
+    debug: true,
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+    },
 };
 
 export default NextAuth(authOptions);

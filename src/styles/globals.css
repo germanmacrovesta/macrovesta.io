@@ -17,3 +17,7 @@
     border-radius: 8px;
     pointer-events: none;
   }
+
+.weglot_switcher {
+  display: none !important;
+}

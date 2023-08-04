@@ -29,6 +29,7 @@ import MultipleSelectDropdown from '../components/multipleSelectDropdown';
 import DateField from '../components/dateField';
 import { useDateFormatter, useLocale } from 'react-aria';
 import { parseDate } from '@internationalized/date';
+import { WeglotLanguageSwitcher } from "~/components/weglotLanguageSwitcher";
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -1354,7 +1355,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
           })}
         </script> */}
       </Head>
-      <main className="grid grid-cols-[160px_auto] h-screen items-center">
+      <main className="main grid grid-cols-[160px_auto] h-screen items-center">
         <Sidebar />
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
@@ -1362,6 +1363,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             <Breadcrumbs title={"Macrovesta Demo"} urlPath={urlPath} user={session?.user.name} />
             <TabMenu data={TabMenuArray} urlPath={urlPath} />
           </header>
+          <WeglotLanguageSwitcher
+            domain="macrovesta.ai"
+            langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} />
           <div className="p-6 bg-slate-200">
             Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
