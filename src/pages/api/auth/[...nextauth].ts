@@ -20,6 +20,8 @@ type ExtendedSession<T> = T & {
     submittedSurvey: boolean | null;
 }
 
+const useSecureCookies = !!process.env.NEXTAUTH_URL
+
 // const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
 // console.log(useSecureCookies)
 // const cookiePrefix = useSecureCookies ? '__Secure-' : ''
@@ -135,20 +137,30 @@ export const authOptions: NextAuthOptions = {
         // verifyRequest: '/auth/verify-request', // (used for check email message)
         // newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
     },
-    // cookies: {
-    //     sessionToken: {
-    //         name: `${cookiePrefix}next-auth.session-token`,
-    //         options: {
-    //             httpOnly: true,
-    //             sameSite: 'lax', // this should be set to 'None' for cross-domain cookies
-    //             path: '/',
-    //             // secure: true, // this should be true for production websites
-    //             // domain: '.macrovesta.ai', // specify your domain, this is crucial
-    //             secure: useSecureCookies,
-    //             domain: dummyHostName == 'localhost' ? dummyHostName : '.' + dummyHostName // add a . in front so that subdomains are included
-    //         },
-    //     },
-    // },
+    cookies: {
+        sessionToken: {
+            name: `${useSecureCookies ? '__Secure-' : ''}next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                domain: '.macrovesta.ai',
+                secure: useSecureCookies,
+            },
+        },
+        // sessionToken: {
+        //     name: `${cookiePrefix}next-auth.session-token`,
+        //     options: {
+        //         httpOnly: true,
+        //         sameSite: 'lax', // this should be set to 'None' for cross-domain cookies
+        //         path: '/',
+        //         // secure: true, // this should be true for production websites
+        //         // domain: '.macrovesta.ai', // specify your domain, this is crucial
+        //         secure: useSecureCookies,
+        //         domain: dummyHostName == 'localhost' ? dummyHostName : '.' + dummyHostName // add a . in front so that subdomains are included
+        //     },
+        // },
+    },
     // debug: true,
     // cors: {
     //     origin: '*',
