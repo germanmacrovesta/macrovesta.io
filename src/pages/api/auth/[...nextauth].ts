@@ -36,7 +36,7 @@ console.log(dummyHostName)
 
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
-    site: "https://macrovesta.ai",
+    // site: "https://macrovesta.ai",
     callbacks: {
         // session({ session, user }) {
         //   if (session.user) {
@@ -149,13 +149,13 @@ export const authOptions: NextAuthOptions = {
     //         },
     //     },
     // },
-    debug: true,
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        credentials: true,
-    },
+    // debug: true,
+    // cors: {
+    //     origin: '*',
+    //     methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
+    //     allowedHeaders: ['Content-Type', 'Authorization'],
+    //     credentials: true,
+    // },
 };
 
 export default NextAuth(authOptions);
