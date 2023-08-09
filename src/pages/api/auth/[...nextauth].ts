@@ -139,7 +139,7 @@ export const authOptions: NextAuthOptions = {
     //         },
     //     },
     // },
-    debug: true,
+    // debug: true,
     // cors: {
     //     origin: '*',
     //     methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
