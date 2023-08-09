@@ -140,12 +140,12 @@ export const authOptions: NextAuthOptions = {
         },
     },
     debug: true,
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        credentials: true,
-    },
+    // cors: {
+    //     origin: '*',
+    //     methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
+    //     allowedHeaders: ['Content-Type', 'Authorization'],
+    //     credentials: true,
+    // },
 };
 
 export default NextAuth(authOptions);
