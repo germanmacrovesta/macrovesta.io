@@ -23,7 +23,7 @@ type ExtendedSession<T> = T & {
 const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
 const cookiePrefix = useSecureCookies ? '__Secure-' : ''
 //@ts-expect-error
-const hostName = new URL(process.env.NEXTAUTH_URL).hostname
+const hostName = new URL(process.env.NEXTAUTH_URL)?.hostname
 
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
@@ -125,20 +125,20 @@ export const authOptions: NextAuthOptions = {
         // verifyRequest: '/auth/verify-request', // (used for check email message)
         // newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
     },
-    cookies: {
-        sessionToken: {
-            name: `next-auth.session-token`,
-            options: {
-                httpOnly: true,
-                sameSite: 'lax', // this should be set to 'None' for cross-domain cookies
-                path: '/',
-                // secure: true, // this should be true for production websites
-                // domain: '.macrovesta.ai', // specify your domain, this is crucial
-                secure: useSecureCookies,
-                domain: hostName == 'localhost' ? hostName : '.' + hostName // add a . in front so that subdomains are included
-            },
-        },
-    },
+    // cookies: {
+    //     sessionToken: {
+    //         name: `next-auth.session-token`,
+    //         options: {
+    //             httpOnly: true,
+    //             sameSite: 'lax', // this should be set to 'None' for cross-domain cookies
+    //             path: '/',
+    //             // secure: true, // this should be true for production websites
+    //             // domain: '.macrovesta.ai', // specify your domain, this is crucial
+    //             secure: useSecureCookies,
+    //             domain: hostName == 'localhost' ? hostName : '.' + hostName // add a . in front so that subdomains are included
+    //         },
+    //     },
+    // },
     debug: true,
     // cors: {
     //     origin: '*',
