@@ -22,8 +22,8 @@ type ExtendedSession<T> = T & {
 
 const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
 console.log(useSecureCookies)
-// const cookiePrefix = useSecureCookies ? '__Secure-' : ''
-// console.log(cookiePrefix)
+const cookiePrefix = useSecureCookies ? '__Secure-' : ''
+console.log(cookiePrefix)
 // //@ts-expect-error
 // const hostName = new URL(process.env.NEXTAUTH_URL)?.hostname
 // console.log(hostName)
