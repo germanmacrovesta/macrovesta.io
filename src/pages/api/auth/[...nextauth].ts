@@ -136,7 +136,7 @@ export const authOptions: NextAuthOptions = {
     },
     cookies: {
         sessionToken: {
-            name: `next-auth.session-token`,
+            name: `${cookiePrefix}next-auth.session-token`,
             options: {
                 httpOnly: true,
                 sameSite: 'lax', // this should be set to 'None' for cross-domain cookies
