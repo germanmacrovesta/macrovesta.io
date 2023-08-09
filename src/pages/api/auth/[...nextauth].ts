@@ -26,8 +26,10 @@ const cookiePrefix = useSecureCookies ? '__Secure-' : ''
 console.log(cookiePrefix)
 let dummyHostName;
 
-if (process.env.NEXTAUTH_URL != undefined) {
+if (process.env.NEXTAUTH_URL?.startsWith('https://')) {
     // dummyHostName = new URL(process.env?.NEXTAUTH_URL)?.hostname
+    dummyHostName = process.env.NEXTAUTH_URL?.split('https://')[1]
+} else {
     dummyHostName = 'localhost'
 }
 console.log(dummyHostName)
