@@ -20,6 +20,11 @@ type ExtendedSession<T> = T & {
     submittedSurvey: boolean | null;
 }
 
+const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
+const cookiePrefix = useSecureCookies ? '__Secure-' : ''
+//@ts-expect-error
+const hostName = new URL(process.env.NEXTAUTH_URL).hostname
+
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
     callbacks: {
@@ -125,10 +130,12 @@ export const authOptions: NextAuthOptions = {
             name: `next-auth.session-token`,
             options: {
                 httpOnly: true,
-                sameSite: 'None', // this should be set to 'None' for cross-domain cookies
+                sameSite: 'lax', // this should be set to 'None' for cross-domain cookies
                 path: '/',
-                secure: true, // this should be true for production websites
-                domain: '.macrovesta.ai', // specify your domain, this is crucial
+                // secure: true, // this should be true for production websites
+                // domain: '.macrovesta.ai', // specify your domain, this is crucial
+                secure: useSecureCookies,
+                domain: hostName == 'localhost' ? hostName : '.' + hostName // add a . in front so that subdomains are included
             },
         },
     },
