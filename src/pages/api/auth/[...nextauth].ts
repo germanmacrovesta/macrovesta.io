@@ -20,21 +20,21 @@ type ExtendedSession<T> = T & {
     submittedSurvey: boolean | null;
 }
 
-const useSecureCookies = !!process.env.NEXTAUTH_URL
 
 // const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
-// console.log(useSecureCookies)
-// const cookiePrefix = useSecureCookies ? '__Secure-' : ''
-// console.log(cookiePrefix)
-// let dummyHostName;
+const useSecureCookies = !!process.env.NEXTAUTH_URL
+console.log(useSecureCookies)
+const cookiePrefix = useSecureCookies ? '__Secure-' : ''
+console.log(cookiePrefix)
+let dummyHostName;
 
-// if (process.env.NEXTAUTH_URL?.startsWith('https://')) {
-//     // dummyHostName = new URL(process.env?.NEXTAUTH_URL)?.hostname
-//     dummyHostName = process.env.NEXTAUTH_URL?.split('https://')[1]
-// } else {
-//     dummyHostName = 'localhost'
-// }
-// console.log(dummyHostName)
+if (process.env.NEXTAUTH_URL?.startsWith('https://')) {
+    // dummyHostName = new URL(process.env?.NEXTAUTH_URL)?.hostname
+    dummyHostName = process.env.NEXTAUTH_URL?.split('https://')[1]
+} else {
+    dummyHostName = 'localhost'
+}
+console.log(dummyHostName)
 
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
@@ -144,8 +144,10 @@ export const authOptions: NextAuthOptions = {
                 httpOnly: true,
                 sameSite: 'lax',
                 path: '/',
-                domain: '.macrovesta.ai',
+                // domain: '.macrovesta.ai',
+                // secure: useSecureCookies,
                 secure: useSecureCookies,
+                domain: dummyHostName == 'localhost' ? dummyHostName : '.' + dummyHostName // add a . in front so that subdomains are included
             },
         },
         // sessionToken: {
