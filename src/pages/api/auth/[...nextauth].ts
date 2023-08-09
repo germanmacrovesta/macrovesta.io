@@ -21,9 +21,12 @@ type ExtendedSession<T> = T & {
 }
 
 const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
-const cookiePrefix = useSecureCookies ? '__Secure-' : ''
-//@ts-expect-error
-const hostName = new URL(process.env.NEXTAUTH_URL)?.hostname
+console.log(useSecureCookies)
+// const cookiePrefix = useSecureCookies ? '__Secure-' : ''
+// console.log(cookiePrefix)
+// //@ts-expect-error
+// const hostName = new URL(process.env.NEXTAUTH_URL)?.hostname
+// console.log(hostName)
 
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
