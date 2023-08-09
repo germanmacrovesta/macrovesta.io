@@ -27,7 +27,8 @@ console.log(cookiePrefix)
 let dummyHostName;
 
 if (process.env.NEXTAUTH_URL != undefined) {
-    dummyHostName = new URL(process.env?.NEXTAUTH_URL)?.hostname
+    // dummyHostName = new URL(process.env?.NEXTAUTH_URL)?.hostname
+    dummyHostName = 'localhost'
 }
 console.log(dummyHostName)
 
