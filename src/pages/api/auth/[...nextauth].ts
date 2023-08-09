@@ -20,10 +20,10 @@ type ExtendedSession<T> = T & {
     submittedSurvey: boolean | null;
 }
 
-// const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
-// const cookiePrefix = useSecureCookies ? '__Secure-' : ''
-// //@ts-expect-error
-// const hostName = new URL(process.env.NEXTAUTH_URL)?.hostname
+const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
+const cookiePrefix = useSecureCookies ? '__Secure-' : ''
+//@ts-expect-error
+const hostName = new URL(process.env.NEXTAUTH_URL)?.hostname
 
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
