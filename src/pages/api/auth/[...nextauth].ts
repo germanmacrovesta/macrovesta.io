@@ -20,19 +20,19 @@ type ExtendedSession<T> = T & {
     submittedSurvey: boolean | null;
 }
 
-const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
-console.log(useSecureCookies)
-const cookiePrefix = useSecureCookies ? '__Secure-' : ''
-console.log(cookiePrefix)
-let dummyHostName;
+// const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
+// console.log(useSecureCookies)
+// const cookiePrefix = useSecureCookies ? '__Secure-' : ''
+// console.log(cookiePrefix)
+// let dummyHostName;
 
-if (process.env.NEXTAUTH_URL?.startsWith('https://')) {
-    // dummyHostName = new URL(process.env?.NEXTAUTH_URL)?.hostname
-    dummyHostName = process.env.NEXTAUTH_URL?.split('https://')[1]
-} else {
-    dummyHostName = 'localhost'
-}
-console.log(dummyHostName)
+// if (process.env.NEXTAUTH_URL?.startsWith('https://')) {
+//     // dummyHostName = new URL(process.env?.NEXTAUTH_URL)?.hostname
+//     dummyHostName = process.env.NEXTAUTH_URL?.split('https://')[1]
+// } else {
+//     dummyHostName = 'localhost'
+// }
+// console.log(dummyHostName)
 
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
