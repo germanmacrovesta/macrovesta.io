@@ -24,9 +24,12 @@ const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
 console.log(useSecureCookies)
 const cookiePrefix = useSecureCookies ? '__Secure-' : ''
 console.log(cookiePrefix)
-// //@ts-expect-error
-// const hostName = new URL(process.env.NEXTAUTH_URL)?.hostname
-// console.log(hostName)
+let dummyHostName;
+
+if (process.env.NEXTAUTH_URL != undefined) {
+    dummyHostName = new URL(process.env?.NEXTAUTH_URL)?.hostname
+}
+console.log(dummyHostName)
 
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
