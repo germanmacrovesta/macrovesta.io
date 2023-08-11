@@ -1,23 +1,36 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-function BullishBearishDonut({ Bullish, Bearish }) {
+function BullishBearishDonut({ Bullish, Bearish, Neutral }) {
     const ref = useRef();
 
     useEffect(() => {
         const data = [
-            { name: "Bullish", value: Bullish, lightcolor: "#44B549", darkcolor: "#44B549" },
-            { name: "Bearish", value: Bearish, lightcolor: "#051D6D", darkcolor: "#051D6D" },
+            { name: "Bullish", value: Bullish, lightcolor: "#051D6D", darkcolor: "#051D6D" },
+            { name: "Bearish", value: Bearish, lightcolor: "#44B549", darkcolor: "#44B549" },
+            { name: "Neutral", value: Neutral, lightcolor: "#3BBCAC", darkcolor: "#3BBCAC" },
         ];
 
         const textOffsets = [
-            { name: "Bullish", offset: '-0.8em' },
-            { name: "Bearish", offset: '1.1em' },
+            { name: "Bullish", offset: '-1.3em' },
+            { name: "Bearish", offset: '0.6em' },
+            { name: "Neutral", offset: '2.5em' },
         ];
         const rectOffsets = [
-            { name: 'Bullish', offset: '-0.5em' },
-            { name: 'Bearish', offset: '1em' },
+            { name: 'Bullish', offset: '-1em' },
+            { name: 'Bearish', offset: '0.5em' },
+            { name: 'Neutral', offset: '2.0em' },
         ];
+        // const textOffsets = [
+        //     { name: "Bullish", offset: '-0.8em' },
+        //     { name: "Bearish", offset: '1.1em' },
+        //     { name: "Neutral", offset: '1.1em' },
+        // ];
+        // const rectOffsets = [
+        //     { name: 'Bullish', offset: '-0.5em' },
+        //     { name: 'Bearish', offset: '1em' },
+        //     { name: 'Neutral', offset: '1em' },
+        // ];
 
         const svg = d3.select(ref.current)
             .attr("width", 300)
@@ -106,7 +119,7 @@ function BullishBearishDonut({ Bullish, Bearish }) {
                 .attr("transform", "translate(" + -40 + "," + -16 + ")");;
         });
 
-    }, [Bullish, Bearish]);
+    }, [Bullish, Bearish, Neutral]);
 
     return (
         <div className="chart flex flex-col items-center w-full">

@@ -18,6 +18,8 @@
     pointer-events: none;
   }
 
-/* .weglot_switcher {
-  display: none !important;
-} */
+.weglot_switcher {
+  /* display: none !important; */
+  scale: 1.3;
+  padding-bottom: 3px;
+}

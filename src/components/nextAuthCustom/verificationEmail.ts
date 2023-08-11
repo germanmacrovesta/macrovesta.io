@@ -1,5 +1,5 @@
-export function html(params: { url: string; host: string; }) {
-  const { url: callbackurl, host } = params
+export function html(params: { url: string; host: string; token: string; }) {
+  const { url: callbackurl, host, token } = params
 
   const url = new URL(callbackurl);
 
@@ -34,13 +34,9 @@ export function html(params: { url: string; host: string; }) {
           <td align="center" style="padding: 20px 0;">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td align="center" style="border-radius: 5px;" bgcolor="${color.buttonBackground}">
-                  <a href="${url.origin}/verify?verificationurl=${encodeURIComponent(url.toString())}" 
-                    target="_blank"
-                    style="font-size: 18px; font-family: Helvetica, Arial, sans-serif; color: ${color.buttonText}; text-decoration: none; border-radius: 5px; padding: 10px 20px; border: 1px solid ${color.buttonBorder}; display: inline-block; font-weight: bold;">
-                      Sign in
-                  </a>
-                </td>
+              <td align="center" style="border-radius: 5px; font-size: 18px; font-family: Helvetica, Arial, sans-serif; color: ${color.buttonText}; text-decoration: none; border-radius: 5px; padding: 10px 20px; border: 1px solid ${color.buttonBorder}; display: inline-block; font-weight: bold;" bgcolor="${color.buttonBackground}">
+              Your code is: ${token}
+              </td>
               </tr>
             </table>
           </td>
@@ -57,8 +53,8 @@ export function html(params: { url: string; host: string; }) {
 }
 
 /** Email Text body (fallback for email clients that don't render HTML, e.g. feature phones) */
-export function text({ url: callbackurl, host }: { url: string; host: string }) {
+export function text({ url: callbackurl, host, token }: { url: string; host: string; token: string; }) {
 
   const url = new URL(callbackurl);
-  return `Sign in to ${host}\n${url.origin}/verify?verificationurl=${encodeURIComponent(url.toString())}\n\n`
+  return `Sign in to ${host}\n\nYour code is: ${token}`
 }

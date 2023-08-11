@@ -10,6 +10,7 @@ const AddSentimentSurveyResults = async (req: NextApiRequest, res: NextApiRespon
         await prisma?.sentiment_survey.create({
             data: {
                 bullish_or_bearish: req.body.bullish_or_bearish,
+                bullish_or_bearish_value: parseInt(req.body.bullish_or_bearish_value),
                 high: parseFloat(req.body.high),
                 low: parseFloat(req.body.low),
                 intraday_average_points: parseFloat(req.body.intraday_average_points),

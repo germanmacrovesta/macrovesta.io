@@ -159,7 +159,7 @@ model cotton_on_call {
 
 model comments {
     record_id       String   @id @default(cuid())
-    comment         String   @db.VarChar(255)
+    comment         String   @db.Text
     section         String   @db.VarChar(255)
     date_of_comment DateTime @db.Date
     added_by        String   @db.VarChar(255)
@@ -269,14 +269,15 @@ model in_country_news {
 //Below is Macrovesta Sentiment Survey
 
 model sentiment_survey {
-    record_id               String    @id @default(cuid())
-    bullish_or_bearish      String    @db.VarChar(255)
-    high                    Decimal?  @default(0) @db.Decimal(16, 4)
-    low                     Decimal?  @default(0) @db.Decimal(16, 4)
-    intraday_average_points Decimal?  @default(0) @db.Decimal(16, 4)
-    open_interest           Decimal?  @default(0) @db.Decimal(16, 4)
-    date_of_survey          DateTime? @db.Date
-    added_by                String    @default("Vic") @db.VarChar(255)
+    record_id                String    @id @default(cuid())
+    bullish_or_bearish       String    @db.VarChar(255)
+    bullish_or_bearish_value Decimal?  @default(0) @db.Decimal(16, 4)
+    high                     Decimal?  @default(0) @db.Decimal(16, 4)
+    low                      Decimal?  @default(0) @db.Decimal(16, 4)
+    intraday_average_points  Decimal?  @default(0) @db.Decimal(16, 4)
+    open_interest            Decimal?  @default(0) @db.Decimal(16, 4)
+    date_of_survey           DateTime? @db.Date
+    added_by                 String    @default("Vic") @db.VarChar(255)
 }
 
 //Below is the Comparison Charts with 17 Months Year 

@@ -248,7 +248,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     e.preventDefault();
     setSentimentSubmitting(true);
 
-    let bullish_or_bearish = "";
+    let bullish_or_bearish = e.target["bullishbearish"].value;
     let high = e.target["high"].value;
     let low = e.target["low"].value;
     let intraday_average_points = e.target["intraday"].value;
@@ -256,12 +256,15 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     let errorMessage = "";
     let warningMessage = "";
 
-    if (bullishBearish != null && bullishBearish != "Select an Option") {
-      bullish_or_bearish = bullishBearish;
-    } else {
-      errorMessage += "Please select bullish or bearish. ";
-    }
+    // if (bullishBearish != null && bullishBearish != "Select an Option") {
+    //   bullish_or_bearish = bullishBearish;
+    // } else {
+    //   errorMessage += "Please select bullish or bearish. ";
+    // }
 
+    if (bullish_or_bearish == null || bullish_or_bearish == "") {
+      errorMessage += "Please enter Estimate for market feeling. ";
+    }
     if (high == null || high == "") {
       errorMessage += "Please enter Estimate for high. ";
     }
@@ -302,7 +305,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       } else {
         // Get data from the form.
         const data = {
-          bullish_or_bearish,
+          bullish_or_bearish: bullish_or_bearish == "0" ? 'Neutral' : parseInt(bullish_or_bearish) < 0 ? 'Bearish' : 'Bullish',
+          bullish_or_bearish_value: bullish_or_bearish,
           high,
           low,
           intraday_average_points,
@@ -842,6 +846,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     //   name: "Combined",
     //   data: []
     // };
+    averages["Bullish"] = {}
+    averages["Bearish"] = {}
+    averages["Neutral"] = {}
 
     for (const obj of inputArray) {
       const groupName = obj.bullish_or_bearish;
@@ -929,7 +936,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     // }
 
     // outputArray.push(combinedSeries);
-
+    console.log(propertyUsed, outputArray)
     return outputArray;
   }
 
@@ -1224,6 +1231,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   let dateOneYearAgo = `${year2}-${month2}-${day2}`;
 
+  const dateToday = new Date(); // Current date
+  const oneWeekAgo = new Date(dateToday.getTime() - 7 * 24 * 60 * 60 * 1000);
+
   const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo));
   const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today));
 
@@ -1363,9 +1373,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             <Breadcrumbs title={"Macrovesta Demo"} urlPath={urlPath} user={session?.user.name} />
             <TabMenu data={TabMenuArray} urlPath={urlPath} />
           </header>
-          <WeglotLanguageSwitcher
+          {/* <WeglotLanguageSwitcher
             domain="macrovesta.ai"
-            langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} />
+            langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
           <div className="p-6 bg-slate-200">
             Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
@@ -1439,7 +1449,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       />
                     </div>
                   </div>
-                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Current Contract")} session={session} section="Current Contract" />
+                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Current Contract")} session={session} section="Current Contract" commentLength={800} />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTH24 Spread</div>
@@ -1469,11 +1479,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             {((session?.submittedSurvey == true) || ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1))) && (
               <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
                 {/* {stages[currentStage]} */}
-                {(currentStage == 0) && (session?.submittedSurvey != true) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && (
+                {/* {(currentStage == 0) && (session?.submittedSurvey != true) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && ( */}
+                {(currentStage == 0) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && (session?.submittedSurvey != true) && (
                   <div className="grid grid-cols-2">
-                    <div className="col-span-2 mb-4 text-center text-xl font-semibold">Macrovesta Sentiment Survey</div>
+                    <div className="col-span-2 mb-4 text-center text-xl font-semibold">Weekly Macrovesta Sentiment Survey</div>
                     <div className="col-span-2 grid grid-cols-2 gap-x-4 pl-4">
-                      <div className="flex flex-col justify-end items-end">
+                      {/* <div className="flex flex-col justify-end items-end">
                         <div className="w-full">
                           <label
                             className="block text-gray-700 text-sm font-bold mb-2 pl-3"
@@ -1481,7 +1492,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                             What is your feeling of the market?
                           </label>
                           <SingleSelectDropdown
-                            options={[{ option: "Bullish" }, { option: "Bearish" }]}
+                            options={[{ option: "Bullish" }, { option: "Bearish" }, { option: "Neutral" }]}
                             label="BullishBearish"
                             variable="option"
                             colour="bg-[#ffffff]"
@@ -1495,13 +1506,31 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                             borderStyle="rounded-md border border-gray-300"
                           />
                         </div>
+                      </div> */}
+                    </div>
+                    <form className="mt-4 mb-4 pl-4 grid grid-cols-2 col-span-2 gap-x-4 w-full" onSubmit={handleSentimentFormSubmit}>
+                      <div className="mb-4">
+                        <label
+                          htmlFor="bullishbearish"
+                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                        >
+                          What is your feeling of the market?
+                        </label>
+                        <input
+                          type="number"
+                          step="1"
+                          min={-5}
+                          max={5}
+                          id="bullishbearish"
+                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                          placeholder="From -5 to 5"
+                        />
+                        <div className="pl-3 text-sm">-5 for very bearish, 0 for neutral and 5 for very bullish</div>
                       </div>
                       <div className="flex flex-col">
                         <div className="font-semibold leading-4 mb-3">Please submit your guesstimates to view the unanimous opinions of our other partners</div>
                         <div className="text-sm leading-4">This new feature displays unanimously the opinion of our partners about December 2023 Futures for the week ahead, offering a view of market sentiment for both short and long-term seasonal trends in the cotton industry.</div>
                       </div>
-                    </div>
-                    <form className="mt-4 mb-4 pl-4 grid grid-cols-2 col-span-2 gap-x-4 w-full" onSubmit={handleSentimentFormSubmit}>
                       <div className="mb-4">
                         <label
                           htmlFor="high"
@@ -1516,6 +1545,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
+                        <div className="pl-3 text-sm">Last week's average was {(transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(2)}</div>
                       </div>
                       <div className="mb-4">
                         <label
@@ -1531,6 +1561,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
+                        <div className="pl-3 text-sm">Last weeks average was {(transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data?.length - 1]?.value).toFixed(2)}</div>
                       </div>
                       <div className="mb-4">
                         <label
@@ -1546,13 +1577,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
+                        <div className="pl-3 text-sm">Last weeks average was {(transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(0)}</div>
                       </div>
                       <div className="mb-4">
                         <label
                           htmlFor="open_interest"
                           className="block text-gray-700 text-sm font-bold mb-2 pl-3"
                         >
-                          Open Interest
+                          Open Interest (Futures only)
                         </label>
                         <input
                           type="number"
@@ -1561,6 +1593,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
+                        <div className="pl-3 text-sm">Last weeks average was {(transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(0)}</div>
                       </div>
 
                       <div className="col-span-2 flex justify-center">
@@ -1583,7 +1616,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     <div className="col-span-2 grid grid-cols-2">
                       <div className="flex flex-col items-center">
                         <div className="font-semibold">Bullish or Bearish</div>
-                        <BullishBearishDonut Bullish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bullish").length} Bearish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bearish").length} />
+                        <BullishBearishDonut Bullish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bullish" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} Bearish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bearish" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} Neutral={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Neutral" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} />
                       </div>
                       <div className="flex flex-col items-center">
                         <div className="flex justify-center font-semibold">
@@ -1630,7 +1663,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             )}
             {((session?.submittedSurvey != true) && ((todaysDate.getDay() != 0) && (todaysDate.getDay() != 1))) && (
               <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
-                <div className="col-span-2 mb-4 text-center text-xl font-semibold">Macrovesta Sentiment Survey</div>
+                <div className="col-span-2 mb-4 text-center text-xl font-semibold">Weekly Macrovesta Sentiment Survey</div>
                 <div className="px-8">
                   You did not fill in the survey sentiment this week on Sunday or Monday and therefore cannot view the results for this week.
                   Please fill it out next week if you would like to see the results.
@@ -2213,7 +2246,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Year" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Sales by week</div>
-                      <div className="mb-16 w-full w-full">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
                       </div>
@@ -2222,7 +2255,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {WeekOrYear == "Week" && (
                     <>
                       <div className="mt-6 -mb-2 font-semibold">Sales by year</div>
-                      <div className="mb-16 w-full w-full">
+                      <div className="mb-16 w-full">
 
                         <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={1999} xDomain2={2021} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
@@ -2802,7 +2835,9 @@ export const getServerSideProps = async (context: any) => {
   const CTZ24Data = JSON.stringify(CTZ24)
 
   const sentiment = await prisma?.sentiment_survey.findMany({
-
+    orderBy: {
+      date_of_survey: "asc"
+    }
   })
   const initialSentimentData = JSON.stringify(sentiment)
 
@@ -2882,6 +2917,9 @@ export const getServerSideProps = async (context: any) => {
       date_of_comment: {
         gt: oneWeekAgo.toISOString()
       }
+    },
+    orderBy: {
+      date_of_comment: "desc"
     }
   })
   const commentsData = JSON.stringify(comment)

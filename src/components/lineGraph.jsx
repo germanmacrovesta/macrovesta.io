@@ -47,7 +47,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
             // height = graphHeight - margin.top - margin.bottom;
 
             // const colors = d3.scaleOrdinal(d3.schemeCategory10);
-            const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549']);
+            const colors = d3.scaleOrdinal().range(['#051D6D', '#44B549', '#3BBCAC', '#D060D6']);
 
             const svg = d3.select(ref.current)
                 .attr("width", width + margin.left + margin.right)

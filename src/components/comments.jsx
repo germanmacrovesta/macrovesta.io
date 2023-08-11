@@ -15,8 +15,15 @@ const parseDateString = (dateString) => {
 
 };
 
-const Comments = (props) => {
-    const [comments, setComments] = React.useState(props.comments)
+const Comments = ({
+    styling,
+    comments,
+    session,
+    section,
+    commentLength = 280
+
+}) => {
+    const [componentComments, setComments] = React.useState(comments)
     const [commentNumber, setCommentNumber] = React.useState(0)
 
     const [openForm, setOpenForm] = React.useState(false)
@@ -39,8 +46,8 @@ const Comments = (props) => {
         if (comment == null || comment == "") {
             errorMessage += "Please enter a comment. ";
         }
-        if (comment.length > 280) {
-            errorMessage += "Please use less than 280 characters. "
+        if (comment.length > commentLength) {
+            errorMessage += `Please use less than ${commentLength} characters. `
         }
 
         if (warningMessage !== "") {
@@ -69,8 +76,8 @@ const Comments = (props) => {
                 // Get data from the form.
                 const data = {
                     comment,
-                    section: props.section,
-                    user: props.session?.user?.name
+                    section: section,
+                    user: session?.user?.name
                 };
 
                 console.log(data);
@@ -108,9 +115,9 @@ const Comments = (props) => {
 
     return (
         <>
-            {comments.length > 0 && (
+            {componentComments.length > 0 && (
 
-                <div className={`grid grid-cols-[110px_auto_110px] w-full ${props.styling}`}>
+                <div className={`grid grid-cols-[110px_auto_110px] w-full ${styling}`}>
                     {commentNumber == 0 && (
                         <div className='invisible'>hidden</div>
                     )}
@@ -121,34 +128,34 @@ const Comments = (props) => {
                     )}
                     <div className='flex flex-col items-center'>
                         <div className='text-center font-semibold'>
-                            {comments[commentNumber]?.added_by}
+                            {componentComments[commentNumber]?.added_by}
                         </div>
                         <div className='text-center text-sm'>
-                            {parseDateString(comments[commentNumber]?.date_of_comment)}
+                            {parseDateString(componentComments[commentNumber]?.date_of_comment)}
                         </div>
                     </div>
-                    {commentNumber == comments.length - 1 && (
+                    {commentNumber == componentComments.length - 1 && (
                         <div className='invisible'>hidden</div>
                     )}
-                    {commentNumber < (comments.length - 1) && (
+                    {commentNumber < (componentComments.length - 1) && (
                         <div className='flex items-start'>
                             <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setCommentNumber(commentNumber + 1)}>Next</button>
                         </div>
                     )}
                     <div className='col-span-3 mt-4 text-center'>
-                        {comments[commentNumber]?.comment}
+                        {componentComments[commentNumber]?.comment}
                     </div>
                 </div>
             )}
-            {props?.session?.role == "admin" && comments.length > 0 && (
+            {session?.role == "admin" && componentComments.length > 0 && (
                 <div className={`flex justify-center`}>
                     <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenForm(true)}>
                         Add Comment
                     </div>
                 </div>
             )}
-            {props?.session?.role == "admin" && comments.length <= 0 && (
-                <div className={`flex justify-center ${props.styling}`}>
+            {session?.role == "admin" && componentComments.length <= 0 && (
+                <div className={`flex justify-center ${styling}`}>
                     <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenForm(true)}>
                         Add Comment
                     </div>

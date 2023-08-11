@@ -20,6 +20,9 @@ type ExtendedSession<T> = T & {
     submittedSurvey: boolean | null;
 }
 
+const generateAuthtoken = () => {
+    return String(Math.floor(100000 + Math.random() * 900000));
+}
 
 // const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith('https://')
 const useSecureCookies = !!process.env.NEXTAUTH_URL
@@ -92,7 +95,11 @@ export const authOptions: NextAuthOptions = {
         EmailProvider({
             server: process.env.EMAIL_SERVER,
             from: process.env.EMAIL_FROM,
-            sendVerificationRequest: async ({ identifier: email, url, provider, theme }) => {
+            generateVerificationToken: async () => {
+                const token = await generateAuthtoken();
+                return token;
+            },
+            sendVerificationRequest: async ({ identifier: email, url, token, provider, theme }) => {
                 const { host } = new URL(url)
                 // NOTE: You are not required to use `nodemailer`, use whatever you want.
                 // const transport = createTransport(provider.server)
@@ -110,8 +117,8 @@ export const authOptions: NextAuthOptions = {
                     to: email,
                     from: provider.from,
                     subject: `Sign in to ${host}`,
-                    text: text({ url, host }),
-                    html: html({ url, host }),
+                    text: text({ url, host, token }),
+                    html: html({ url, host, token }),
                 })
                 const failed = result.rejected.concat(result.pending).filter(Boolean)
                 if (failed.length) {
@@ -137,32 +144,32 @@ export const authOptions: NextAuthOptions = {
         // verifyRequest: '/auth/verify-request', // (used for check email message)
         // newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
     },
-    cookies: {
-        sessionToken: {
-            name: `${useSecureCookies ? '__Secure-' : ''}next-auth.session-token`,
-            options: {
-                httpOnly: true,
-                sameSite: 'lax',
-                path: '/',
-                domain: '.macrovesta.ai',
-                secure: useSecureCookies,
-                // secure: useSecureCookies,
-                // domain: dummyHostName == 'localhost' ? dummyHostName : '.' + dummyHostName // add a . in front so that subdomains are included
-            },
-        },
-        // sessionToken: {
-        //     name: `${cookiePrefix}next-auth.session-token`,
-        //     options: {
-        //         httpOnly: true,
-        //         sameSite: 'lax', // this should be set to 'None' for cross-domain cookies
-        //         path: '/',
-        //         // secure: true, // this should be true for production websites
-        //         // domain: '.macrovesta.ai', // specify your domain, this is crucial
-        //         secure: useSecureCookies,
-        //         domain: dummyHostName == 'localhost' ? dummyHostName : '.' + dummyHostName // add a . in front so that subdomains are included
-        //     },
-        // },
-    },
+    // cookies: {
+    //     sessionToken: {
+    //         name: `${useSecureCookies ? '__Secure-' : ''}next-auth.session-token`,
+    //         options: {
+    //             httpOnly: true,
+    //             sameSite: 'lax',
+    //             path: '/',
+    //             domain: '.macrovesta.ai',
+    //             secure: useSecureCookies,
+    //             // secure: useSecureCookies,
+    //             // domain: dummyHostName == 'localhost' ? dummyHostName : '.' + dummyHostName // add a . in front so that subdomains are included
+    //         },
+    //     },
+    //     // sessionToken: {
+    //     //     name: `${cookiePrefix}next-auth.session-token`,
+    //     //     options: {
+    //     //         httpOnly: true,
+    //     //         sameSite: 'lax', // this should be set to 'None' for cross-domain cookies
+    //     //         path: '/',
+    //     //         // secure: true, // this should be true for production websites
+    //     //         // domain: '.macrovesta.ai', // specify your domain, this is crucial
+    //     //         secure: useSecureCookies,
+    //     //         domain: dummyHostName == 'localhost' ? dummyHostName : '.' + dummyHostName // add a . in front so that subdomains are included
+    //     //     },
+    //     // },
+    // },
     // debug: true,
     // cors: {
     //     origin: '*',
