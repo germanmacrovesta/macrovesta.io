@@ -68,34 +68,35 @@ model VerificationToken {
 //Below is the table Supply and Demand
 
 model supply_and_demand {
-    record_id                       String   @id @default(cuid())
-    date                            DateTime @db.Date
-    country                         String?
-    area_harvested_usda             Int?
-    area_harvested_eap              Int?
-    yield_usda                      Int?
-    yield_eap                       Int?
-    beginning_stocks_usda           Int?
-    beginning_stocks_eap            Int?
-    production_usda                 Int?
-    production_eap                  Int?
-    imports_usda                    Int?
-    imports_eap                     Int?
-    total_supply_usda               Int?
-    total_supply_eap                Int?
-    exports_usda                    Int?
-    exports_eap                     Int?
-    total_demand_usda               Int?
-    total_demand_eap                Int?
-    ending_stocks_usda              Int?
-    ending_stocks_eap               Int?
-    stocks_to_usage_usda            Int?
-    stocks_to_usage_eap             Int?
-    carry_out_months_of_supply_usda Int?
-    carry_out_months_of_supply_eap  Int?
-    domestic_use_usda               Int?
-    domestic_use_eap                Int?
-    projected                       Boolean?
+    record_id             String   @id @default(cuid())
+    date                  DateTime @db.Date
+    season                String?
+    country               String?
+    beginning_stocks_usda Decimal? @default(0) @db.Decimal(16, 4)
+    beginning_stocks_eap  Decimal? @default(0) @db.Decimal(16, 4)
+    production_usda       Decimal? @default(0) @db.Decimal(16, 4)
+    production_eap        Decimal? @default(0) @db.Decimal(16, 4)
+    imports_usda          Decimal? @default(0) @db.Decimal(16, 4)
+    imports_eap           Decimal? @default(0) @db.Decimal(16, 4)
+    domestic_use_usda     Decimal? @default(0) @db.Decimal(16, 4)
+    domestic_use_eap      Decimal? @default(0) @db.Decimal(16, 4)
+    exports_usda          Decimal? @default(0) @db.Decimal(16, 4)
+    exports_eap           Decimal? @default(0) @db.Decimal(16, 4)
+    ending_stocks_usda    Decimal? @default(0) @db.Decimal(16, 4)
+    ending_stocks_eap     Decimal? @default(0) @db.Decimal(16, 4)
+    projected             Boolean?
+    // area_harvested_usda             Decimal? @default(0) @db.Decimal(16, 4)
+    // area_harvested_eap              Decimal? @default(0) @db.Decimal(16, 4)
+    // yield_usda                      Decimal? @default(0) @db.Decimal(16, 4)
+    // yield_eap                       Decimal? @default(0) @db.Decimal(16, 4)
+    // total_supply_usda               Decimal? @default(0) @db.Decimal(16, 4)
+    // total_supply_eap                Decimal? @default(0) @db.Decimal(16, 4)
+    // total_demand_usda               Decimal? @default(0) @db.Decimal(16, 4)
+    // total_demand_eap                Decimal? @default(0) @db.Decimal(16, 4)
+    // stocks_to_usage_usda            Decimal? @default(0) @db.Decimal(16, 4)
+    // stocks_to_usage_eap             Decimal? @default(0) @db.Decimal(16, 4)
+    // carry_out_months_of_supply_usda Decimal? @default(0) @db.Decimal(16, 4)
+    // carry_out_months_of_supply_eap  Decimal? @default(0) @db.Decimal(16, 4)
 }
 
 //Below is the table US Export Sales

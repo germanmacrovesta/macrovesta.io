@@ -38,11 +38,11 @@ export const VerificationStep: React.FC<VerificationStepProps> = ({
     return (
         <div className={parentStyle}>
             <h2 className={`text-center ${hideCheckEmail ? 'hidden' : ''}`}>We have just sent you a verification email</h2>
-            <p className='text-center'>Please enter the magic code you received in the email</p>
+            <p className='text-center'>Please enter the code you received in the email</p>
             <div className='flex items-center gap-4'>
                 <label htmlFor='code' className='flex items-center'>
                     <div className=''>
-                        Magic code:
+                        Code:
                     </div>
                 </label>
                 <input

@@ -47,7 +47,7 @@ const EmailInput: React.FC<EmailInputProps> = ({ onSuccess }) => {
                 }}
                 onKeyPress={onKeyPress}
             />
-            <button className='text-black bg-white disabled:bg-grey-400 rounded-full py-2 px-6 mt-6 w-fit' disabled={loading} onClick={() => handleSignin()} >Next</button>
+            <button className='text-black bg-white disabled:bg-gray-300 rounded-full py-2 px-6 mt-6 w-fit' disabled={loading} onClick={() => handleSignin()} >Next</button>
         </div>
     );
 };

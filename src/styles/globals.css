@@ -23,3 +23,27 @@
   scale: 1.3;
   padding-bottom: 3px;
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  border: none;
+  -webkit-text-fill-color: inherit;
+  -webkit-box-shadow: 0 0 0px 1000px inherit inset;
+  transition: background-color 0s ease-in-out 5000s;
+  font-size: inherit;
+  color: inherit;
+}
+
+input.text-white:-webkit-autofill,
+input.text-white:-webkit-autofill:hover, 
+input.text-white:-webkit-autofill:focus, 
+input.text-white:-webkit-autofill:active {
+  border: none;
+  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0px 1000px inherit inset;
+  transition: background-color 0s ease-in-out 5000s;
+  font-size: inherit;
+  color: inherit;
+}
