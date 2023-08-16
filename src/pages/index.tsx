@@ -2451,7 +2451,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Purchases by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" />
                       </div>
                     </>
                   )}
@@ -2460,7 +2460,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Purchases by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Purchases" />
                       </div>
                     </>
                   )}
@@ -2524,7 +2524,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Total" />
                       </div>
                     </>
                   )}
@@ -2533,7 +2533,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Total" />
                       </div>
                     </>
                   )}
