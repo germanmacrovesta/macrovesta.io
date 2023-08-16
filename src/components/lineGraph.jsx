@@ -7,7 +7,18 @@ const capitalizeText = (text) => {
     return `${firstLetter}${rest}`
 }
 
-const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400 }) => {
+function weekNumber(date) {
+    // Compute the day-of-year number
+    const start = new Date(date.getFullYear(), 0, 1);
+    const diff = date - start + (start.getTimezoneOffset() - date.getTimezoneOffset()) * 60000;
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+
+    // Compute week number
+    return Math.ceil((dayOfYear + (start.getDay() + 1)) / 7);
+}
+
+const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400, weekNumberTicks = false, xAxisTitle = "", yAxisTitle = "" }) => {
     const ref = useRef();
 
     const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
@@ -281,13 +292,26 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
             const monthFormat = d3.timeFormat("%B");
             const yearFormat = d3.timeFormat("%Y");
 
-            const xAxis = d3.axisBottom(x)
-                .ticks(4)
-                .tickFormat(d => `${monthFormat(d)}${d.getMonth() === 0 ? ` ${yearFormat(d)}` : ""}`);
+            if (weekNumberTicks) {
+                const xAxis = d3.axisBottom(x)
+                    .ticks(10)
+                    // .ticks(d3.timeMonday)
+                    .tickFormat(d => weekNumber(d));
 
-            svg.append("g")
-                .attr("transform", `translate(0, ${height})`)
-                .call(xAxis);
+                svg.append("g")
+                    .attr("transform", `translate(0, ${height})`)
+                    .call(xAxis);
+            } else {
+                const xAxis = d3.axisBottom(x)
+                    .ticks(4)
+                    .tickFormat(d => `${monthFormat(d)}${d.getMonth() === 0 ? ` ${yearFormat(d)}` : ""}`);
+
+                svg.append("g")
+                    .attr("transform", `translate(0, ${height})`)
+                    .call(xAxis);
+            }
+
+
 
             // svg.append("g")
             //     .attr("transform", `translate(0, ${height})`)
@@ -295,6 +319,21 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
 
             svg.append("g")
                 .call(d3.axisLeft(y));
+
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text(yAxisTitle);
+
+            svg.append("text")
+                .attr("transform",
+                    "translate(" + (width / 2) + " ," +
+                    (height + margin.top + 20) + ")")
+                .style("text-anchor", "middle")
+                .text(xAxisTitle);
 
         }
     }, [data, xValue, yValue, dimensions]);

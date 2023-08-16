@@ -102,6 +102,7 @@ const Sidebar = (props) => {
                         <Link href={{ pathname: `/` }} >
                             <div className="flex justify-center w-full">
                                 <img className="" width="100%" src="/Full_Logo.svg" />
+                                {/* <img className="" width="100%" src="/watermark.svg" /> */}
                             </div>
                         </Link>
                     </div>

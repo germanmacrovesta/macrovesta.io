@@ -13,7 +13,8 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
                 country: req.body.country,
                 contract_december_2023: parseInt(req.body.contractOneBasis),
                 contract_december_2024: parseInt(req.body.contractTwoBasis),
-                added_by: req.body.user
+                added_by: req.body.user,
+                cost_type: req.body.cost_type
             }
         })
 

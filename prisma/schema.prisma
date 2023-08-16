@@ -136,8 +136,9 @@ model commitment_of_traders {
 //Below is the table cotton_on_call
 
 model cotton_on_call {
-    record_id               String @id @default(cuid())
-    season_week             Int
+    record_id               String   @id @default(cuid())
+    date                    DateTime @db.Date
+    season_week             Int?
     week                    Int
     season                  String
     october_sales           Int?
@@ -239,7 +240,9 @@ model snapshot_strategy {
     title_of_snapshot_strategy String   @db.VarChar(255)
     image_of_snapshot_strategy String?  @db.VarChar(255) //here i wanted to upload an image or pull in-house graph similar to this - https://www.tradingview.com/chart/USDBRL/W62o6aQ2-Gold-China-BRICS-vs-US-Dollar-Hegemony/
     text_of_snapshot_strategy  String   @db.Text
-    date_of_snapshot_strategy  DateTime @db.Date
+    date_of_snapshot_strategy  DateTime @default(now())
+    valid                      Boolean  @default(true)
+    news_type                  String   @default("Recent Events") @db.VarChar(255)
     added_by                   String   @default("Error") @db.VarChar(255)
     verified                   Boolean  @default(false)
 }
@@ -250,6 +253,7 @@ model basis_comparison {
     record_id              String   @id @default(cuid())
     date_of_basis_report   DateTime @db.Date
     country                String   @db.VarChar(255)
+    cost_type              String   @db.VarChar(255)
     contract_december_2023 Int      @default(0)
     contract_december_2024 Int      @default(0)
     added_by               String   @default("Vic") @db.VarChar(255)

@@ -240,6 +240,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [openCountryNewsForm, setOpenCountryNewsForm] = React.useState(false)
 
   const [selectedCountry, setSelectedCountry] = React.useState(undefined)
+  const [selectedFormCostType, setSelectedFormCostType] = React.useState(undefined)
 
   const [bullishBearish, setBullishBearish] = React.useState(undefined)
 
@@ -359,6 +360,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     setSubmitting(true);
 
     let country = "";
+    let cost_type = "";
     let contractOneBasis = e.target["ctz23"].value;
     let contractTwoBasis = e.target["ctz24"].value;
     let errorMessage = "";
@@ -368,6 +370,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       country = selectedCountry;
     } else {
       errorMessage += "Please select a Country. ";
+    }
+
+    if (selectedFormCostType != null && selectedFormCostType != "Select cost type") {
+      cost_type = selectedFormCostType;
+    } else {
+      errorMessage += "Please select a cost type. ";
     }
 
     if (contractOneBasis == null || contractOneBasis == "") {
@@ -407,7 +415,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
           country,
           contractOneBasis,
           contractTwoBasis,
-          user: session?.user?.name
+          user: session?.user?.name,
+          cost_type
         };
 
         console.log(data);
@@ -443,11 +452,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   };
 
+  const [selectedNewsType, setSelectedNewsType] = React.useState("")
+
   const handleSnapshotFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
     e.preventDefault();
     setSnapshotSubmitting(true);
 
+    let news_type = "";
     let title = e.target["title"].value;
     let text = e.target["text"].value;
     let image = e.target["image"].value;
@@ -456,6 +468,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
     // console.log("textarea", text == "")
 
+    if (selectedNewsType != null && selectedNewsType != "" && selectedNewsType != "Select Snapshot Type") {
+      news_type = selectedNewsType
+    } else {
+      errorMessage += "Please select a snapshot type. ";
+    }
     if (title == null || title == "") {
       errorMessage += "Please enter a title. ";
     }
@@ -494,7 +511,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
           title,
           text,
           image,
-          user: session?.user?.name
+          user: session?.user?.name,
+          news_type
         };
 
         console.log(data);
@@ -998,10 +1016,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
           let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: parseInt(item.season_week), y: parseInt(item[property]) })
+          dataset.data.push({ x: item.date, y: parseInt(item[property]) })
         } else {
           let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: parseInt(item.season_week), y: parseInt(item[property]) })
+          dataset.data.push({ x: item.date, y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
       })
@@ -1378,6 +1396,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     };
   }, []);
 
+  const [selectedCostType, setSelectedCostType] = React.useState("FOB")
+
   return (
     <>
       <Head>
@@ -1577,7 +1597,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
-                        <div className="pl-3 text-sm">Last week's average was {(transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(2)}</div>
+                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(2)}</div>
                       </div>
                       <div className="mb-4">
                         <label
@@ -1593,7 +1613,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
-                        <div className="pl-3 text-sm">Last weeks average was {(transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data?.length - 1]?.value).toFixed(2)}</div>
+                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data?.length - 1]?.value).toFixed(2)}</div>
                       </div>
                       <div className="mb-4">
                         <label
@@ -1609,7 +1629,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
-                        <div className="pl-3 text-sm">Last weeks average was {(transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(0)}</div>
+                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(0)}</div>
                       </div>
                       <div className="mb-4">
                         <label
@@ -1625,7 +1645,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
-                        <div className="pl-3 text-sm">Last weeks average was {(transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(0)}</div>
+                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(0)}</div>
                       </div>
 
                       <div className="col-span-2 flex justify-center">
@@ -1703,39 +1723,82 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             )}
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
-              <div className="text-center font-semibold text-xl">
-                30 Seconds Snapshot
+              <div className="flex justify-around">
+                <div className="text-center font-semibold text-xl">
+                  Recent Events
+                </div>
+                <div className="text-center font-semibold text-xl">
+                  Future Considerations
+                </div>
               </div>
-              <div className="grid grid-cols-2 justify-around items-start gap-x-8 gap-y-4 mt-4">
-                {/* {JSON.parse(snapshotsData).map((snapshot) => (
+              <div className="flex justify-around gap-x-8">
+                <div className="flex flex-col w-full justify-start items-start gap-x-8 gap-y-4 mt-4">
+                  {/* {JSON.parse(snapshotsData).map((snapshot) => (
                   <div>
                     {snapshot.title_of_snapshot_strategy}
                   </div>
                 ))} */}
-                {JSON.parse(snapshotsData).filter((object: any, index: number) => index < 10).map((snapshot) => (
-                  <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
+                  {JSON.parse(snapshotsData).filter((object: any, index: number) => object.news_type == "Recent Events").filter((object: any, index: number) => index < 5).map((snapshot) => (
+                    <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
+                      {snapshot.title_of_snapshot_strategy}
+                    </div>
+                  ))}
+                  {snapshotPopup != null && (
+                    <div className='absolute modal left-0 top-0 z-40'>
+                      <div className=' fixed grid place-content-center inset-0 z-40'>
+                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                          <img className="w-3/4" src={snapshotPopup.image_of_snapshot_strategy} />
+                          <div className="my-4 font-semibold text-lg">
+                            {snapshotPopup.title_of_snapshot_strategy}
+                          </div>
+                          <div className="-mt-4 mb-2">
+                            {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
+                          </div>
+                          <div className="">
+                            {snapshotPopup.text_of_snapshot_strategy}
+                          </div>
+                        </div>
+                        <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col w-full justify-start items-start gap-x-8 gap-y-4 mt-4">
+                  {/* {JSON.parse(snapshotsData).map((snapshot) => (
+                  <div>
                     {snapshot.title_of_snapshot_strategy}
                   </div>
-                ))}
-                {snapshotPopup != null && (
-                  <div className='absolute modal left-0 top-0 z-40'>
-                    <div className=' fixed grid place-content-center inset-0 z-40'>
-                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                        <img className="w-3/4" src={snapshotPopup.image_of_snapshot_strategy} />
-                        <div className="my-4 font-semibold text-lg">
-                          {snapshotPopup.title_of_snapshot_strategy}
-                        </div>
-                        <div className="-mt-4 mb-2">
-                          {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
-                        </div>
-                        <div className="">
-                          {snapshotPopup.text_of_snapshot_strategy}
-                        </div>
+                ))} */}
+                  {JSON.parse(snapshotsData).filter((object: any, index: number) => (object.news_type == "Short Term" || object.news_type == "Long Term")).filter((object: any, index: number) => index < 5).sort((a, b) => { if (a.news_type < b.news_type) return 1; if (a.news_type > b.news_type) return -1; return 0; }).map((snapshot) => (
+                    <div className="border flex justify-between hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full h-fit py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
+                      <div>
+                        {snapshot.title_of_snapshot_strategy}
                       </div>
-                      <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                      <div>
+                        {snapshot.news_type}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
+                  {snapshotPopup != null && (
+                    <div className='absolute modal left-0 top-0 z-40'>
+                      <div className=' fixed grid place-content-center inset-0 z-40'>
+                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                          <img className="w-3/4" src={snapshotPopup.image_of_snapshot_strategy} />
+                          <div className="my-4 font-semibold text-lg">
+                            {snapshotPopup.title_of_snapshot_strategy}
+                          </div>
+                          <div className="-mt-4 mb-2">
+                            {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
+                          </div>
+                          <div className="">
+                            {snapshotPopup.text_of_snapshot_strategy}
+                          </div>
+                        </div>
+                        <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
               {(session?.role == "partner" || session?.role == "admin") && (
                 <div className="flex justify-center">
@@ -1754,6 +1817,18 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="w-full">
                         <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleSnapshotFormSubmit}>
                           <div className="mb-4">
+                            <div className="mb-4">
+                              <SingleSelectDropdown
+                                options={[{ name: "Recent Events", value: "" }, { name: "Short Term Consideration", value: "Short Term" }, { name: "Long Term Consideration", value: "Long Term" }]}
+                                label="snapshot_type"
+                                variable="name"
+                                colour="bg-deep_blue"
+                                onSelectionChange={(e) => setSelectedNewsType(e.value)}
+                                placeholder="Select Snapshot Type"
+                                searchPlaceholder="Search Types"
+                                includeLabel={false}
+                              />
+                            </div>
                             <label
                               htmlFor="image"
                               className="block text-gray-700 text-sm font-bold mb-2 pl-3"
@@ -1788,7 +1863,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                             >
                               Text
                             </label>
-                            <textarea id="text" placeholder="Enter text" name="text" rows={6} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
+                            <textarea id="text" placeholder="Enter text" name="text" rows={4} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
                           </div>
 
                           <div className="col-span-2 flex justify-center">
@@ -1809,6 +1884,17 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               )}
             </div>
             <div className="grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  ">
+              <div className="col-span-2 flex pl-12 items-center gap-2 w-full">
+                <div className="mr-2">
+                  Select Cost Type:
+                </div>
+                <div className={`${selectedCostType == "FOB" ? ' bg-deep_blue text-white shadow-md' : 'bg-white text-black shadow-center-md'} w-fit  px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200`} onClick={() => setSelectedCostType("FOB")}>
+                  FOB
+                </div>
+                <div className={`${selectedCostType == "CNF" ? ' bg-deep_blue text-white shadow-md' : 'bg-white text-black shadow-center-md'} w-fit  px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200`} onClick={() => setSelectedCostType("CNF")}>
+                  CNF
+                </div>
+              </div>
               <div className="relative flex flex-col items-center">
                 <div className='absolute top-2 right-2 remove-me group' >
 
@@ -1824,11 +1910,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   </div>
                 </div>
                 <div className="text-center font-semibold text-xl">Current Basis Cost</div>
-                <GroupedBarChart data={basisBarChartData(JSON.parse(basisData))} />
+                <GroupedBarChart data={basisBarChartData(JSON.parse(basisData).filter((basis) => basis.cost_type == selectedCostType))} />
               </div>
               <div className="flex flex-col items-center">
                 <div className="-mb-2 text-center font-semibold text-xl">Historical Basis Cost</div>
-                <LineGraph data={transformData(JSON.parse(basisData).filter((basis) => basis.country == basisCountry))} xValue="time" yValue="value" monthsTicks={6} />
+                <LineGraph data={transformData(JSON.parse(basisData).filter((basis) => (basis.country == basisCountry) && (basis.cost_type == selectedCostType)))} xValue="time" yValue="value" monthsTicks={6} />
               </div>
               <div className="col-span-2 grid grid-cols-2 mb-4">
                 <div className="grid place-content-center">
@@ -1845,17 +1931,29 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                             Add Basis Cost Estimate
                           </div>
                           <div className="w-full">
-                            <SingleSelectDropdown
-                              options={[{ country: "Brazil" }, { country: "USA" }, { country: "WAF" }, { country: "Australia" }]}
-                              label="Country"
-                              variable="country"
-                              colour="bg-deep_blue"
-                              onSelectionChange={(e) => setSelectedCountry(e.country)}
-                              placeholder="Select Country"
-                              searchPlaceholder="Search Countries"
-                              includeLabel={false}
-                            />
-                            <form className="mt-4 mb-4 pl-4 grid grid-cols-2 gap-x-4 w-full" onSubmit={handleBasisFormSubmit}>
+                            <div className="flex flex-col gap-4">
+                              <SingleSelectDropdown
+                                options={[{ country: "Brazil" }, { country: "USA" }, { country: "WAF" }, { country: "Australia" }]}
+                                label="Country"
+                                variable="country"
+                                colour="bg-deep_blue"
+                                onSelectionChange={(e) => setSelectedCountry(e.country)}
+                                placeholder="Select Country"
+                                searchPlaceholder="Search Countries"
+                                includeLabel={false}
+                              />
+                              <SingleSelectDropdown
+                                options={[{ value: "FOB" }, { value: "CNF" }]}
+                                label="cost_type"
+                                variable="value"
+                                colour="bg-deep_blue"
+                                onSelectionChange={(e) => setSelectedFormCostType(e.value)}
+                                placeholder="Select cost type"
+                                searchPlaceholder="Search cost types"
+                                includeLabel={false}
+                              />
+                            </div>
+                            <form className="mt-4 mb-4  grid grid-cols-2 gap-x-4 w-full" onSubmit={handleBasisFormSubmit}>
                               <div className="mb-4">
                                 <label
                                   htmlFor="ctz23"
@@ -2155,7 +2253,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
               <img src="/Charts_Under_Construction_Wide.png" />
               <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == "0102"))} graphWidth={1000} graphHeight={600} xDomain2={52} xAxisTitle="Week" />
-              <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == "1"))} graphWidth={1000} graphHeight={600} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+              <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == "1"))} graphWidth={1000} graphHeight={600} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
               <LineGraphNotTime data={getCommitmentOfTradersWeekData(JSON.parse(commitmentData).filter((data) => parseInt(data.calendar_year) == 2010))} graphWidth={1000} graphHeight={600} xDomain2={52} xAxisTitle="Week" />
               <LineGraphNotTime data={getCommitmentOfTradersSeasonData(JSON.parse(commitmentData).filter((data) => parseInt(data.week) == 1))} graphWidth={1000} graphHeight={600} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
             </div> */}
@@ -2280,7 +2378,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Sales by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2289,7 +2387,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Sales by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={1999} xDomain2={2021} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2353,7 +2451,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Purchases by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2362,7 +2460,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Purchases by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"], ["October", "December", "March", "May", "July"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2426,7 +2524,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2435,7 +2533,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2499,7 +2597,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Net" />
                       </div>
                     </>
                   )}
@@ -2508,7 +2606,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.season_week == Week), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2009} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Net" />
                       </div>
                     </>
                   )}
@@ -2679,9 +2777,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )} */}
                   {/* {commitmentWeekOrYear == "Week" && (
                     <> */}
-                  <div className="mt-6 -mb-2 font-semibold">Consolidated Supply and Demand</div>
+                  <div className="mt-6 -mb-2 font-semibold">Historical WASDE</div>
                   <div className="mb-16 w-full">
-                    <LineGraph data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (data.projected == false) && (data.date < selectedSupplyAndDemandEndDate) && (data.date > selectedSupplyAndDemandStartDate)), supplyAndDemandPropertiesArray, supplyAndDemandNamesArray)} graphWidth={1000} />
+                    <LineGraph data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (new Date(data.date).getMonth() == new Date().getMonth() - 1) && (data.date < selectedSupplyAndDemandEndDate) && (data.date > selectedSupplyAndDemandStartDate)), supplyAndDemandPropertiesArray, supplyAndDemandNamesArray)} graphWidth={1000} />
                   </div>
                   <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
@@ -2713,7 +2811,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       />
                     </div>
                   </div>
-                  <div className="mt-6 -mb-2 font-semibold">Projected Supply and Demand</div>
+                  <div className="mt-6 -mb-2 font-semibold">Supply and Demand by Season</div>
                   <div className="mb-16 w-full">
                     <LineGraph data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (data.season == selectedSupplyAndDemandSeason)), supplyAndDemandProjectedPropertiesArray, supplyAndDemandProjectedNamesArray)} graphWidth={1000} />
                   </div>
@@ -3001,12 +3099,12 @@ export const getServerSideProps = async (context: any) => {
     // }
   })
 
-  console.log("basis length", basis.length)
+  // console.log("basis length", basis.length)
 
   const formattedBasis = basis.map((basis) => {
-    const { country, date_of_basis_report, contract_december_2023: CTZ23, contract_december_2024: CTZ24 } = basis;
-    console.log(date_of_basis_report)
-    return { country, date_of_basis_report, CTZ23, CTZ24 }
+    console.log("cost_type", basis.cost_type)
+    const { country, date_of_basis_report, contract_december_2023: CTZ23, contract_december_2024: CTZ24, cost_type } = basis;
+    return { country, date_of_basis_report, CTZ23, CTZ24, cost_type }
   })
 
   const basisData = JSON.stringify(formattedBasis)
