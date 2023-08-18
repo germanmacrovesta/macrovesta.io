@@ -8,21 +8,21 @@ const VerifyPost = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET') {
 
         let log = "";
-        if (req.body.table == "Snapshot Strategy") {
+        if (req.query.table == "Snapshot Strategy") {
             log += "Snapshot Strategy"
-            await prisma?.snapshot_strategy.update({
+            await prisma?.snapshot_strategy.updateMany({
                 where: {
-                    record_id: req.body.record_id
+                    record_id: `${req.query.record_id ?? ""}`
                 },
                 data: {
                     verified: true
                 }
             })
-        } else if (req.body.table == "In Country News") {
+        } else if (req.query.table == "In Country News") {
             log += "In Country News"
-            await prisma?.in_country_news.update({
+            await prisma?.in_country_news.updateMany({
                 where: {
-                    record_id: req.body.record_id
+                    record_id: `${req.query.record_id ?? ""}`
                 },
                 data: {
                     verified: true
