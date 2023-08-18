@@ -1838,7 +1838,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           <div className="mb-4">
                             <div className="mb-4">
                               <SingleSelectDropdown
-                                options={[{ name: "Recent Events", value: "" }, { name: "Short Term Consideration", value: "Short Term" }, { name: "Long Term Consideration", value: "Long Term" }]}
+                                options={[{ name: "Recent Events", value: "Recent Events" }, { name: "Short Term Consideration", value: "Short Term" }, { name: "Long Term Consideration", value: "Long Term" }]}
                                 label="snapshot_type"
                                 variable="name"
                                 colour="bg-deep_blue"
