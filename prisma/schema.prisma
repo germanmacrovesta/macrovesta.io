@@ -65,6 +65,27 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+//Below is the table Things to Review
+
+model things_to_review {
+    record_id   String @id @default(cuid())
+    added_by    String
+    table       String
+    type        String
+    thing_id    String
+    information String @db.Text
+}
+
+//Below is the table External Links
+
+model External_Links {
+    record_id    String   @id @default(cuid())
+    type         String
+    url          String
+    language     String?  @default("en")
+    date_created DateTime @default(now())
+}
+
 //Below is the table Supply and Demand
 
 model supply_and_demand {

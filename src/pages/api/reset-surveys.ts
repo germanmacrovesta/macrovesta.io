@@ -25,7 +25,8 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
                     method: 'POST',
                     body: JSON.stringify({
                         to: user.email, subject: `Weekly Market Sentiment Survey Available Now`,
-                        text: `Dear ${user.name?.split(' ')[0]},\n\nOur weekly Cotton Market Survey is now available for your input.\n\nClick here to go to https://macrovesta.ai \n\nYour participation strengthens our community and helps us serve you better. Thank you for being a part of it.`
+                        htmlText: `<p>Dear ${user.name?.split(' ')[0]},<br/><br/>Our weekly Cotton Market Survey is now available for your input.<br/><br/>Your participation strengthens our community and helps us serve you better. Thank you for being a part of it.</p>`,
+                        text: `Dear ${user.name?.split(' ')[0]},\n\nOur weekly Cotton Market Survey is now available for your input.\n\nYour participation strengthens our community and helps us serve you better. Thank you for being a part of it.`
                     }),
                     headers: {
                         'Content-Type': 'application/json'

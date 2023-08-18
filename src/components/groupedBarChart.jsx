@@ -287,6 +287,9 @@ function GroupedBarChart({ data }) {
 
     return (
         <div className="chart relative w-full h-[400px] px-4">
+            {/* <div className='absolute inset-0 grid place-content-center'>
+                <img src='/macrovesta_watermark.png' className='w-[200px]' />
+            </div> */}
             <div id="bartooltip" className='-mb-8 text-center'>&nbsp;</div>
             <svg className="w-full h-full -mb-7" ref={ref} style={{ width: '100%', maxHeight: '450px' }} />
         </div>

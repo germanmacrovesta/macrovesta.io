@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-        const { to, subject, text } = req.body;
+        const { to, subject, text, htmlText } = req.body;
 
         console.log("Sending Email to:", to, subject, text)
 
@@ -22,9 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             from: process.env.NODEMAILER_ALIAS,
             to: to,
             subject: subject,
-            html: `
-                    <img width="150px" src="https://macrovesta.ai/macrovestalogo.png" alt="Macrovesta Logo">
-                    <h1>Welcome to Our Service</h1><p>${text}</p>`,
+            html: `${htmlText}<a href='https://macrovesta.ai'>Click here</a><p>Best regards,<br/>Victor Fernandes</p><img width="150px" src="https://macrovesta.ai/macrovestalogo.png" alt="Macrovesta Logo">`,
             text: `${text}\n\nBest regards,\nVictor Fernandes\nMacrovesta`
         };
 

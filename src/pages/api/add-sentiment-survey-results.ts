@@ -7,7 +7,7 @@ import { prisma } from "../../server/db";
 const AddSentimentSurveyResults = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
 
-        await prisma?.sentiment_survey.create({
+        const record = await prisma?.sentiment_survey.create({
             data: {
                 bullish_or_bearish: req.body.bullish_or_bearish,
                 bullish_or_bearish_value: parseInt(req.body.bullish_or_bearish_value),
@@ -21,6 +21,16 @@ const AddSentimentSurveyResults = async (req: NextApiRequest, res: NextApiRespon
         })
 
         console.log(req.body.email)
+
+        await prisma?.things_to_review.create({
+            data: {
+                table: "Sentiment Survey",
+                type: "Supervision",
+                thing_id: record.record_id,
+                information: `Sentiment: ${req.body.bullish_or_bearish_value},\nHigh: ${req.body.high},\nLow: ${req.body.low},\nIntraday: ${req.body.intraday_average_points},\nOpen Interest: ${req.body.open_interest} `,
+                added_by: req.body.user
+            }
+        })
 
         await prisma?.user.update({
             where: {

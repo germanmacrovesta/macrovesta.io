@@ -30,6 +30,7 @@ import DateField from '../components/dateField';
 import { useDateFormatter, useLocale } from 'react-aria';
 import { parseDate } from '@internationalized/date';
 import { WeglotLanguageSwitcher } from "~/components/weglotLanguageSwitcher";
+import useWeglotLang from '../components/useWeglotLang'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -123,9 +124,11 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData }) => {
+const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData }) => {
   const router = useRouter();
   const url = router.pathname;
+
+  const currentLang = useWeglotLang();
 
   const { data: session } = useSession();
   console.log("session", session)
@@ -1471,6 +1474,22 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(seasonalIndexData).probability_rate}</div>
                 </div>
 
+              </div>
+            </div>
+            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <div className="grid grid-cols-1">
+                <div className="flex flex-col gap-y-6 items-center px-8">
+                  <div className="text-left font-semibold text-lg">Conclusion of latest market report</div>
+                  <div>We maintain that the 2023/24 season will prove to be an inverse season, that cotton is fully valued in the mid to high 80s and that we would be a scale up seller at these levels. While the funds can drive the market direction, we think the upside move will be limited given the underlying fundamentals.</div>
+                  <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a>
+                  <div>{currentLang}</div>
+                </div>
+                {/* <div className="flex flex-col gap-4">
+                  <div className="px-3 py-2 shadow-lg rounded-lg border text-center">Cotton Market Report Link</div>
+                  <div className="grid place-content-center w-full">
+                    <img src="https://mcusercontent.com/672ff4ca3cd7768c1563b69f0/images/697840bb-da2a-35c5-28b6-237954d8b369.png" className="rounded-lg w-full" />
+                  </div>
+                </div> */}
               </div>
             </div>
             <div className="flex flex-col">
@@ -2823,7 +2842,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
-              <LineGraphNotTime data={(contract1 && contract2 && contract3) ? getStudyData(JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract1), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract2), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract3)) : []} graphWidth={1000} graphHeight={600} />
+              <LineGraphNotTime xDomain1={0} xDomain2={12} data={(contract1 && contract2 && contract3) ? getStudyData(JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract1), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract2), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract3)) : []} graphWidth={1000} graphHeight={600} />
             </div>
             <div className="text-center text-2xl mt-4">Please Select the Seasons you want to compare</div>
             <div className="grid grid-cols-3 justify-center gap-8 mx-8 mt-4 text-xl">
@@ -3185,9 +3204,20 @@ export const getServerSideProps = async (context: any) => {
 
   const supplyAndDemandData = JSON.stringify(supplydemand)
 
+  const cottonreport = await prisma?.external_Links.findMany({
+    where: {
+      type: "Cotton Report"
+    },
+    orderBy: {
+      date_created: "desc"
+    }
+  })
+
+  const cottonReportURLData = JSON.stringify(cottonreport)
+
   // console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData },
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData },
   };
 };
 

@@ -7,13 +7,23 @@ import { prisma } from "../../server/db";
 const AddSnapshot = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
 
-        await prisma?.snapshot_strategy.create({
+        const record = await prisma?.snapshot_strategy.create({
             data: {
                 title_of_snapshot_strategy: req.body.title,
                 text_of_snapshot_strategy: req.body.text,
                 image_of_snapshot_strategy: req.body.image,
                 date_of_snapshot_strategy: new Date(),
                 news_type: req.body.news_type ?? "",
+                added_by: req.body.user
+            }
+        })
+
+        await prisma?.things_to_review.create({
+            data: {
+                table: "Snapshot Strategy",
+                type: "Verification",
+                thing_id: record.record_id,
+                information: `Title: ${req.body.title},\nText: ${req.body.text} `,
                 added_by: req.body.user
             }
         })

@@ -341,6 +341,9 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
     return (
         // <div id='lineGraph' className='-mb-10'>
         <div id='lineGraph' className='relative w-full h-[400px] px-4'>
+            <div className='absolute inset-0 grid place-content-center'>
+                <img src='/macrovesta_watermark.png' className='w-[200px]' />
+            </div>
             <svg className="w-full h-full -mb-7" ref={ref} style={{ width: '100%', maxHeight: '450px' }} />
         </div>
     );
