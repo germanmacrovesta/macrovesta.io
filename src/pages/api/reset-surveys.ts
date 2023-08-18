@@ -5,11 +5,32 @@ import { prisma } from "../../server/db";
 const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET' && req.query?.access == "abc123") {
 
+        const users = await prisma?.user.findMany({
+            where: {
+                id: "cljzpccri0000zbdovqvictuk"
+            }
+        })
         try {
             const updateUsers = await prisma?.user.updateMany({
+                where: {
+                    id: "cljzpccri0000zbdovqvictuk"
+                },
                 data: {
                     submittedSurvey: false
                 }
+            })
+
+            users.forEach(async (user) => {
+                await fetch(`http://${req.headers.host}/api/send-email`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        to: user.email, subject: `Weekly Market Sentiment Survey Available Now`,
+                        text: `Dear ${user.name?.split(' ')[0]},\n\nOur weekly Cotton Market Survey is now available for your input.\n\nClick here to go to https://macrovesta.ai \n\nYour participation strengthens our community and helps us serve you better. Thank you for being a part of it.`
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
             })
             res.status(200).json({ message: JSON.stringify(updateUsers) });
         } catch (error) {
