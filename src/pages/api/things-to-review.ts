@@ -15,16 +15,17 @@ const ThingsToReview = async (req: NextApiRequest, res: NextApiResponse) => {
 
         thingsKeys.forEach((key) => {
             const tempThings = things.filter((thing) => thing.table == key)
-
+            emailText += key
             tempThings.forEach((thing) => {
                 emailText += "<p>"
                 emailText += thing.information
                 emailText += "</p>"
                 if (thing.type == "Verification") {
-                    emailText += `<a href='https://macrovesta.ai/api/verify-post?table=${thing.table}&record_id=${thing.record_id}'>Verify</a>`
+                    emailText += `<a href='https://macrovesta.ai/api/verify-post?table=${thing.table}&record_id=${thing.thing_id}'>Verify</a><br/>`
                 }
             })
         })
+        emailText += "<br/><br/>"
 
         await fetch(`http://${req.headers.host}/api/send-email`, {
             method: 'POST',
