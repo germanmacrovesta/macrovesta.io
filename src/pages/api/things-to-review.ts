@@ -27,13 +27,15 @@ const ThingsToReview = async (req: NextApiRequest, res: NextApiResponse) => {
         })
         emailText += "<br/><br/>"
 
-        await fetch(`http://${req.headers.host}/api/send-email`, {
+        await fetch(`https://${req.headers.host}/api/send-email`, {
             method: 'POST',
             body: JSON.stringify({ to: 'developer@macrovesta.ai', subject: `Things to look at`, text: `${emailText}`, htmlText: emailText }),
             headers: {
                 'Content-Type': 'application/json'
             }
         });
+
+        await prisma?.things_to_review.deleteMany({})
 
         res.status(200).json({ message: 'Success' });
 
