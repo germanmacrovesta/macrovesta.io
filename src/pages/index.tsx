@@ -2158,7 +2158,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   In Country News
                 </div>
                 <div className="flex flex-col justify-around items-start gap-4 mt-4">
-                  {JSON.parse(countryNewsData).filter((object: any, index: number) => index < 6).map((news) => (
+                  {JSON.parse(countryNewsData).filter((object: any, index: number) => index < 10).map((news) => (
                     <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setCountryNewsPopup(news)}>
                       {news.title_of_in_country_news}
                     </div>
