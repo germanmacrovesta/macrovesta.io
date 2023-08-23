@@ -6,15 +6,15 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
     if (req.method === 'GET' && req.query?.access == "abc123") {
 
         const users = await prisma?.user.findMany({
-            // where: {
-            //     id: "cljzpccri0000zbdovqvictuk"
-            // }
+            where: {
+                id: "cljzpccri0000zbdovqvictuk"
+            }
         })
         try {
             const updateUsers = await prisma?.user.updateMany({
-                // where: {
-                //     id: "cljzpccri0000zbdovqvictuk"
-                // },
+                where: {
+                    id: "cljzpccri0000zbdovqvictuk"
+                },
                 data: {
                     submittedSurvey: false
                 }
