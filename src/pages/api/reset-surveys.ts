@@ -7,23 +7,39 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
 
         const users = await prisma?.user.findMany({
             where: {
-                id: "cljzpccri0000zbdovqvictuk"
+                OR: [
+                    {
+                        id: "cljzpccri0000zbdovqvictuk"
+                    },
+                    {
+                        id: "cljzx1vgn0000zbegn63qn1xg"
+                    }
+                ]
             }
         })
         try {
             console.log("updating user false")
             const updateUsers = await prisma?.user.updateMany({
                 where: {
-                    id: "cljzpccri0000zbdovqvictuk"
+                    OR: [
+                        {
+                            id: "cljzpccri0000zbdovqvictuk"
+                        },
+                        {
+                            id: "cljzx1vgn0000zbegn63qn1xg"
+                        }
+                    ]
                 },
                 data: {
                     submittedSurvey: false
                 }
             })
-            console.log("sending email")
+            console.log("sending emails")
 
             users.forEach(async (user) => {
-                await fetch(`https://${req.headers.host}/api/send-email`, {
+                console.log("sending email")
+
+                await fetch(`http://${req.headers.host}/api/send-email`, {
                     method: 'POST',
                     body: JSON.stringify({
                         to: user.email, subject: `Weekly Market Sentiment Survey Available Now`,
@@ -34,6 +50,7 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
                         'Content-Type': 'application/json'
                     }
                 });
+                console.log("finished email")
             })
             console.log("finished emails")
 
