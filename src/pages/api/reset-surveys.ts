@@ -6,30 +6,30 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
     if (req.method === 'GET' && req.query?.access == "abc123") {
 
         const users = await prisma?.user.findMany({
-            where: {
-                OR: [
-                    {
-                        id: "cljzpccri0000zbdovqvictuk"
-                    },
-                    {
-                        id: "cljzx1vgn0000zbegn63qn1xg"
-                    }
-                ]
-            }
+            // where: {
+            //     OR: [
+            //         {
+            //             id: "cljzpccri0000zbdovqvictuk"
+            //         },
+            //         {
+            //             id: "cljzx1vgn0000zbegn63qn1xg"
+            //         }
+            //     ]
+            // }
         })
         try {
             console.log("updating user false")
             const updateUsers = await prisma?.user.updateMany({
-                where: {
-                    OR: [
-                        {
-                            id: "cljzpccri0000zbdovqvictuk"
-                        },
-                        {
-                            id: "cljzx1vgn0000zbegn63qn1xg"
-                        }
-                    ]
-                },
+                // where: {
+                //     OR: [
+                //         {
+                //             id: "cljzpccri0000zbdovqvictuk"
+                //         },
+                //         {
+                //             id: "cljzx1vgn0000zbegn63qn1xg"
+                //         }
+                //     ]
+                // },
                 data: {
                     submittedSurvey: false
                 }
