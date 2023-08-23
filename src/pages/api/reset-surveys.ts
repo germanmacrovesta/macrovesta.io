@@ -11,6 +11,7 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
             }
         })
         try {
+            console.log("updating user false")
             const updateUsers = await prisma?.user.updateMany({
                 where: {
                     id: "cljzpccri0000zbdovqvictuk"
@@ -19,6 +20,7 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
                     submittedSurvey: false
                 }
             })
+            console.log("sending email")
 
             users.forEach(async (user) => {
                 await fetch(`https://${req.headers.host}/api/send-email`, {
@@ -33,6 +35,8 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
                     }
                 });
             })
+            console.log("finished emails")
+
             res.status(200).json({ message: JSON.stringify(updateUsers) });
         } catch (error) {
             console.log(error)
