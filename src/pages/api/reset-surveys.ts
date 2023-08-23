@@ -36,10 +36,10 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
             })
             console.log("sending emails")
 
-            users.forEach(async (user) => {
+            const promises = users.map(async (user) => {
                 console.log("sending email")
 
-                await fetch(`http://${req.headers.host}/api/send-email`, {
+                const promise = await fetch(`https://${req.headers.host}/api/send-email`, {
                     method: 'POST',
                     body: JSON.stringify({
                         to: user.email, subject: `Weekly Market Sentiment Survey Available Now`,
@@ -51,10 +51,13 @@ const AddBasisCostEstimate = async (req: NextApiRequest, res: NextApiResponse) =
                     }
                 });
                 console.log("finished email")
+                return promise
             })
             console.log("finished emails")
 
-            res.status(200).json({ message: JSON.stringify(updateUsers) });
+            Promise.all(promises).then(() => { console.log("promises finished"); res.status(200).json({ message: JSON.stringify(updateUsers) }) }).catch(() => res.status(400).json({ message: 'Error Sending Emails' }))
+
+            // res.status(200).json({ message: JSON.stringify(updateUsers) });
         } catch (error) {
             console.log(error)
             res.status(400).json({ message: 'Error Updating' });
