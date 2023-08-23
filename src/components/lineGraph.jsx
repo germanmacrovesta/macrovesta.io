@@ -18,7 +18,11 @@ function weekNumber(date) {
     return Math.ceil((dayOfYear + (start.getDay() + 1)) / 7);
 }
 
-const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400, weekNumberTicks = false, xAxisTitle = "", yAxisTitle = "" }) => {
+
+const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400, weekNumberTicks = false, xAxisTitle = "", yAxisTitle = "", verticalTooltip = true }) => {
+    let tooltipTimeout;
+    const tooltipId = `tooltip-${Math.random().toString(36).substr(2, 9)}`;
+
     const ref = useRef();
 
     const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
@@ -96,6 +100,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
             // y.domain(valueDomain);
 
             const tooltip = d3.select("body").append("div")
+                .attr("id", tooltipId)
                 .attr("class", "tooltip")
                 .style("opacity", 0);
 
@@ -103,6 +108,85 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
             var newTooltip = d3.select("body").append("div")
                 .attr("class", "tooltip")
                 .style("opacity", 0);
+
+            if (verticalTooltip == true && data.length < 4) {
+
+                const overlay = svg.append('rect')
+                    .attr('width', width)
+                    .attr('height', height)
+                    .attr('fill', 'none')
+                    .attr('pointer-events', 'all');
+
+                const verticalLine = svg.append('line')
+                    .attr('stroke', '#aaa')
+                    .attr('y1', 0)
+                    .attr('y2', height)
+                    .attr('x', 10)
+                    // .attr('x2', 0)
+                    .attr('opacity', 0);
+
+                overlay.on('mousemove', function (event) {
+                    // clearTimeout(tooltipTimeout);
+                    const [mx] = d3.pointer(event);
+
+                    // tooltipTimeout = setTimeout(() => {
+                    // Place your tooltip update logic here
+
+                    const date = x.invert(mx);
+
+                    // We will get the nearest x-value for each series 
+                    // and store the respective y-values along with series names
+                    const tooltipData = [];
+
+                    data.forEach(series => {
+                        const bisectDate = d3.bisector(d => new Date(d[xValue])).left;
+                        const idx = bisectDate(series.data, date);
+
+                        const d0 = series.data[idx - 1];
+                        const d1 = series.data[idx];
+                        const d = !d1 ? d0 : (!d0 ? d1 : (date - new Date(d0[xValue]) > new Date(d1[xValue]) - date ? d1 : d0));
+
+                        tooltipData.push({
+                            name: series.name,
+                            value: d[yValue],
+                            time: d[xValue]
+                        });
+                    });
+
+                    // Setting position for vertical line based on nearest x-point
+                    const closestX = tooltipData[0] && tooltipData[0].time;
+
+                    console.log("Mouse X:", mx);
+                    console.log("Closest Data X:", closestX);
+                    console.log("Mapped X:", x(closestX));
+
+                    verticalLine
+                        .attr('x1', x(new Date(closestX)))
+                        .attr('x2', x(new Date(closestX)))
+                        .attr('opacity', 1);
+
+                    // Constructing tooltip content
+                    const closestDate = new Date(closestX)
+                    const closestDateString = `${closestDate.getDate()}-${closestDate.getMonth() + 1}-${closestDate.getFullYear()}`
+                    let tooltipX = `${closestDateString}<br/>`
+                    let tooltipY = tooltipData.map(item => `${item.name}: ${(item.value)}`).join('<br/>');
+                    let tooltipContent = tooltipX + tooltipY
+
+                    tooltip
+                        .html(tooltipContent)
+                        .style('left', (event.pageX + 15) + 'px')
+                        .style('top', (event.pageY - 28) + 'px')
+                        .style('opacity', 1);
+                    // }, 0);
+
+                });
+
+                svg.on('mouseleave', function () {
+                    tooltip.style('opacity', 0);
+                    verticalLine.attr('opacity', 0);
+                });
+            }
+
 
             // Define a mousemove event for the SVG canvas
             // svg.on("mousemove", function (event) {
@@ -163,19 +247,113 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
             // });
 
             data.forEach((series, i) => {
-                let path = svg.append("path")
+                let visiblepath = svg.append("path")
                     .datum(series.data)
                     .attr("fill", "none")
                     .attr("stroke", colors(i))
                     .attr("stroke-width", 1.5)
                     .attr("class", `line line-${i}`)
                     .attr("d", line);
+                let invisiblePath = svg.append("path")
+                    .datum(series.data)
+                    .attr("fill", "none")
+                    .attr("stroke", colors(i))
+                    .attr("stroke-width", 10)
+                    .attr("stroke-opacity", 0)
+                    .attr("class", `line line-${i}`)
+                    .attr("d", line);
 
                 if (series.dottedLine) {
-                    path.attr("stroke-dasharray", ("3, 3")) // this will create a dotted line
+                    invisiblePath.attr("stroke-dasharray", ("3, 3")) // this will create a dotted line
+                } else if (verticalTooltip) {
+                    if (data.length < 4) {
+
+                    } else {
+                        const verticalLine = svg.append('line')
+                            .attr('stroke', '#aaa')
+                            .attr('y1', 0)
+                            .attr('y2', height)
+                            .attr('x', 10)
+                            // .attr('x2', 0)
+                            .attr('opacity', 0);
+
+                        invisiblePath.on('mousemove', function (event) {
+                            // clearTimeout(tooltipTimeout);
+                            const [mx] = d3.pointer(event);
+
+                            // this.parentNode.appendChild(this);
+                            // d3.select(this).transition()
+                            //     .duration(200)
+                            //     .attr("stroke-width", 6);
+
+                            // tooltipTimeout = setTimeout(() => {
+                            // Place your tooltip update logic here
+
+                            const date = x.invert(mx);
+
+                            // We will get the nearest x-value for each series 
+                            // and store the respective y-values along with series names
+                            const tooltipData = [];
+
+
+                            const bisectDate = d3.bisector(d => new Date(d[xValue])).left;
+                            const idx = bisectDate(series.data, date);
+
+                            const d0 = series.data[idx - 1];
+                            const d1 = series.data[idx];
+                            const d = !d1 ? d0 : (!d0 ? d1 : (date - new Date(d0[xValue]) > new Date(d1[xValue]) - date ? d1 : d0));
+
+                            tooltipData.push({
+                                name: series.name,
+                                value: d[yValue],
+                                time: d[xValue]
+                            });
+
+
+                            // Setting position for vertical line based on nearest x-point
+                            const closestX = tooltipData[0] && tooltipData[0].time;
+
+                            console.log("Mouse X:", mx);
+                            console.log("Closest Data X:", closestX);
+                            console.log("Mapped X:", x(closestX));
+
+                            verticalLine
+                                .attr('x1', x(new Date(closestX)))
+                                .attr('x2', x(new Date(closestX)))
+                                .attr('opacity', 1);
+
+                            // Constructing tooltip content
+                            let closestDate = new Date();
+                            let closestDateString;
+                            if (weekNumberTicks) {
+                                closestDateString = weekNumber(new Date(closestX))
+                            } else {
+                                closestDate = new Date(closestX)
+                                closestDateString = `${closestDate.getDate()}-${closestDate.getMonth() + 1}-${closestDate.getFullYear()}`
+                            }
+                            let tooltipX = `${closestDateString}<br/>`
+                            let tooltipY = tooltipData.map(item => `${item.name}: ${(item.value)}`).join('<br/>');
+                            let tooltipContent = tooltipX + tooltipY
+
+                            tooltip
+                                .html(tooltipContent)
+                                .style('left', (event.pageX + 15) + 'px')
+                                .style('top', (event.pageY - 28) + 'px')
+                                .style('opacity', 1);
+                            // }, 0);
+
+                        })
+                            .on('mouseleave', function () {
+                                // d3.select(this).transition()
+                                //     .duration(200)
+                                //     .attr("stroke-width", 1.5);
+                                tooltip.style('opacity', 0);
+                                verticalLine.attr('opacity', 0);
+                            });
+                    }
                 } else if (series.noCircles) {
                     if (series.noHover) {
-                        path.on("mousemove", function (event) {
+                        invisiblePath.on("mousemove", function (event) {
                             // Get mouse coordinates in SVG-space
                             var mouse = d3.pointer(event);
 
@@ -210,7 +388,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                         //             .style("opacity", 0);
                         //     });
                     } else {
-                        path.on("mouseover", function (e, d) {
+                        invisiblePath.on("mouseover", function (event, d) {
                             var mouse = d3.pointer(event);
 
                             // Convert those coordinates into your graph's domain
@@ -221,13 +399,13 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                             d3.select(this).transition()
                                 .duration(200)
                                 .attr("stroke-width", 6);
-                            tooltip.transition()
-                                .duration(200)
-                                .style("opacity", .9);
-                            tooltip.html(`${capitalizeText(series.name)}<br/>${(y0).toFixed(0)}`)
-                                .style("left", (e.pageX - 65) + "px")
-                                .style("top", (e.pageY - 35) + "px")
-                                .style("padding",);
+                            // tooltip.transition()
+                            //     .duration(200)
+                            //     .style("opacity", .9);
+                            // tooltip.html(`${capitalizeText(series.name)}<br/>${(y0).toFixed(0)}`)
+                            //     .style("left", (e.pageX - 65) + "px")
+                            //     .style("top", (e.pageY - 35) + "px")
+                            //     .style("padding",);
                         })
                             .on("mouseout", function (e) {
                                 d3.select(this).transition()
@@ -239,7 +417,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                             });
                     }
                 } else {
-                    path.on("mouseover", function (e, d) {
+                    invisiblePath.on("mouseover", function (e, d) {
                         d3.select(this).transition()
                             .duration(200)
                             .attr("stroke-width", 6);
@@ -288,7 +466,6 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                 }
             });
 
-
             const monthFormat = d3.timeFormat("%B");
             const yearFormat = d3.timeFormat("%Y");
 
@@ -336,12 +513,15 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                 .text(xAxisTitle);
 
         }
+        return () => {
+            d3.select(`#${tooltipId}`).remove();
+        }
     }, [data, xValue, yValue, dimensions]);
 
     return (
         // <div id='lineGraph' className='-mb-10'>
         <div id='lineGraph' className='relative w-full h-[400px] px-4'>
-            <div className='absolute inset-0 grid place-content-center'>
+            <div className='absolute pointer-events-none inset-0 grid place-content-center'>
                 <img src='/macrovesta_watermark.png' className='w-[200px]' />
             </div>
             <svg className="w-full h-full -mb-7" ref={ref} style={{ width: '100%', maxHeight: '450px' }} />

@@ -124,7 +124,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData }) => {
+const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -979,7 +979,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
         if (close2 !== undefined) {
           merged.push({
             time: datetime,
-            value: close1 - close2,
+            value: Number((close1 - close2).toPrecision(4)),
           });
         }
       }
@@ -1198,7 +1198,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const [basisCountry, setBasisCountry] = React.useState("Brazil");
 
-  const [WeekOrYear, setWeekOrYear] = React.useState("Week")
+  const [WeekOrYear, setWeekOrYear] = React.useState("Year")
   const [Year, setYear] = React.useState("0102")
   const [Week, setWeek] = React.useState(1)
 
@@ -1480,7 +1480,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="grid grid-cols-1">
                 <div className="flex flex-col gap-y-6 items-center px-8">
                   <div className="text-left font-semibold text-lg">Conclusion of latest market report</div>
-                  <div>We maintain that the 2023/24 season will prove to be an inverse season, that cotton is fully valued in the mid to high 80s and that we would be a scale up seller at these levels. While the funds can drive the market direction, we think the upside move will be limited given the underlying fundamentals.</div>
+                  <div>{JSON.parse(conclusionData)?.text}</div>
                   <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a>
                   <div>{currentLang}</div>
                 </div>
@@ -1504,7 +1504,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
                 <div className="flex flex-col col-span-2 items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23</div>
-                  <LineGraph data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
+                  <LineGraph verticalTooltip={true} data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
                   <div className="flex justify-center mt-8">
                     <div className="w-[200px]">
                       <SingleSelectDropdown
@@ -1524,22 +1524,22 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTH24 Spread</div>
-                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTH24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTH24 Spread")} monthsTicks={6} />
+                  <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTH24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTH24 Spread")} monthsTicks={6} />
                   <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Nearby Spread")} session={session} section="Nearby Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTK24 Spread</div>
-                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTK24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTK24 Spread")} monthsTicks={6} />
+                  <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTK24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTK24 Spread")} monthsTicks={6} />
                   <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Second Spread")} session={session} section="Second Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTN24 Spread</div>
-                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTN24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTN24 Spread")} />
+                  <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTN24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTN24 Spread")} />
                   <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Third Spread")} session={session} section="Third Spread" />
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTZ24 Spread</div>
-                  <LineGraph data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTZ24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTZ24 Spread")} />
+                  <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTZ24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTZ24 Spread")} />
                   <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Fourth Spread")} session={session} section="Fourth Spread" />
                 </div>
               </div>
@@ -1757,7 +1757,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     {snapshot.title_of_snapshot_strategy}
                   </div>
                 ))} */}
-                  {JSON.parse(snapshotsData).filter((object: any, index: number) => object.news_type == "Recent Events").filter((object: any, index: number) => index < 5).map((snapshot) => (
+                  {JSON.parse(snapshotsData).filter((object: any, index: number) => object.news_type == "Recent Events").filter((object: any, index: number) => index < 8).map((snapshot) => (
                     <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
                       {snapshot.title_of_snapshot_strategy}
                     </div>
@@ -1788,7 +1788,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     {snapshot.title_of_snapshot_strategy}
                   </div>
                 ))} */}
-                  {JSON.parse(snapshotsData).filter((object: any, index: number) => (object.news_type == "Short Term" || object.news_type == "Long Term")).filter((object: any, index: number) => index < 5).sort((a, b) => { if (a.news_type < b.news_type) return 1; if (a.news_type > b.news_type) return -1; return 0; }).map((snapshot) => (
+                  {JSON.parse(snapshotsData).filter((object: any, index: number) => (object.news_type == "Short Term" || object.news_type == "Long Term")).filter((object: any, index: number) => index < 8).sort((a, b) => { if (a.news_type < b.news_type) return 1; if (a.news_type > b.news_type) return -1; return 0; }).map((snapshot) => (
                     <div className="border flex justify-between hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full h-fit py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
                       <div>
                         {snapshot.title_of_snapshot_strategy}
@@ -1933,7 +1933,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
               <div className="flex flex-col items-center">
                 <div className="-mb-2 text-center font-semibold text-xl">Historical Basis Cost</div>
-                <LineGraph data={transformData(JSON.parse(basisData).filter((basis) => (basis.country == basisCountry) && (basis.cost_type == selectedCostType)))} xValue="time" yValue="value" monthsTicks={6} />
+                <LineGraph verticalTooltip={true} data={transformData(JSON.parse(basisData).filter((basis) => (basis.country == basisCountry) && (basis.cost_type == selectedCostType)))} xValue="time" yValue="value" monthsTicks={6} />
               </div>
               <div className="col-span-2 grid grid-cols-2 mb-4">
                 <div className="grid place-content-center">
@@ -2045,7 +2045,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
               <div className="flex flex-col col-span-1 bg-[#ffffff] p-4 rounded-xl shadow-lg">
 
-                <div className="grid grid-cols-2 mb-12">
+                <div className="grid grid-cols-2">
                   <div className="col-span-2 text-center text-xl font-semibold mb-4">
                     US Exports Sales
                   </div>
@@ -2125,9 +2125,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
                   <div className="col-span-2 flex flex-col items-center w-full">
                     <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
-                    <div className="mb-16 w-full">
+                    <div className="mb-4 w-full">
 
-                      <LineGraph data={getUSExportSalesData(JSON.parse(exportSalesData).filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), ["net_sales", "next_marketing_year_net_sales"], ["Net Sales", "Next Marketing Year Net Sales"])} xValue="x" yValue="y" xAxisTitle="Week" />
+                      <LineGraph verticalTooltip={true} data={getUSExportSalesData(JSON.parse(exportSalesData).filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), ["net_sales", "next_marketing_year_net_sales"], ["Net Sales", "Next Marketing Year Net Sales"])} xValue="x" yValue="y" xAxisTitle="Week" />
                     </div>
                     {/* {commitmentWeekOrYear == "Year" && (
                       <>
@@ -2297,7 +2297,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         placeholder="Select Week or Year"
                         searchPlaceholder="Search Options"
                         includeLabel={false}
-                        defaultValue="Week"
+                        defaultValue="Year"
                       />
                     </div>
                     {WeekOrYear == "Year" && (
@@ -2712,7 +2712,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCommitmentOfTradersWeekData(JSON.parse(commitmentData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain2={52} xAxisTitle="Week" />
+                        <LineGraphNotTime verticalTooltip={true} data={getCommitmentOfTradersWeekData(JSON.parse(commitmentData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain2={52} xAxisTitle="Week" />
                       </div>
                     </>
                   )}
@@ -2721,7 +2721,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCommitmentOfTradersSeasonData(JSON.parse(commitmentData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
+                        <LineGraphNotTime verticalTooltip={true} data={getCommitmentOfTradersSeasonData(JSON.parse(commitmentData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
                       </div>
                     </>
                   )}
@@ -2798,7 +2798,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     <> */}
                   <div className="mt-6 -mb-2 font-semibold">Historical WASDE</div>
                   <div className="mb-16 w-full">
-                    <LineGraph data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (new Date(data.date).getMonth() == new Date().getMonth() - 1) && (data.date < selectedSupplyAndDemandEndDate) && (data.date > selectedSupplyAndDemandStartDate)), supplyAndDemandPropertiesArray, supplyAndDemandNamesArray)} graphWidth={1000} />
+                    <LineGraph verticalTooltip={true} data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (new Date(data.date).getMonth() == new Date().getMonth() - 1) && (data.date < selectedSupplyAndDemandEndDate) && (data.date > selectedSupplyAndDemandStartDate)), supplyAndDemandPropertiesArray, supplyAndDemandNamesArray)} graphWidth={1000} />
                   </div>
                   <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
@@ -2832,7 +2832,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   </div>
                   <div className="mt-6 -mb-2 font-semibold">Supply and Demand by Season</div>
                   <div className="mb-16 w-full">
-                    <LineGraph data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (data.season == selectedSupplyAndDemandSeason)), supplyAndDemandProjectedPropertiesArray, supplyAndDemandProjectedNamesArray)} graphWidth={1000} />
+                    <LineGraph verticalTooltip={true} data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (data.season == selectedSupplyAndDemandSeason)), supplyAndDemandProjectedPropertiesArray, supplyAndDemandProjectedNamesArray)} graphWidth={1000} />
                   </div>
                   {/* </>
                   )} */}
@@ -2842,7 +2842,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
-              <LineGraphNotTime xDomain1={0} xDomain2={12} data={(contract1 && contract2 && contract3) ? getStudyData(JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract1), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract2), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract3)) : []} graphWidth={1000} graphHeight={600} />
+              <LineGraphNotTime verticalTooltip={false} xDomain1={0} xDomain2={12} data={(contract1 && contract2 && contract3) ? getStudyData(JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract1), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract2), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract3)) : []} graphWidth={1000} graphHeight={600} />
             </div>
             <div className="text-center text-2xl mt-4">Please Select the Seasons you want to compare</div>
             <div className="grid grid-cols-3 justify-center gap-8 mx-8 mt-4 text-xl">
@@ -2949,7 +2949,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             <div className="flex flex-col items-center bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">V4</div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
-              <LineGraphNotTime data={(season1 && season2 && season3) ? getSeasonData(JSON.parse(seasonsData).find((season) => season.season == season1), JSON.parse(seasonsData).find((season) => season.season == season2), JSON.parse(seasonsData).find((season) => season.season == season3)) : []} graphWidth={1000} graphHeight={600} />
+              <LineGraphNotTime verticalTooltip={false} data={(season1 && season2 && season3) ? getSeasonData(JSON.parse(seasonsData).find((season) => season.season == season1), JSON.parse(seasonsData).find((season) => season.season == season2), JSON.parse(seasonsData).find((season) => season.season == season3)) : []} graphWidth={1000} graphHeight={600} />
             </div>
             <div className="text-center text-2xl mt-4">Please Select the Seasons you want to compare</div>
             <div className="grid grid-cols-3 justify-center gap-8 mx-8 mt-4 text-xl">
@@ -3146,6 +3146,9 @@ export const getServerSideProps = async (context: any) => {
   const countryNews = await prisma?.in_country_news.findMany({
     where: {
       verified: true
+    },
+    orderBy: {
+      date_of_in_country_news: "desc"
     }
   })
   const countryNewsData = JSON.stringify(countryNews)
@@ -3153,6 +3156,9 @@ export const getServerSideProps = async (context: any) => {
   const snapshot = await prisma?.snapshot_strategy.findMany({
     where: {
       verified: true
+    },
+    orderBy: {
+      date_of_snapshot_strategy: "desc"
     }
   })
   const snapshotsData = JSON.stringify(snapshot);
@@ -3215,9 +3221,17 @@ export const getServerSideProps = async (context: any) => {
 
   const cottonReportURLData = JSON.stringify(cottonreport)
 
+  const conclusion = await prisma?.conclusion.findFirst({
+    orderBy: {
+      date_created: "desc"
+    }
+  })
+
+  const conclusionData = JSON.stringify(conclusion)
+
   // console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData },
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData },
   };
 };
 

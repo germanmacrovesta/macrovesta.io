@@ -29,7 +29,7 @@ function removeCommas(str) {
 
 function ukDateToISO(ukDateString) {
     var parts = ukDateString.split("/");
-    return new Date(parts[2], parts[1] - 1, parts[0]);
+    return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]), 12, 0, 0);
 }
 
 var date = ukDateToISO("30/03/2010");
@@ -62,7 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     // Map CSV row to Prisma model data
                     const modelData = Object.entries(row).reduce(
                         (acc, [key, value]) => {
-                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments" && key != "season" && key != "dead" && key != "report_date_as_mm_dd_yyyy" && key != "crop_year" && key != "week_ending" && key != "" && key != "projected" && key != "date") {
+                            if (key != "record_id" && key != "MA-Simple" && key != "datetime" && key != "date_of_high" && key != "date_of_low" && key != "comments" && key != "season" && key != "dead" && key != "report_date_as_dd_mm_yyyy" && key != "crop_year" && key != "week_ending" && key != "" && key != "projected" && key != "date") {
                                 acc[key] = (value != null && value != undefined) ? isNaN(Number(removeCommas(value))) ? String(value)[0] == "(" ? removeBrackets(value) : value : Number(removeCommas(value)) : null;
                             } else if ((key == "datetime")) {
                                 acc[key] = new Date(value)
@@ -72,7 +72,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                                 // let dateRecord = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
                                 // console.log("Date Record", `${parts[2]}-${parts[1]}-${parts[0]}`)
                                 acc[key] = new Date(excelDateToJSDate(value))
-                            } else if (key == "report_date_as_mm_dd_yyyy" || key == "date") {
+                            } else if (key == "report_date_as_dd_mm_yyyy" || key == "date") {
                                 acc[key] = ukDateToISO(value)
                                 // } else if (key == "comments" || key == "season" || key == "week") {
                                 //     acc[key] = `${value}`

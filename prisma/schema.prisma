@@ -65,6 +65,14 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+//Below is the table conclusion
+
+model conclusion {
+    record_id    String   @id @default(cuid())
+    text         String   @db.Text
+    date_created DateTime @default(now())
+}
+
 //Below is the table Things to Review
 
 model things_to_review {
@@ -141,7 +149,7 @@ model commitment_of_traders {
     crop_year                 String
     month                     String
     week                      Int?
-    report_date_as_mm_dd_yyyy DateTime @db.Date()
+    report_date_as_dd_mm_yyyy DateTime @db.Date()
     open_interest_all         Int?
     producer_merchant_net     Int?
     swap_position_net         Int?

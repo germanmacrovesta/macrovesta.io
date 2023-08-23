@@ -6,7 +6,6 @@
 .tooltip {
     position: absolute;
     text-align: center;
-    width: 130px;
     padding-top: 4px;
     padding-bottom: 4px;
     padding-left: 5px;
@@ -47,3 +46,7 @@ input.text-white:-webkit-autofill:active {
   font-size: inherit;
   color: inherit;
 }
+
+/* body {
+  overflow-x: hidden;
+} */
