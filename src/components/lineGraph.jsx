@@ -19,7 +19,7 @@ function weekNumber(date) {
 }
 
 
-const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400, weekNumberTicks = false, xAxisTitle = "", yAxisTitle = "", verticalTooltip = true }) => {
+const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400, weekNumberTicks = false, xAxisTitle = "", yAxisTitle = "", verticalTooltip = true, lineLimit = 4 }) => {
     let tooltipTimeout;
     const tooltipId = `tooltip-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -109,7 +109,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                 .attr("class", "tooltip")
                 .style("opacity", 0);
 
-            if (verticalTooltip == true && data.length < 4) {
+            if (verticalTooltip == true && data.length < lineLimit) {
 
                 const overlay = svg.append('rect')
                     .attr('width', width)
@@ -247,7 +247,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
             // });
 
             data.forEach((series, i) => {
-                let visiblepath = svg.append("path")
+                let visiblePath = svg.append("path")
                     .datum(series.data)
                     .attr("fill", "none")
                     .attr("stroke", colors(i))
@@ -264,9 +264,9 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                     .attr("d", line);
 
                 if (series.dottedLine) {
-                    invisiblePath.attr("stroke-dasharray", ("3, 3")) // this will create a dotted line
+                    visiblePath.attr("stroke-dasharray", ("3, 3")) // this will create a dotted line
                 } else if (verticalTooltip) {
-                    if (data.length < 4) {
+                    if (data.length < lineLimit) {
 
                     } else {
                         const verticalLine = svg.append('line')

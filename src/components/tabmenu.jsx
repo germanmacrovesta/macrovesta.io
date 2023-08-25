@@ -33,9 +33,10 @@ export default function TabMenu(props) {
             {children.map((child, index) => (
                 <div className="relative z-10 -mr-8">
                     {/* {console.log(child.page)} */}
-                    {urlPath == "/" && (
+                    {urlPath == child.page && (
                         <Link href={{
-                            pathname: `${props.root}${child.page}`,
+                            // pathname: `${props.root}${child.page}`,
+                            pathname: `${child.page}`,
                             // query: {
                             //     ServiceProviderID: props.router.query['ServiceProviderID'],
                             //     CompanyID: props.router.query['CompanyID'],
@@ -62,9 +63,10 @@ export default function TabMenu(props) {
                             </div>
                         </Link>
                     )}
-                    {urlPath != "/" && (
+                    {urlPath != child.page && (
                         <Link href={{
-                            pathname: `${props.root}${child.page}`,
+                            // pathname: `${props.root}${child.page}`,
+                            pathname: `${child.page}`,
                             // query: {
                             //     ServiceProviderID: props.router.query['ServiceProviderID'],
                             //     CompanyID: props.router.query['CompanyID'],
@@ -72,7 +74,7 @@ export default function TabMenu(props) {
                             // }
                         }}>
                             <div
-                                className="z-10 cursor-pointer rounded-t-2xl bg-gradient-to-br from-green to-teal-500 text-white shadow-center-md transition duration-150 hover:bg-secondarygrey"
+                                className="z-10 cursor-pointer rounded-t-2xl bg-white text-black shadow-center-md transition duration-150 hover:bg-secondarygrey"
                                 onMouseOver={() => handleHover(child.title)}
                                 onMouseOut={() => handleHover(null)}
                             >
@@ -93,7 +95,7 @@ export default function TabMenu(props) {
                                             />
                                         )}
                                         {showMenuText === child.title && (
-                                            <h3 className="self-center leading-5 text-white">
+                                            <h3 className="self-center leading-5 text-black">
                                                 {child.title}
                                             </h3>
                                         )}

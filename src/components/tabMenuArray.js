@@ -1,8 +1,14 @@
 export const TabMenuArray = [
     {
-        title: "Overview",
+        title: "Home",
         page: "/",
-        imgB: "/Logo_White.svg",
-        imgW: "/Logo_White.svg"
+        imgB: "/Dash_B_SQ.png",
+        imgW: "/Dash_W_SQ.png"
+    },
+    {
+        title: "Overview",
+        page: "/overview",
+        imgB: "/Tracker_B_SQ.png",
+        imgW: "/Tracker_W_SQ.png"
     }
 ]

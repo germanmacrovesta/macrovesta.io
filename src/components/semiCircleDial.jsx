@@ -1,104 +1,136 @@
-import React, { useRef, useEffect } from "react";
-import * as d3 from "d3";
+// import React, { useRef, useEffect } from "react";
+// import * as d3 from "d3";
 
-const SemiCircleDial = ({ value = 0 }) => {
-    const ref = useRef();
+// const SemiCircleDial = ({ value = 0 }) => {
+//     const ref = useRef();
 
-    useEffect(() => {
-        const svg = d3.select(ref.current);
-        const width = 300, height = 150;
-        svg.attr("width", width).attr("height", height);
+//     useEffect(() => {
+//         const svg = d3.select(ref.current);
+//         const width = 200, height = 100;
+//         svg.attr("width", width).attr("height", height);
 
-        // Create a scale to map values to angles
-        const scale = d3.scaleLinear()
-            .domain([-100, 100])
-            .range([-90, 90]);
+//         // Create a scale to map values to angles
+//         const scale = d3.scaleLinear()
+//             .domain([-100, 100])
+//             .range([-90, 90]);
 
-        // Draw the semi-circle dial
-        const arc = d3.arc()
-            .innerRadius(height - 70)
-            .outerRadius(height)
-            .startAngle(-Math.PI / 2)
-            .endAngle(Math.PI / 2);
+//         // Draw the semi-circle dial
+//         const arc = d3.arc()
+//             .innerRadius(height - 70)
+//             .outerRadius(height)
+//             .startAngle(-Math.PI / 2)
+//             .endAngle(Math.PI / 2);
 
-        const dial = svg.append("path")
-            .attr("d", arc)
-            .attr("transform", `translate(${width / 2},${height})`)
-            .style("fill", "#ccc");
+//         const dial = svg.append("path")
+//             .attr("d", arc)
+//             .attr("transform", `translate(${width / 2},${height})`)
+//             .style("fill", "#ccc");
 
-        // Draw additional arcs
-        const arcAngle = Math.PI / 5; // 36 degrees in radians
-        // const colors = d3.scaleOrdinal(d3.schemeCategory10); // colors for the arcs
-        const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
-        const anglesArray = [[- Math.PI / 2, Math.PI / 4], [- Math.PI / 4, Math.PI / 6], [- Math.PI / 12, Math.PI / 6], [Math.PI / 4, - Math.PI / 6], [Math.PI / 2, - Math.PI / 4]]
+//         // Draw additional arcs
+//         const arcAngle = Math.PI / 5; // 36 degrees in radians
+//         // const colors = d3.scaleOrdinal(d3.schemeCategory10); // colors for the arcs
+//         const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
+//         const anglesArray = [[- Math.PI / 2, Math.PI / 4], [- Math.PI / 4, Math.PI / 6], [- Math.PI / 12, Math.PI / 6], [Math.PI / 4, - Math.PI / 6], [Math.PI / 2, - Math.PI / 4]]
 
-        for (let i = 0; i < 5; i++) {
-            const startAngle = anglesArray[i][0];
-            const endAngle = startAngle + anglesArray[i][1];
-            const arcPath = d3.arc()
-                .innerRadius(height - 70)
-                .outerRadius(height)
-                .startAngle(startAngle)
-                .endAngle(endAngle);
+//         const arcs = []; // keep track of the arcs
 
-            svg.append("path")
-                .attr("d", arcPath())
-                .attr("transform", `translate(${width / 2},${height})`)
-                .style("fill", colors(i));
-        }
-        // const startAngle1 = - Math.PI / 2;
-        // const endAngle1 = startAngle1 + (Math.PI / 4);
-        // const arcPath1 = d3.arc()
-        //     .innerRadius(height - 70)
-        //     .outerRadius(height)
-        //     .startAngle(startAngle1)
-        //     .endAngle(endAngle1);
+//         for (let i = 0; i < 5; i++) {
+//             const startAngle = anglesArray[i][0];
+//             const endAngle = startAngle + anglesArray[i][1];
+//             const arcPath = d3.arc()
+//                 .innerRadius(height - 70)
+//                 .outerRadius(height)
+//                 .startAngle(startAngle)
+//                 .endAngle(endAngle);
 
-        // svg.append("path")
-        //     .attr("d", arcPath1())
-        //     .attr("transform", `translate(${width / 2},${height})`)
-        //     .style("fill", "#051D6D");
+//             const arcElement = svg.append("path")
+//                 .attr("d", arcPath())
+//                 .attr("transform", `translate(${width / 2},${height})`)
+//                 .style("fill", colors(i));
 
-        // const startAngle2 = Math.PI / 2
-        // const endAngle2 = startAngle2 - (Math.PI / 4);
-        // const arcPath2 = d3.arc()
-        //     .innerRadius(height - 70)
-        //     .outerRadius(height)
-        //     .startAngle(startAngle2)
-        //     .endAngle(endAngle2);
+//             arcs.push({
+//                 startAngle,
+//                 endAngle,
+//                 element: arcElement,
+//             });
+//         }
+//         // const startAngle1 = - Math.PI / 2;
+//         // const endAngle1 = startAngle1 + (Math.PI / 4);
+//         // const arcPath1 = d3.arc()
+//         //     .innerRadius(height - 70)
+//         //     .outerRadius(height)
+//         //     .startAngle(startAngle1)
+//         //     .endAngle(endAngle1);
 
-        // svg.append("path")
-        //     .attr("d", arcPath2())
-        //     .attr("transform", `translate(${width / 2},${height})`)
-        //     .style("fill", "#051D6D");
+//         // svg.append("path")
+//         //     .attr("d", arcPath1())
+//         //     .attr("transform", `translate(${width / 2},${height})`)
+//         //     .style("fill", "#051D6D");
 
-        // The needle
-        const needle = svg.append("line")
-            .attr("x1", 0)
-            .attr("y1", - height)
-            .attr("x2", 0)
-            .attr("y2", 0)
-            .style("stroke", "#000")
-            .style("stroke-width", 8)
-            .raise();
+//         // const startAngle2 = Math.PI / 2
+//         // const endAngle2 = startAngle2 - (Math.PI / 4);
+//         // const arcPath2 = d3.arc()
+//         //     .innerRadius(height - 70)
+//         //     .outerRadius(height)
+//         //     .startAngle(startAngle2)
+//         //     .endAngle(endAngle2);
 
-        const transitionNeedle = (newValue) => {
-            needle.transition()
-                .duration(1000)
-                .attrTween("transform", () => {
-                    const interpolate = d3.interpolate(scale(0), scale(newValue));
-                    return t => `translate(${width / 2},${height}) rotate(${interpolate(t)})`;
-                });
-        };
+//         // svg.append("path")
+//         //     .attr("d", arcPath2())
+//         //     .attr("transform", `translate(${width / 2},${height})`)
+//         //     .style("fill", "#051D6D");
 
-        transitionNeedle(value);
+//         // The needle
+//         const needle = svg.append("line")
+//             .attr("x1", 0)
+//             .attr("y1", - height)
+//             .attr("x2", 0)
+//             .attr("y2", 0)
+//             .style("stroke", "#000")
+//             .style("stroke-width", 8)
+//             .raise();
 
-    }, [value]);
+//         // const transitionNeedle = (newValue) => {
+//         //     needle.transition()
+//         //         .duration(1000)
+//         //         .attrTween("transform", () => {
+//         //             const interpolate = d3.interpolate(scale(0), scale(newValue));
+//         //             return t => `translate(${width / 2},${height}) rotate(${interpolate(t)})`;
+//         //         });
+//         // };
 
-    return <svg ref={ref}></svg>;
-};
+//         // transitionNeedle(value);
 
-export default SemiCircleDial;
+//         const transitionNeedle = (newValue) => {
+//             const targetAngle = scale(newValue);
+//             needle.transition()
+//                 .duration(1000)
+//                 .attrTween("transform", () => {
+//                     const interpolate = d3.interpolate(scale(0), targetAngle);
+//                     return t => {
+//                         const currentAngle = interpolate(t);
+//                         arcs.forEach(arc => {
+//                             if (currentAngle >= arc.startAngle * 180 / Math.PI && currentAngle < arc.endAngle * 180 / Math.PI) {
+//                                 arc.element.style("fill", "green");
+//                             } else {
+//                                 arc.element.style("fill", "#ccc");
+//                             }
+//                         });
+//                         return `translate(${width / 2},${height}) rotate(${currentAngle})`;
+//                     };
+//                 });
+//         };
+
+//         transitionNeedle(value);
+
+//     }, [value]);
+
+//     return <svg ref={ref}></svg>;
+// };
+
+// export default SemiCircleDial;
+
+///////////////////////////////////////////////////////////////////////////////////////////
 
 // import React, { useRef, useEffect } from "react";
 // import * as d3 from "d3";
@@ -192,95 +224,173 @@ export default SemiCircleDial;
 
 // export default SemiCircleDial;
 
-// import React, { useRef, useEffect } from "react";
-// import * as d3 from "d3";
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// const SemiCircleDial = ({ value = 0 }) => {
-//     const ref = useRef();
+import React, { useRef, useEffect } from "react";
+import * as d3 from "d3";
 
-//     useEffect(() => {
-//         const svg = d3.select(ref.current);
-//         const width = 200, height = 100;
-//         svg.attr("width", width).attr("height", height);
+const SemiCircleDial = ({ value = 0 }) => {
+    const ref = useRef();
 
-//         // Create a scale to map values to angles
-//         const scale = d3.scaleLinear()
-//             .domain([-100, 100])
-//             .range([-90, 90]);
+    useEffect(() => {
+        const svg = d3.select(ref.current);
+        const width = 360, height = 180;
+        const labelRadius = height - 85;
+        svg.attr("width", width).attr("height", height);
 
-//         // Draw the semi-circle dial
-//         const arc = d3.arc()
-//             .innerRadius(height - 70)
-//             .outerRadius(height)
-//             .startAngle(-Math.PI / 2)
-//             .endAngle(Math.PI / 2);
+        // Create a scale to map values to angles
+        const scale = d3.scaleLinear()
+            .domain([-100, 100])
+            .range([-90, 90]);
 
-//         const dial = svg.append("path")
-//             .attr("d", arc)
-//             .attr("transform", `translate(${width / 2},${height})`)
-//             .style("fill", "#ccc");
+        // Draw the semi-circle dial
+        const arc = d3.arc()
+            .innerRadius(height - 70)
+            .outerRadius(height)
+            .startAngle(-Math.PI / 2)
+            .endAngle(Math.PI / 2);
 
-//         // Draw additional arcs
-//         const arcAngle = Math.PI / 5; // 36 degrees in radians
-//         const arcs = []; // keep track of the arcs
+        const dial = svg.append("path")
+            .attr("d", arc)
+            .attr("transform", `translate(${width / 2},${height})`)
+            .style("fill", "#ccc");
 
-//         for (let i = 0; i < 5; i++) {
-//             const startAngle = -Math.PI / 2 + arcAngle * i;
-//             const endAngle = startAngle + arcAngle;
-//             const arcPath = d3.arc()
-//                 .innerRadius(height - 70)
-//                 .outerRadius(height)
-//                 .startAngle(startAngle)
-//                 .endAngle(endAngle);
+        // Draw additional arcs
+        const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
+        const arcAngle = Math.PI / 5; // 36 degrees in radians
+        const arcs = []; // keep track of the arcs
 
-//             const arcElement = svg.append("path")
-//                 .attr("d", arcPath())
-//                 .attr("transform", `translate(${width / 2},${height})`)
-//                 .style("fill", "#ccc");
+        for (let i = 0; i < 5; i++) {
+            const startAngle = -Math.PI / 2 + arcAngle * i;
+            const endAngle = startAngle + arcAngle;
+            const arcPath = d3.arc()
+                .innerRadius(height - 70)
+                .outerRadius(height)
+                .startAngle(startAngle)
+                .endAngle(endAngle);
 
-//             arcs.push({
-//                 startAngle,
-//                 endAngle,
-//                 element: arcElement,
-//             });
-//         }
+            const arcElement = svg.append("path")
+                .attr("d", arcPath())
+                .attr("transform", `translate(${width / 2},${height})`)
+                .style("fill", colors(i));
 
-//         // The needle
-//         const needle = svg.append("line")
-//             .attr("x1", 0)
-//             .attr("y1", - height)
-//             .attr("x2", 0)
-//             .attr("y2", 0)
-//             .style("stroke", "#000")
-//             .style("stroke-width", 3)
-//             .attr("transform", `translate(${width / 2},${height})`)
-//             .raise();
+            arcs.push({
+                index: i,
+                startAngle,
+                endAngle,
+                element: arcElement,
+            });
 
-//         const transitionNeedle = (newValue) => {
-//             const targetAngle = scale(newValue);
-//             needle.transition()
-//                 .duration(1000)
-//                 .attrTween("transform", () => {
-//                     const interpolate = d3.interpolate(scale(0), targetAngle);
-//                     return t => {
-//                         const currentAngle = interpolate(t);
-//                         arcs.forEach(arc => {
-//                             if (currentAngle >= arc.startAngle * 180 / Math.PI && currentAngle <= arc.endAngle * 180 / Math.PI) {
-//                                 arc.element.style("fill", "green");
-//                             } else {
-//                                 arc.element.style("fill", "#ccc");
-//                             }
-//                         });
-//                         return `translate(${width / 2},${height}) rotate(${currentAngle})`;
-//                     };
-//                 });
-//         };
+            const arcText = svg.append("text")
+                .attr("transform", `translate(${arcPath.centroid()})`)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("font-size", "10px")
+                .text(`${i}`)
+                .attr("transform", () => {
+                    // const c = arcPath.centroid();
+                    // const x = c[0];
+                    // const y = c[1];
+                    // const rot = Math.atan2(y, x) * (180 / Math.PI);  // Convert radian to degree
+                    // return `translate(${x}, ${y}) rotate(${rot})`;
+                    const midAngle = -Math.PI / 2 + (startAngle + endAngle) / 2;
+                    const x = Math.cos(midAngle) * labelRadius;
+                    const y = Math.sin(midAngle) * labelRadius;
+                    const rot = (midAngle * 180 / Math.PI) - 90;
+                    const finalRotation = rot + (Math.abs(rot) > 90 ? 180 : 0);  // Adjust for labels on the left half
+                    return `translate(${x + width / 2}, ${y + height}) rotate(${finalRotation})`;
+                });
+        }
 
-//         transitionNeedle(value);
+        // Add text labels
 
-//     }, [value]);
+        // const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
+        // const anglesArray = [[- Math.PI / 2, Math.PI / 4], [- Math.PI / 4, Math.PI / 6], [- Math.PI / 12, Math.PI / 6], [Math.PI / 4, - Math.PI / 6], [Math.PI / 2, - Math.PI / 4]]
 
-//     return <svg ref={ref}></svg>;
-// };
+        // const arcs = []; // keep track of the arcs
 
-// export default SemiCircleDial;
+        // for (let i = 0; i < 5; i++) {
+        //     const startAngle = anglesArray[i][0];
+        //     const endAngle = startAngle + anglesArray[i][1];
+        //     const arcPath = d3.arc()
+        //         .innerRadius(height - 70)
+        //         .outerRadius(height)
+        //         .startAngle(startAngle)
+        //         .endAngle(endAngle);
+
+        //     const arcElement = svg.append("path")
+        //         .attr("d", arcPath())
+        //         .attr("transform", `translate(${width / 2},${height})`)
+        //         .style("fill", colors(i));
+
+        //     arcs.push({
+        //         startAngle,
+        //         endAngle,
+        //         element: arcElement,
+        //     });
+        // }
+
+        // The needle
+        const needle = svg.append("line")
+            .attr("x1", 0)
+            .attr("y1", - height)
+            .attr("x2", 0)
+            .attr("y2", 0)
+            .style("stroke", "#000")
+            .style("stroke-width", 3)
+            .attr("transform", `translate(${width / 2},${height})`)
+            .raise();
+
+        // // Radial scale
+        // const radialScale = d3.scaleLinear()
+        //     .domain([-100, 100])
+        //     .range([-90, 90]);
+
+        // const ticks = radialScale.ticks(5);
+
+        // svg.selectAll(".inner-tick")
+        //     .data(ticks)
+        //     .enter().append("circle")
+        //     .attr("r", d => radialScale(d))
+        //     .style("fill", "none")
+        //     .style("stroke", "#ccc")
+        //     .style("stroke-dasharray", "2,2");
+
+        // svg.selectAll(".inner-tick-label")
+        //     .data(ticks)
+        //     .enter().append("text")
+        //     .attr("y", d => -radialScale(d))
+        //     .attr("dy", "0.35em")
+        //     .attr("text-anchor", "middle")
+        //     .text(d => d);
+
+        const transitionNeedle = (newValue) => {
+            const targetAngle = scale(newValue);
+            needle.transition()
+                .duration(1000)
+                .attrTween("transform", () => {
+                    const interpolate = d3.interpolate(scale(0), targetAngle);
+                    return t => {
+                        const currentAngle = interpolate(t);
+                        arcs.forEach(arc => {
+                            if (currentAngle >= arc.startAngle * 180 / Math.PI && currentAngle < arc.endAngle * 180 / Math.PI) {
+                                arc.element.style("fill", colors(arc.index));
+                            } else {
+                                arc.element.style("fill", "#ccc");
+                            }
+                        });
+                        return `translate(${width / 2},${height}) rotate(${currentAngle})`;
+                    };
+                });
+        };
+
+        transitionNeedle(value);
+
+
+    }, [value]);
+
+    return <svg ref={ref}></svg>;
+};
+
+export default SemiCircleDial;

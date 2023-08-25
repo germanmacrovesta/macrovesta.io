@@ -30,7 +30,8 @@ import DateField from '../components/dateField';
 import { useDateFormatter, useLocale } from 'react-aria';
 import { parseDate } from '@internationalized/date';
 import { WeglotLanguageSwitcher } from "~/components/weglotLanguageSwitcher";
-import useWeglotLang from '../components/useWeglotLang'
+import useWeglotLang from '../components/useWeglotLang';
+import InfoButton from '../components/infoButton';
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -457,6 +458,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const [selectedNewsType, setSelectedNewsType] = React.useState("")
 
+  const [snapshotError_Message, setSnapshotError_Message] = React.useState("");
+  const [snapshotSubmitted, setSnapshotSubmitted] = React.useState(false);
+  const [snapshotSubmitting, setSnapshotSubmitting] = React.useState(false);
+  const [snapshotWarning_Message, setSnapshotWarning_Message] = React.useState("");
+  const [snapshotWarningSubmit, setSnapshotWarningSubmit] = React.useState(false);
+
   const handleSnapshotFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
     e.preventDefault();
@@ -549,11 +556,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     }
 
   };
-  const [snapshotError_Message, setSnapshotError_Message] = React.useState("");
-  const [snapshotSubmitted, setSnapshotSubmitted] = React.useState(false);
-  const [snapshotSubmitting, setSnapshotSubmitting] = React.useState(false);
-  const [snapshotWarning_Message, setSnapshotWarning_Message] = React.useState("");
-  const [snapshotWarningSubmit, setSnapshotWarningSubmit] = React.useState(false);
 
   const handleCountryNewsFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
@@ -860,7 +862,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   //   return outputArray;
   // }
 
-  function transformSurveyData(inputArray, propertyUsed) {
+  function transformSurveyData(inputArray, propertyUsed, precision = 2) {
     const outputArray = [];
     const averages = {};
     // const combinedSeries = {
@@ -922,7 +924,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
       for (const dateString in group) {
         const average =
-          group[dateString].sum / group[dateString].count;
+          parseFloat((group[dateString].sum / group[dateString].count).toFixed(precision));
         const date = new Date(dateString);
 
         data.push({
@@ -1424,7 +1426,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
         <Sidebar />
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
-          <header className="z-50 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
+          <header className="z-40 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
             <Breadcrumbs title={"Macrovesta Demo"} urlPath={urlPath} user={session?.user.name} />
             <TabMenu data={TabMenuArray} urlPath={urlPath} />
           </header>
@@ -1433,7 +1435,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
           <div className="p-6 bg-slate-200">
             Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
-            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+
               {/* <div>
                 <LineGraph data={linedata} />
               </div> */}
@@ -1443,9 +1446,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
               <div className="flex justify-around gap-8">
                 {/* <IndexDial probability={0} /> */}
-                {/* <SemiCircleDial value={-70} /> */}
+
 
                 <div className="relative">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+
                   <div className="text-center font-semibold">
                     Monthly Index
                   </div>
@@ -1460,29 +1465,31 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(monthlyIndexData).probability_rate}</div>
                 </div>
                 <div className="relative">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+
                   <div className="text-center font-semibold">
                     Seasonal Index
                   </div>
+                  {/* <SemiCircleDial value={65} /> */}
                   {selectAppropriateImage(JSON.parse(seasonalIndexData).inverse_year, parseFloat(JSON.parse(seasonalIndexData).probability_rate))}
-                  {/* <img className="w-[400px]" src="/Index_Inverse_High.jpg" /> */}
                   <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
                     transform: `rotate(${90 - (parseFloat(JSON.parse(seasonalIndexData).probability_rate) / 100 * 90) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? 1 : -1)}deg)`
                   }}>
-                    {/* <div className="origin-right bg-turquoise w-[150px] ml-[50px] bottom-[28px] h-2" style={{ transform: `rotate(${degrees}deg)` }}>
-                    </div> */}
+
                   </div>
                   <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(seasonalIndexData).probability_rate}</div>
                 </div>
 
               </div>
             </div>
-            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
               <div className="grid grid-cols-1">
-                <div className="flex flex-col gap-y-6 items-center px-8">
+                <div className="relative flex flex-col gap-y-6 items-center px-8">
                   <div className="text-left font-semibold text-lg">Conclusion of latest market report</div>
                   <div>{JSON.parse(conclusionData)?.text}</div>
                   <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a>
-                  <div>{currentLang}</div>
+                  {/* <div>{currentLang}</div> */}
                 </div>
                 {/* <div className="flex flex-col gap-4">
                   <div className="px-3 py-2 shadow-lg rounded-lg border text-center">Cotton Market Report Link</div>
@@ -1502,7 +1509,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     <DateField label='Start Date' setDate={setSelectedCottonContractsEndDate} date={selectedCottonContractsEndDate} formatter={formatter} />
                   </div>
                 </div>
-                <div className="flex flex-col col-span-2 items-center">
+                <div className="relative flex flex-col col-span-2 items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   <div className="mt-6 -mb-2 font-semibold">CTZ23</div>
                   <LineGraph verticalTooltip={true} data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
                   <div className="flex justify-center mt-8">
@@ -1520,27 +1528,31 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       />
                     </div>
                   </div>
-                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Current Contract")} session={session} section="Current Contract" commentLength={800} />
+                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Current Contract")} session={session} section="Current Contract" commentLength={800} />
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="relative flex flex-col items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTH24 Spread</div>
                   <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTH24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTH24 Spread")} monthsTicks={6} />
-                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Nearby Spread")} session={session} section="Nearby Spread" />
+                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Nearby Spread")} session={session} section="Nearby Spread" />
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="relative flex flex-col items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTK24 Spread</div>
                   <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTK24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTK24 Spread")} monthsTicks={6} />
-                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Second Spread")} session={session} section="Second Spread" />
+                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Second Spread")} session={session} section="Second Spread" />
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="relative flex flex-col items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTN24 Spread</div>
                   <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTN24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTN24 Spread")} />
-                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Third Spread")} session={session} section="Third Spread" />
+                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Third Spread")} session={session} section="Third Spread" />
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="relative flex flex-col items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTZ24 Spread</div>
                   <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTZ24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTZ24 Spread")} />
-                  <Comments styling="mt-8 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Fourth Spread")} session={session} section="Fourth Spread" />
+                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Fourth Spread")} session={session} section="Fourth Spread" />
                 </div>
               </div>
             </div>
@@ -1548,7 +1560,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <TVChartContainer {...defaultWidgetProps} />
             </div> */}
             {((session?.submittedSurvey == true) || ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1))) && (
-              <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+              <div className="relative flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                 {/* {stages[currentStage]} */}
                 {/* {(currentStage == 0) && (session?.submittedSurvey != true) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && ( */}
                 {(currentStage == 0) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && (session?.submittedSurvey != true) && (
@@ -1703,19 +1716,19 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     </div>
                     <div className="flex flex-col items-center">
                       <div className="mt-6 -mb-2 font-semibold">High</div>
-                      <LineGraph data={transformSurveyData(sentimentData, 'high')} monthsTicks={1} />
+                      <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'high')} monthsTicks={1} />
                     </div>
                     <div className="flex flex-col items-center">
                       <div className="mt-6 -mb-2 font-semibold">Low</div>
-                      <LineGraph data={transformSurveyData(sentimentData, 'low')} monthsTicks={1} />
+                      <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'low')} monthsTicks={1} />
                     </div>
                     <div className="flex flex-col items-center">
                       <div className="mt-6 -mb-2 font-semibold">Intraday Average in Points</div>
-                      <LineGraph data={transformSurveyData(sentimentData, 'intraday_average_points')} monthsTicks={1} />
+                      <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'intraday_average_points')} monthsTicks={1} />
                     </div>
                     <div className="flex flex-col items-center">
                       <div className="mt-6 -mb-2 font-semibold">Open Interest</div>
-                      <LineGraph data={transformSurveyData(sentimentData, 'open_interest')} monthsTicks={1} />
+                      <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'open_interest', 0)} monthsTicks={1} />
                     </div>
                   </div>
                 )}
@@ -1733,8 +1746,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             )}
             {((session?.submittedSurvey != true) && ((todaysDate.getDay() != 0) && (todaysDate.getDay() != 1))) && (
-              <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
-                <div className="col-span-2 mb-4 text-center text-xl font-semibold">Weekly Macrovesta Sentiment Survey</div>
+              <div className="relative flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+                <div className="relative w-full text-center col-span-2 mb-4 text-xl font-semibold">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  Weekly Macrovesta Sentiment Survey
+                </div>
                 <div className="px-8">
                   You did not fill in the survey sentiment this week on Sunday or Monday and therefore cannot view the results for this week.
                   Please fill it out next week if you would like to see the results.
@@ -1742,11 +1758,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             )}
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
-              <div className="flex justify-around">
-                <div className="text-center font-semibold text-xl">
+              <div className="flex justify-around gap-8">
+                <div className="relative w-full text-center font-semibold text-xl">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   Recent Events
                 </div>
-                <div className="text-center font-semibold text-xl">
+                <div className="relative w-full text-center font-semibold text-xl">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   Future Considerations
                 </div>
               </div>
@@ -1903,7 +1921,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               )}
             </div>
             <div className="grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  ">
-              <div className="col-span-2 flex pl-12 items-center gap-2 w-full">
+              <div className="col-span-2 flex pl-12 items-center justify-left gap-2 w-full">
                 <div className="mr-2">
                   Select Cost Type:
                 </div>
@@ -1915,7 +1933,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
               </div>
               <div className="relative flex flex-col items-center">
-                <div className='absolute top-2 right-2 remove-me group' >
+                {/* <div className='absolute top-2 right-2 remove-me group' >
 
                   <img className=' w-[15px] h-[15px] self-center opacity-100 group-hover:hidden' width="15" height="15" src={"/i_G_SQ.png"}></img>
                   <img className=' w-[15px] h-[15px] self-center opacity-100 hidden group-hover:block' width="15" height="15" src={"/i.png"}></img>
@@ -1927,11 +1945,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                 <div className="text-center font-semibold text-xl">Current Basis Cost</div>
                 <GroupedBarChart data={basisBarChartData(JSON.parse(basisData).filter((basis) => basis.cost_type == selectedCostType))} />
               </div>
-              <div className="flex flex-col items-center">
+              <div className="relative flex flex-col items-center">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                 <div className="-mb-2 text-center font-semibold text-xl">Historical Basis Cost</div>
                 <LineGraph verticalTooltip={true} data={transformData(JSON.parse(basisData).filter((basis) => (basis.country == basisCountry) && (basis.cost_type == selectedCostType)))} xValue="time" yValue="value" monthsTicks={6} />
               </div>
@@ -2036,16 +2056,16 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
               </div>
               <div className="col-span-1">
-                <Comments styling="mt-2 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Recent Basis")} session={session} section="Recent Basis" />
+                <Comments styling="mt-2 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Recent Basis")} session={session} section="Recent Basis" />
               </div>
               <div className="col-span-1">
-                <Comments styling="mt-2 pl-10 pr-4" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Historical Basis")} session={session} section="Historical Basis" />
+                <Comments styling="mt-2 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Historical Basis")} session={session} section="Historical Basis" />
               </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
-              <div className="flex flex-col col-span-1 bg-[#ffffff] p-4 rounded-xl shadow-lg">
-
-                <div className="grid grid-cols-2">
+              <div className="relative flex flex-col col-span-1 bg-[#ffffff] p-4 rounded-xl shadow-lg">
+                <div className="relative grid grid-cols-2">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   <div className="col-span-2 text-center text-xl font-semibold mb-4">
                     US Exports Sales
                   </div>
@@ -2153,8 +2173,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
                 <img src="/Charts_Under_Construction_Half_width.png" />
               </div> */}
-              <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
-                <div className="text-center font-semibold text-xl">
+              <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
+                <div className="relative text-center font-semibold text-xl">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   In Country News
                 </div>
                 <div className="flex flex-col justify-around items-start gap-4 mt-4">
@@ -2208,7 +2229,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     <div className=' fixed grid place-content-center inset-0 z-40'>
                       <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
                         <div className="my-4 font-semibold text-lg">
-                          Add 30 in country news
+                          Add in country news
                         </div>
                         <div className="w-full">
                           <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleCountryNewsFormSubmit}>
@@ -2278,12 +2299,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             </div> */}
             <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
 
-              <div className="grid grid-cols-2 gap-y-8 mb-12">
-                <div className="col-span-2 text-center text-xl font-semibold mb-4">
+              <div className="grid grid-cols-2 gap-y-8 -mb-8">
+                <div className="relative col-span-2 text-center text-xl font-semibold mb-4">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   Cotton on Call
                 </div>
 
-                <div className="col-span-2 flex flex-col items-center">
+                <div className="relative col-span-2 flex flex-col items-center">
+
                   <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
@@ -2338,7 +2361,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     )}
                   </div>
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="relative flex flex-col items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   {/* <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
@@ -2411,7 +2435,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     </>
                   )}
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="relative flex flex-col items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   {/* <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
@@ -2484,7 +2509,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     </>
                   )}
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="relative flex flex-col items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   {/* <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
@@ -2557,7 +2583,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     </>
                   )}
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="relative flex flex-col items-center">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   {/* <div className="col-span-3 grid grid-cols-2 w-full gap-x-4 px-8">
 
                     <div className="mb-4 w-full">
@@ -2631,11 +2658,15 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )}
                 </div>
               </div>
+              <div className="col-span-1">
+                <Comments styling="mt-2 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Cotton On Call")} session={session} section="Cotton On Call" />
+              </div>
             </div>
             <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
 
-              <div className="grid grid-cols-2 mb-12">
-                <div className="col-span-2 text-center text-xl font-semibold mb-4">
+              <div className="grid grid-cols-2 -mb-8">
+                <div className="relative col-span-2 text-center text-xl font-semibold mb-4">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   Commitment of Traders
                 </div>
                 <div className="col-span-3 grid grid-cols-3 w-full gap-x-4 px-8">
@@ -2709,7 +2740,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 <div className="col-span-2 flex flex-col items-center">
                   {commitmentWeekOrYear == "Year" && (
                     <>
-                      <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Week</div>
+                      <div className="relative w-full text-center mt-6 -mb-2 font-semibold">
+                        <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                        Commitment of traders by Week
+                      </div>
                       <div className="mb-16 w-full">
 
                         <LineGraphNotTime verticalTooltip={true} data={getCommitmentOfTradersWeekData(JSON.parse(commitmentData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain2={52} xAxisTitle="Week" />
@@ -2718,7 +2752,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )}
                   {commitmentWeekOrYear == "Week" && (
                     <>
-                      <div className="mt-6 -mb-2 font-semibold">Commitment of traders by Year</div>
+                      <div className="relative w-full text-center mt-6 -mb-2 font-semibold">
+                        <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                        Commitment of traders by Year
+                      </div>
                       <div className="mb-16 w-full">
 
                         <LineGraphNotTime verticalTooltip={true} data={getCommitmentOfTradersSeasonData(JSON.parse(commitmentData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} graphWidth={1000} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
@@ -2727,11 +2764,15 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )}
                 </div>
               </div>
+              <div className="col-span-1">
+                <Comments styling="mt-2 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Commitment Of Traders")} session={session} section="Commitment Of Traders" />
+              </div>
             </div>
             <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
 
-              <div className="grid grid-cols-2 mb-12">
-                <div className="col-span-2 text-center text-xl font-semibold mb-4">
+              <div className="grid grid-cols-2 -mb-8">
+                <div className="relative col-span-2 text-center text-xl font-semibold mb-4">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   Supply and Demand
                 </div>
                 <div className="col-span-3 grid grid-cols-3 w-full gap-x-4 px-8">
@@ -2796,7 +2837,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )} */}
                   {/* {commitmentWeekOrYear == "Week" && (
                     <> */}
-                  <div className="mt-6 -mb-2 font-semibold">Historical WASDE</div>
+                  <div className="relative w-full text-center mt-6 -mb-2 font-semibold">
+                    <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                    Historical WASDE
+                  </div>
                   <div className="mb-16 w-full">
                     <LineGraph verticalTooltip={true} data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (new Date(data.date).getMonth() == new Date().getMonth() - 1) && (data.date < selectedSupplyAndDemandEndDate) && (data.date > selectedSupplyAndDemandStartDate)), supplyAndDemandPropertiesArray, supplyAndDemandNamesArray)} graphWidth={1000} />
                   </div>
@@ -2830,7 +2874,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       />
                     </div>
                   </div>
-                  <div className="mt-6 -mb-2 font-semibold">Supply and Demand by Season</div>
+                  <div className="relative w-full text-center mt-6 -mb-2 font-semibold">
+                    <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                    Supply and Demand by Season
+                  </div>
                   <div className="mb-16 w-full">
                     <LineGraph verticalTooltip={true} data={getSupplyAndDemandData(JSON.parse(supplyAndDemandData).filter((data) => (data.season == selectedSupplyAndDemandSeason)), supplyAndDemandProjectedPropertiesArray, supplyAndDemandProjectedNamesArray)} graphWidth={1000} />
                   </div>
@@ -2838,9 +2885,15 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )} */}
                 </div>
               </div>
+              <div className="col-span-1">
+                <Comments styling="mt-2 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Supply And Demand")} session={session} section="Supply And Demand" />
+              </div>
             </div>
             <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
-              <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
+              <div className="relative w-full text-center text-xl font-semibold mt-4">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                Future Contracts Study
+              </div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
               <LineGraphNotTime verticalTooltip={false} xDomain1={0} xDomain2={12} data={(contract1 && contract2 && contract3) ? getStudyData(JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract1), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract2), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract3)) : []} graphWidth={1000} graphHeight={600} />
             </div>
@@ -2947,7 +3000,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             </div>
             <div className="flex flex-col items-center bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
-              <div className="text-xl font-semibold text-center pt-4">V4</div>
+              <div className="relative w-full text-center text-xl font-semibold mt-4">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                V4
+              </div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
               <LineGraphNotTime verticalTooltip={false} data={(season1 && season2 && season3) ? getSeasonData(JSON.parse(seasonsData).find((season) => season.season == season1), JSON.parse(seasonsData).find((season) => season.season == season2), JSON.parse(seasonsData).find((season) => season.season == season3)) : []} graphWidth={1000} graphHeight={600} />
             </div>
