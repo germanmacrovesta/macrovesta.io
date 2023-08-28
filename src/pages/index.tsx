@@ -1454,30 +1454,36 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   <div className="text-center font-semibold">
                     Monthly Index
                   </div>
-                  {selectAppropriateImage(JSON.parse(monthlyIndexData).inverse_month, parseFloat(JSON.parse(monthlyIndexData).probability_rate))}
+                  <div className="justify-self-end">
+                    {/* <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} /> */}
+                    <SemiCircleDial value={parseFloat(JSON.parse(monthlyIndexData).probability_rate) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? -1 : 1)} />
+                  </div>
+                  {/* {selectAppropriateImage(JSON.parse(monthlyIndexData).inverse_month, parseFloat(JSON.parse(monthlyIndexData).probability_rate))}
 
                   <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
                     transform: `rotate(${90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? 1 : -1)}deg)`
                   }}>
-                    {/* <div className="origin-right bg-turquoise w-[150px] ml-[50px] bottom-[28px] h-2" style={{ transform: `rotate(${degrees}deg)` }}>
-                    </div> */}
+                   
                   </div>
-                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(monthlyIndexData).probability_rate}</div>
+                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(monthlyIndexData).probability_rate}</div> */}
                 </div>
-                <div className="relative">
+                <div className="relative flex flex-col justify-between">
                   <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
 
                   <div className="text-center font-semibold">
                     Seasonal Index
                   </div>
-                  {/* <SemiCircleDial value={65} /> */}
-                  {selectAppropriateImage(JSON.parse(seasonalIndexData).inverse_year, parseFloat(JSON.parse(seasonalIndexData).probability_rate))}
+                  <div className="justify-self-end">
+                    {/* <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} /> */}
+                    <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? -1 : 1)} />
+                  </div>
+                  {/* {selectAppropriateImage(JSON.parse(seasonalIndexData).inverse_year, parseFloat(JSON.parse(seasonalIndexData).probability_rate))}
                   <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
                     transform: `rotate(${90 - (parseFloat(JSON.parse(seasonalIndexData).probability_rate) / 100 * 90) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? 1 : -1)}deg)`
                   }}>
 
                   </div>
-                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(seasonalIndexData).probability_rate}</div>
+                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(seasonalIndexData).probability_rate}</div> */}
                 </div>
 
               </div>
@@ -2169,6 +2175,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     )} */}
                   </div>
                 </div>
+                <Comments styling="px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Export Sales")} session={session} section="Export Sales" />
               </div>
               {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
                 <img src="/Charts_Under_Construction_Half_width.png" />

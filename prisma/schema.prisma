@@ -304,6 +304,7 @@ model snapshot_strategy {
     date_of_snapshot_strategy  DateTime @default(now())
     valid                      Boolean  @default(true)
     news_type                  String   @default("Recent Events") @db.VarChar(255)
+    impact                     String?  @default("Low")
     added_by                   String   @default("Error") @db.VarChar(255)
     verified                   Boolean  @default(false)
 }
@@ -328,6 +329,7 @@ model in_country_news {
     title_of_in_country_news String   @db.VarChar(255)
     text_of_in_country_news  String   @db.Text
     date_of_in_country_news  DateTime @db.Date
+    impact                   String?  @default("Low")
     added_by                 String   @default("Error") @db.VarChar(255)
     verified                 Boolean  @default(false)
 }

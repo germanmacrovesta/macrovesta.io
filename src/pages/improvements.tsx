@@ -306,7 +306,7 @@ const Home: NextPage = ({ upcomingData }) => {
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
           <header className="z-50 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={"Upcoming"} urlPath={urlPath} user={session?.user.name} />
+            <Breadcrumbs title={"Improvements"} urlPath={urlPath} user={session?.user.name} />
             {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
           </header>
           {/* <WeglotLanguageSwitcher
@@ -314,44 +314,49 @@ const Home: NextPage = ({ upcomingData }) => {
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
           <div className="p-6 bg-slate-200">
             <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-              {JSON.parse(upcomingData).map((upcoming) => (
-                <>
-                  <div>
-                    <div className="text-lg font-semibold mb-2">
-                      {upcoming.title}
-                    </div>
-                    <div>
-                      {upcoming.text}
-                    </div>
-                  </div>
-                </>
-              ))}
-              <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenSuggestionForm(true)}>
+              <div className="text-center font-semibold text-lg">Planned Changes</div>
+              <ul className="list-disc pl-4">
+                {JSON.parse(upcomingData).map((upcoming) => (
+                  <>
+                    <li>
+                      <div className="font-semibold mb-2">
+                        {upcoming.title}
+                      </div>
+                      <div className="mb-4">
+                        {upcoming.text}
+                      </div>
+                    </li>
+                  </>
+                ))}
+              </ul>
+
+            </div>
+            {/* <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenSuggestionForm(true)}>
+              Add Suggestion
+            </div> */}
+
+            {/* <div className='absolute modal left-0 top-0 z-40'>
+                <div className=' fixed grid place-content-center inset-0 z-40'> */}
+            <div className='relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg'>
+              <div className="my-4 font-semibold text-lg text-center">
                 Add Suggestion
               </div>
-              {openSuggestionForm && (
-                <div className='absolute modal left-0 top-0 z-40'>
-                  <div className=' fixed grid place-content-center inset-0 z-40'>
-                    <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                      <div className="my-4 font-semibold text-lg">
-                        Add Suggestion
-                      </div>
-                      <div className="w-full">
-                        <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleSuggestionFormSubmit}>
-                          <div className="mb-4">
-                            <div className="mb-4">
-                              <SingleSelectDropdown
-                                options={[{ name: "General", value: "General" }, { name: "Data Visualisation", value: "Data Visualisation" }, { name: "Information Request", value: "Information Request" }, { name: "Reports", value: "Reports" }]}
-                                label="suggestion_type"
-                                variable="name"
-                                colour="bg-deep_blue"
-                                onSelectionChange={(e) => setSelectedSuggestionType(e.value)}
-                                placeholder="Select Suggestion Type"
-                                searchPlaceholder="Search Types"
-                                includeLabel={false}
-                              />
-                            </div>
-                            {/* <label
+              <div className="w-full">
+                <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleSuggestionFormSubmit}>
+                  <div className="mb-4">
+                    <div className="mb-4">
+                      <SingleSelectDropdown
+                        options={[{ name: "General", value: "General" }, { name: "Data Visualisation", value: "Data Visualisation" }, { name: "Information Request", value: "Information Request" }, { name: "Reports", value: "Reports" }]}
+                        label="suggestion_type"
+                        variable="name"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setSelectedSuggestionType(e.value)}
+                        placeholder="Select Suggestion Type"
+                        searchPlaceholder="Search Types"
+                        includeLabel={false}
+                      />
+                    </div>
+                    {/* <label
                               htmlFor="image"
                               className="block text-gray-700 text-sm font-bold mb-2 pl-3"
                             >
@@ -363,8 +368,8 @@ const Home: NextPage = ({ upcomingData }) => {
                               className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                               placeholder="Enter a url to an image e.g. https://picsum.photos/200"
                             /> */}
-                          </div>
-                          {/* <div className="mb-4">
+                  </div>
+                  {/* <div className="mb-4">
                             <label
                               htmlFor="title"
                               className="block text-gray-700 text-sm font-bold mb-2 pl-3"
@@ -378,33 +383,31 @@ const Home: NextPage = ({ upcomingData }) => {
                               placeholder="Enter title"
                             />
                           </div> */}
-                          <div className="mb-4">
-                            <label
-                              htmlFor="text"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Suggestion
-                            </label>
-                            <textarea id="text" placeholder="Enter text" name="text" rows={4} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
-                          </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="text"
+                      className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                    >
+                      Suggestion
+                    </label>
+                    <textarea id="text" placeholder="Enter text" name="text" rows={4} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
+                  </div>
 
-                          <div className="col-span-2 flex justify-center">
-                            {/* <button
+                  <div className="col-span-2 flex justify-center">
+                    {/* <button
                                 type="submit"
                                 className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
                               >
                                 Submit
                               </button> */}
-                            <FormSubmit errorMessage={suggestionError_Message} warningMessage={suggestionWarning_Message} submitted={suggestionSubmitted} submitting={suggestionSubmitting} warningSubmit={suggestionWarningSubmit} />
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                    <div onClick={() => setOpenSuggestionForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    <FormSubmit errorMessage={suggestionError_Message} warningMessage={suggestionWarning_Message} submitted={suggestionSubmitted} submitting={suggestionSubmitting} warningSubmit={suggestionWarningSubmit} />
                   </div>
-                </div>
-              )}
+                </form>
+              </div>
             </div>
+            {/* <div onClick={() => setOpenSuggestionForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div> */}
+            {/* </div>
+              </div> */}
           </div>
 
         </div>

@@ -1433,7 +1433,442 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             domain="macrovesta.ai"
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
           <div className="p-6 bg-slate-200 text-center">
-            Coming Soon
+            {/* ---------------------------------------------------------------------------------------------- */}
+            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+
+              {/* <div>
+                <LineGraph data={linedata} />
+              </div> */}
+
+              <div className="text-center font-semibold text-xl">
+                The Macrovesta Index {session?.user.id}
+              </div>
+              <div className="flex justify-around gap-8">
+                {/* <IndexDial probability={0} /> */}
+
+
+                <div className="relative">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+
+                  <div className="text-center font-semibold">
+                    Monthly Index
+                  </div>
+                  <div className="justify-self-end">
+                    {/* <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} /> */}
+                    <SemiCircleDial value={parseFloat(JSON.parse(monthlyIndexData).probability_rate) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? -1 : 1)} />
+                  </div>
+                  {/* {selectAppropriateImage(JSON.parse(monthlyIndexData).inverse_month, parseFloat(JSON.parse(monthlyIndexData).probability_rate))}
+
+                  <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
+                    transform: `rotate(${90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? 1 : -1)}deg)`
+                  }}>
+                   
+                  </div>
+                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(monthlyIndexData).probability_rate}</div> */}
+                </div>
+                <div className="relative flex flex-col justify-between">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+
+                  <div className="text-center font-semibold">
+                    Seasonal Index
+                  </div>
+                  <div className="justify-self-end">
+                    {/* <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} /> */}
+                    <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? -1 : 1)} />
+                  </div>
+                  {/* {selectAppropriateImage(JSON.parse(seasonalIndexData).inverse_year, parseFloat(JSON.parse(seasonalIndexData).probability_rate))}
+                  <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
+                    transform: `rotate(${90 - (parseFloat(JSON.parse(seasonalIndexData).probability_rate) / 100 * 90) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? 1 : -1)}deg)`
+                  }}>
+
+                  </div>
+                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(seasonalIndexData).probability_rate}</div> */}
+                </div>
+
+              </div>
+            </div>
+            {/* ---------------------------------------------------------------------------------------------- */}
+            {JSON.parse(commentsData).find((obj) => obj.section == "Current Contract" && obj.added_by == "Victor Fernandes")?.comment != undefined && (
+              <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <div className="grid grid-cols-1">
+                  <div className="relative flex flex-col gap-y-6 items-center px-8">
+                    <div className="text-left font-semibold text-lg">Conclusion of Current Front Month</div>
+                    <div>{JSON.parse(commentsData).find((obj) => obj.section == "Current Contract" && obj.added_by == "Victor Fernandes")?.comment}</div>
+                    {/* <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a> */}
+                    {/* <div>{currentLang}</div> */}
+                  </div>
+                  {/* <div className="flex flex-col gap-4">
+                  <div className="px-3 py-2 shadow-lg rounded-lg border text-center">Cotton Market Report Link</div>
+                  <div className="grid place-content-center w-full">
+                    <img src="https://mcusercontent.com/672ff4ca3cd7768c1563b69f0/images/697840bb-da2a-35c5-28b6-237954d8b369.png" className="rounded-lg w-full" />
+                  </div>
+                </div> */}
+                </div>
+              </div>
+            )}
+            {/* ---------------------------------------------------------------------------------------------- */}
+            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
+              <div className="flex justify-around gap-8">
+                <div className="relative w-full text-center font-semibold text-xl">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  Recent Events
+                </div>
+                <div className="relative w-full text-center font-semibold text-xl">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  Future Considerations
+                </div>
+              </div>
+              <div className="flex justify-around gap-x-8">
+                <div className="flex flex-col w-full justify-start items-start gap-x-8 gap-y-4 mt-4">
+                  {/* {JSON.parse(snapshotsData).map((snapshot) => (
+                  <div>
+                    {snapshot.title_of_snapshot_strategy}
+                  </div>
+                ))} */}
+                  {JSON.parse(snapshotsData).filter((object: any, index: number) => object.news_type == "Recent Events" && object.impact == "High").filter((object: any, index: number) => index < 8).map((snapshot) => (
+                    <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
+                      {snapshot.title_of_snapshot_strategy}
+                    </div>
+                  ))}
+                  {snapshotPopup != null && (
+                    <div className='absolute modal left-0 top-0 z-40'>
+                      <div className=' fixed grid place-content-center inset-0 z-40'>
+                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                          <img className="w-3/4" src={snapshotPopup.image_of_snapshot_strategy} />
+                          <div className="my-4 font-semibold text-lg">
+                            {snapshotPopup.title_of_snapshot_strategy}
+                          </div>
+                          <div className="-mt-4 mb-2">
+                            {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
+                          </div>
+                          <div className="">
+                            {snapshotPopup.text_of_snapshot_strategy}
+                          </div>
+                        </div>
+                        <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col w-full justify-start items-start gap-x-8 gap-y-4 mt-4">
+                  {/* {JSON.parse(snapshotsData).map((snapshot) => (
+                  <div>
+                    {snapshot.title_of_snapshot_strategy}
+                  </div>
+                ))} */}
+                  {JSON.parse(snapshotsData).filter((object: any, index: number) => ((object.news_type == "Short Term" || object.news_type == "Long Term") && object.impact == "High")).filter((object: any, index: number) => index < 8).sort((a, b) => { if (a.news_type < b.news_type) return 1; if (a.news_type > b.news_type) return -1; return 0; }).map((snapshot) => (
+                    <div className="border flex justify-between hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full h-fit py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
+                      <div>
+                        {snapshot.title_of_snapshot_strategy}
+                      </div>
+                      <div>
+                        {snapshot.news_type}
+                      </div>
+                    </div>
+                  ))}
+                  {snapshotPopup != null && (
+                    <div className='absolute modal left-0 top-0 z-40'>
+                      <div className=' fixed grid place-content-center inset-0 z-40'>
+                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                          <img className="w-3/4" src={snapshotPopup.image_of_snapshot_strategy} />
+                          <div className="my-4 font-semibold text-lg">
+                            {snapshotPopup.title_of_snapshot_strategy}
+                          </div>
+                          <div className="-mt-4 mb-2">
+                            {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
+                          </div>
+                          <div className="">
+                            {snapshotPopup.text_of_snapshot_strategy}
+                          </div>
+                        </div>
+                        <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              {(session?.role == "partner" || session?.role == "admin") && (
+                <div className="flex justify-center">
+                  <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenSnapshotForm(true)}>
+                    Add 30 Seconds Snapshot
+                  </div>
+                </div>
+              )}
+              {openSnapshotForm && (
+                <div className='absolute modal left-0 top-0 z-40'>
+                  <div className=' fixed grid place-content-center inset-0 z-40'>
+                    <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                      <div className="my-4 font-semibold text-lg">
+                        Add 30 Seconds Snapshot
+                      </div>
+                      <div className="w-full">
+                        <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleSnapshotFormSubmit}>
+                          <div className="mb-4">
+                            <div className="mb-4">
+                              <SingleSelectDropdown
+                                options={[{ name: "Recent Events", value: "Recent Events" }, { name: "Short Term Consideration", value: "Short Term" }, { name: "Long Term Consideration", value: "Long Term" }]}
+                                label="snapshot_type"
+                                variable="name"
+                                colour="bg-deep_blue"
+                                onSelectionChange={(e) => setSelectedNewsType(e.value)}
+                                placeholder="Select Snapshot Type"
+                                searchPlaceholder="Search Types"
+                                includeLabel={false}
+                              />
+                            </div>
+                            <label
+                              htmlFor="image"
+                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                            >
+                              Image (optional)
+                            </label>
+                            <input
+                              type="text"
+                              id="image"
+                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                              placeholder="Enter a url to an image e.g. https://picsum.photos/200"
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="title"
+                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                            >
+                              Title
+                            </label>
+                            <input
+                              type="text"
+                              id="title"
+                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                              placeholder="Enter title"
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="text"
+                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                            >
+                              Text
+                            </label>
+                            <textarea id="text" placeholder="Enter text" name="text" rows={4} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
+                          </div>
+
+                          <div className="col-span-2 flex justify-center">
+                            {/* <button
+                                type="submit"
+                                className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+                              >
+                                Submit
+                              </button> */}
+                            <FormSubmit errorMessage={snapshotError_Message} warningMessage={snapshotWarning_Message} submitted={snapshotSubmitted} submitting={snapshotSubmitting} warningSubmit={snapshotWarningSubmit} />
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    <div onClick={() => setOpenSnapshotForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* ---------------------------------------------------------------------------------------------- */}
+            <div className="grid grid-cols-1 xl:grid-cols-1 m-8 gap-8">
+
+              <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
+                <div className="relative text-center font-semibold text-xl">
+                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  In Country News
+                </div>
+                <div className="flex flex-col justify-around items-start gap-4 mt-4">
+                  {JSON.parse(countryNewsData).filter((object) => object.impact == "High").filter((object: any, index: number) => index < 10).map((news) => (
+                    <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setCountryNewsPopup(news)}>
+                      {news.title_of_in_country_news}
+                    </div>
+                  ))}
+                  {countryNewsPopup != null && (
+                    <div className='absolute modal left-0 top-0 z-40'>
+                      <div className=' fixed grid place-content-center inset-0 z-40'>
+                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                          <img className="w-3/4" src={countryNewsPopup.image_of_in_country_news} />
+                          <div className="my-4 font-semibold text-lg">
+                            {countryNewsPopup.title_of_in_country_news}
+                          </div>
+                          <div className="-mt-4 mb-2">
+                            {parseDateString(countryNewsPopup.date_of_in_country_news)}
+                          </div>
+                          <div className="">
+                            {/* <ReactMarkdown children={countryNewsPopup.text_of_in_country_news} /> */}
+                            {/* <ReactMarkdown components={renderers}>{markdown}</ReactMarkdown> */}
+                            {/* {(countryNewsPopup.text_of_in_country_news).replace('[newline]', '\n\n')} */}
+                            {countryNewsPopup.text_of_in_country_news.split('[newline]').map((paragraph, index) => (
+                              <>
+                                <p>{paragraph}</p>
+                                {index != countryNewsPopup.text_of_in_country_news.split('[newline]').length - 1 && (
+                                  <>
+                                    <br />
+                                  </>
+                                )}
+                              </>
+                            ))}
+                          </div>
+                        </div>
+                        <div onClick={() => setCountryNewsPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+                {(session?.role == "partner" || session?.role == "admin") && (
+                  <div className="flex justify-center">
+                    <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenCountryNewsForm(true)}>
+                      Add in country news
+                    </div>
+                  </div>
+                )}
+                {openCountryNewsForm && (
+                  <div className='absolute modal left-0 top-0 z-40'>
+                    <div className=' fixed grid place-content-center inset-0 z-40'>
+                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                        <div className="my-4 font-semibold text-lg">
+                          Add in country news
+                        </div>
+                        <div className="w-full">
+                          <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleCountryNewsFormSubmit}>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="image"
+                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                              >
+                                Image (optional)
+                              </label>
+                              <input
+                                type="text"
+                                id="image"
+                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter a url to an image e.g. https://picsum.photos/200"
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="title"
+                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                              >
+                                Title
+                              </label>
+                              <input
+                                type="text"
+                                id="title"
+                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter title"
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="text"
+                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                              >
+                                Text
+                              </label>
+                              <textarea id="text" placeholder="Enter text" name="text" rows={6} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
+                            </div>
+
+                            <div className="col-span-2 flex justify-center">
+                              {/* <button
+                                type="submit"
+                                className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+                              >
+                                Submit
+                              </button> */}
+                              <FormSubmit errorMessage={countryNewsError_Message} warningMessage={countryNewsWarning_Message} submitted={countryNewsSubmitted} submitting={countryNewsSubmitting} warningSubmit={countryNewsWarningSubmit} />
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div onClick={() => setOpenCountryNewsForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* ---------------------------------------------------------------------------------------------- */}
+            {JSON.parse(commentsData).find((obj) => obj.section == "Cotton On Call" && obj.added_by == "Victor Fernandes")?.comment != undefined && (
+              <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <div className="grid grid-cols-1">
+                  <div className="relative flex flex-col gap-y-6 items-center px-8">
+                    <div className="text-left font-semibold text-lg">Conclusion of CFTC Cotton On Call</div>
+                    <div>{JSON.parse(commentsData).find((obj) => obj.section == "Cotton On Call" && obj.added_by == "Victor Fernandes")?.comment}</div>
+                    {/* <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a> */}
+                    {/* <div>{currentLang}</div> */}
+                  </div>
+                  {/* <div className="flex flex-col gap-4">
+                  <div className="px-3 py-2 shadow-lg rounded-lg border text-center">Cotton Market Report Link</div>
+                  <div className="grid place-content-center w-full">
+                    <img src="https://mcusercontent.com/672ff4ca3cd7768c1563b69f0/images/697840bb-da2a-35c5-28b6-237954d8b369.png" className="rounded-lg w-full" />
+                  </div>
+                </div> */}
+                </div>
+              </div>
+            )}
+            {/* ---------------------------------------------------------------------------------------------- */}
+            {JSON.parse(commentsData).find((obj) => obj.section == "Commitment Of Traders" && obj.added_by == "Victor Fernandes")?.comment != undefined && (
+              <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <div className="grid grid-cols-1">
+                  <div className="relative flex flex-col gap-y-6 items-center px-8">
+                    <div className="text-left font-semibold text-lg">Conclusion of Commitment of traders</div>
+                    <div>{JSON.parse(commentsData).find((obj) => obj.section == "Commitment Of Traders" && obj.added_by == "Victor Fernandes")?.comment}</div>
+                    {/* <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a> */}
+                    {/* <div>{currentLang}</div> */}
+                  </div>
+                  {/* <div className="flex flex-col gap-4">
+                  <div className="px-3 py-2 shadow-lg rounded-lg border text-center">Cotton Market Report Link</div>
+                  <div className="grid place-content-center w-full">
+                    <img src="https://mcusercontent.com/672ff4ca3cd7768c1563b69f0/images/697840bb-da2a-35c5-28b6-237954d8b369.png" className="rounded-lg w-full" />
+                  </div>
+                </div> */}
+                </div>
+              </div>
+            )}
+            {/* ---------------------------------------------------------------------------------------------- */}
+            {JSON.parse(commentsData).find((obj) => obj.section == "Supply And Demand" && obj.added_by == "Victor Fernandes")?.comment != undefined && (
+              <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <div className="grid grid-cols-1">
+                  <div className="relative flex flex-col gap-y-6 items-center px-8">
+                    <div className="text-left font-semibold text-lg">Conclusion of Supply and Demand</div>
+                    <div>{JSON.parse(commentsData).find((obj) => obj.section == "Supply And Demand" && obj.added_by == "Victor Fernandes")?.comment}</div>
+                    {/* <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a> */}
+                    {/* <div>{currentLang}</div> */}
+                  </div>
+                  {/* <div className="flex flex-col gap-4">
+                  <div className="px-3 py-2 shadow-lg rounded-lg border text-center">Cotton Market Report Link</div>
+                  <div className="grid place-content-center w-full">
+                    <img src="https://mcusercontent.com/672ff4ca3cd7768c1563b69f0/images/697840bb-da2a-35c5-28b6-237954d8b369.png" className="rounded-lg w-full" />
+                  </div>
+                </div> */}
+                </div>
+              </div>
+            )}
+            {/* ---------------------------------------------------------------------------------------------- */}
+            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+              <div className="grid grid-cols-1">
+                <div className="relative flex flex-col gap-y-6 items-center px-8">
+                  <div className="text-left font-semibold text-lg">Conclusion of latest market report</div>
+                  <div>{JSON.parse(conclusionData)?.text}</div>
+                  <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a>
+                  {/* <div>{currentLang}</div> */}
+                </div>
+                {/* <div className="flex flex-col gap-4">
+                  <div className="px-3 py-2 shadow-lg rounded-lg border text-center">Cotton Market Report Link</div>
+                  <div className="grid place-content-center w-full">
+                    <img src="https://mcusercontent.com/672ff4ca3cd7768c1563b69f0/images/697840bb-da2a-35c5-28b6-237954d8b369.png" className="rounded-lg w-full" />
+                  </div>
+                </div> */}
+              </div>
+            </div>
+            {/* ---------------------------------------------------------------------------------------------- */}
           </div>
         </div>
       </main >
