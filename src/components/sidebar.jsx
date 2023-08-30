@@ -226,6 +226,13 @@ const Sidebar = (props) => {
                                 <p className={'pl-2 rounded-lg pr-2'}  >{"Improvements"}</p>
                             </Link>
                         </div>
+                        <div className={`${urlPath == "/position" ? 'bg-[#ffffff20]' : ''} rounded-full px-2 py-1 relative flex items-center w-fit`}>
+                            {/* <img height="20px" className="h-[20px] z-20" src={"Dash_W_SQ.png"} /> */}
+                            {/* <img className={'absolute h-[35px] z-10 -left-[7px]'} src="/Active_Underlay.png" /> */}
+                            <Link href={{ pathname: `/position` }} >
+                                <p className={'pl-2 rounded-lg pr-2'}  >{"Position"}</p>
+                            </Link>
+                        </div>
                         {/* <div className={`${urlPath == "/suggestions" ? 'bg-[#ffffff20]' : ''} rounded-full px-2 py-1 relative flex items-center w-fit`}>
                             <img height="20px" className="h-[20px] z-20" src={"Dash_W_SQ.png"} />
                             <img className={'absolute h-[35px] z-10 -left-[7px]'} src="/Active_Underlay.png" />

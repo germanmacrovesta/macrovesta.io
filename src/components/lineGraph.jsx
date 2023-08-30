@@ -169,7 +169,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                     const closestDate = new Date(closestX)
                     const closestDateString = `${closestDate.getDate()}-${closestDate.getMonth() + 1}-${closestDate.getFullYear()}`
                     let tooltipX = `${closestDateString}<br/>`
-                    let tooltipY = tooltipData.map(item => `${item.name}: ${(item.value)}`).join('<br/>');
+                    let tooltipY = tooltipData.map(item => item.name != "" ? `${item.name}: ${(item.value)}` : `${(item.value)}`).join('<br/>');
                     let tooltipContent = tooltipX + tooltipY
 
                     tooltip

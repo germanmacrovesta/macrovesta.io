@@ -17,6 +17,10 @@ import { text, html, } from "../../../components/nextAuthCustom/verificationEmai
 
 type ExtendedSession<T> = T & {
     role: string | null;
+    company: string | null;
+    company_id: string | null;
+    selected_company: string | null;
+    selected_company_id: string | null;
     submittedSurvey: boolean | null;
 }
 
@@ -57,15 +61,27 @@ export const authOptions: NextAuthOptions = {
             const userData = await prisma.user.findUnique({
                 where: {
                     email: session.user.email ?? undefined
+                },
+                include: {
+                    company: true,
+                    selected_company: true
                 }
             });
             let extendedSession: ExtendedSession<typeof session> = {
                 ...session,
                 role: null,
+                company: null,
+                company_id: null,
+                selected_company: null,
+                selected_company_id: null,
                 submittedSurvey: null
             }
             extendedSession.role = userData?.role ?? null;
             extendedSession.submittedSurvey = userData?.submittedSurvey ?? null;
+            extendedSession.company = userData?.company?.name ?? null;
+            extendedSession.company_id = userData?.company_id ?? null;
+            extendedSession.selected_company = userData?.selected_company?.name ?? null;
+            extendedSession.selected_company_id = userData?.selected_company_id ?? null;
 
             return extendedSession
             // return {

@@ -46,15 +46,41 @@ model Session {
 }
 
 model User {
-    id              String    @id @default(cuid())
-    name            String?
-    email           String?   @unique
-    emailVerified   DateTime?
-    role            String?
-    submittedSurvey Boolean?  @default(false)
-    image           String?
-    accounts        Account[]
-    sessions        Session[]
+    id                  String    @id @default(cuid())
+    name                String?
+    email               String?   @unique
+    emailVerified       DateTime?
+    role                String?
+    company_id          String?
+    company             Company?  @relation(name: "UserCompanyRelation", fields: [company_id], references: [record_id], map: "UserCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    selected_company_id String?
+    selected_company    Company?  @relation(name: "UserSelectedCompanyRelation", fields: [selected_company_id], references: [record_id], map: "UserSelectedCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    company_managing    Company?  @relation("CompanyManagerRelation")
+    macrovesta_managing Company[] @relation("MacrovestaManagerRelation")
+    submittedSurvey     Boolean?  @default(false)
+    image               String?
+    accounts            Account[]
+    sessions            Session[]
+
+    @@index([company_id])
+}
+
+model Company {
+    record_id                            String                                 @id @default(cuid())
+    name                                 String
+    type                                 String
+    tier                                 String
+    company_manager                      User?                                  @relation("CompanyManagerRelation", fields: [company_manager_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    macrovesta_manager                   User?                                  @relation("MacrovestaManagerRelation", fields: [macrovesta_manager_id], references: [id])
+    users                                User[]                                 @relation("UserCompanyRelation")
+    selected_users                       User[]                                 @relation("UserSelectedCompanyRelation")
+    created_at                           DateTime                               @default(now())
+    producer_production_estimates        producer_production_estimates[]
+    producer_cost_estimates              producer_cost_estimates[]
+    producer_commercialisation_estimates producer_commercialisation_estimates[]
+    strategy_log                         strategy_log[]
+    company_manager_id                   String?                                @unique
+    macrovesta_manager_id                String?
 }
 
 model VerificationToken {
@@ -63,6 +89,64 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+//Below is the table strategy_log
+
+model strategy_log {
+    record_id    String   @id @default(cuid())
+    company_id   String
+    company      Company  @relation(fields: [company_id], references: [record_id])
+    title        String?
+    text         String?  @db.Text
+    added_by     String?
+    date_created DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table producer_production_estimates
+
+model producer_production_estimates {
+    record_id           String   @id @default(cuid())
+    company_id          String
+    company             Company  @relation(fields: [company_id], references: [record_id])
+    season              String
+    production_estimate Decimal
+    yield_estimate      Decimal
+    added_by            String?
+    date_created        DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table producer_cost_estimates
+
+model producer_cost_estimates {
+    record_id                        String   @id @default(cuid())
+    company_id                       String
+    company                          Company  @relation(fields: [company_id], references: [record_id])
+    season                           String
+    cost_estimate_dollar_per_hectare Decimal
+    cost_estimate_cent_per_pound     Decimal
+    added_by                         String?
+    date_created                     DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table producer_commercialisation_estimates
+
+model producer_commercialisation_estimates {
+    record_id       String   @id @default(cuid())
+    company_id      String
+    company         Company  @relation(fields: [company_id], references: [record_id])
+    season          String
+    percentage_sold Decimal
+    added_by        String?
+    date_created    DateTime @default(now())
+
+    @@index([company_id])
 }
 
 //Below is the table bug_report

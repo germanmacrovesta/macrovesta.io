@@ -1565,12 +1565,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <TVChartContainer {...defaultWidgetProps} />
             </div> */}
-            {((session?.submittedSurvey == true) || ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1))) && (
+            {/* ((session?.submittedSurvey == true) || ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1))) */}
+            {true && (
               <div className="relative flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
                 <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                 {/* {stages[currentStage]} */}
-                {/* {(currentStage == 0) && (session?.submittedSurvey != true) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && ( */}
-                {(currentStage == 0) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && (session?.submittedSurvey != true) && (
+                {/* (currentStage == 0) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && (session?.submittedSurvey != true) */}
+                {true && (
                   <div className="grid grid-cols-2">
                     <div className="col-span-2 mb-4 text-center text-xl font-semibold">Weekly Macrovesta Sentiment Survey</div>
                     <div className="col-span-2 grid grid-cols-2 gap-x-4 pl-4">
@@ -1635,7 +1636,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
-                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(2)}</div>
+                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(2)}</div>
                       </div>
                       <div className="mb-4">
                         <label
@@ -1651,7 +1652,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
-                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data?.length - 1]?.value).toFixed(2)}</div>
+                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data?.length - 2]?.value).toFixed(2)}</div>
                       </div>
                       <div className="mb-4">
                         <label
@@ -1667,7 +1668,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
-                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(0)}</div>
+                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(0)}</div>
                       </div>
                       <div className="mb-4">
                         <label
@@ -1683,7 +1684,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                           placeholder="Enter your estimate"
                         />
-                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data?.length - 1]?.value)?.toFixed(0)}</div>
+                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(0)}</div>
                       </div>
 
                       <div className="col-span-2 flex justify-center">
