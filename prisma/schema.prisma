@@ -81,6 +81,8 @@ model Company {
     strategy_log                         strategy_log[]
     company_manager_id                   String?                                @unique
     macrovesta_manager_id                String?
+    fixed_cotton                         fixed_cotton[]
+    unfixed_cotton                       unfixed_cotton[]
 }
 
 model VerificationToken {
@@ -89,6 +91,41 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+//Below is the table Fixed Cotton
+
+model fixed_cotton {
+    company_id                String
+    record_id                 String   @id @default(cuid())
+    company                   Company  @relation(fields: [company_id], references: [record_id])
+    contract_number           String   @unique
+    futures_month             String
+    basis                     Decimal?
+    fixed_price_without_basis Decimal?
+    amount_fixed              Decimal?
+    added_by                  String
+    date_created              DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table Unfixed Cotton
+
+model unfixed_cotton {
+    record_id        String   @id @default(cuid())
+    company_id       String
+    company          Company  @relation(fields: [company_id], references: [record_id])
+    contract_number  String   @unique
+    futures_month    String
+    basis            Decimal?
+    fix_by           DateTime
+    total_amount     Decimal?
+    amount_remaining Decimal?
+    added_by         String
+    date_created     DateTime @default(now())
+
+    @@index([company_id])
 }
 
 //Below is the table strategy_log

@@ -125,7 +125,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ companyData, productionData, costData, commercialisationData, strategyLogData }) => {
+const Home: NextPage = ({ companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -206,6 +206,22 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
   const [commercialisationSubmitting, setCommercialisationSubmitting] = React.useState(false);
   const [commercialisationWarning_Message, setCommercialisationWarning_Message] = React.useState("");
   const [commercialisationWarningSubmit, setCommercialisationWarningSubmit] = React.useState(false);
+
+  const [openUnfixedForm, setOpenUnfixedForm] = React.useState(false)
+
+  const [unfixedError_Message, setUnfixedError_Message] = React.useState("");
+  const [unfixedSubmitted, setUnfixedSubmitted] = React.useState(false);
+  const [unfixedSubmitting, setUnfixedSubmitting] = React.useState(false);
+  const [unfixedWarning_Message, setUnfixedWarning_Message] = React.useState("");
+  const [unfixedWarningSubmit, setUnfixedWarningSubmit] = React.useState(false);
+
+  const [openFixedForm, setOpenFixedForm] = React.useState(false)
+
+  const [fixedError_Message, setFixedError_Message] = React.useState("");
+  const [fixedSubmitted, setFixedSubmitted] = React.useState(false);
+  const [fixedSubmitting, setFixedSubmitting] = React.useState(false);
+  const [fixedWarning_Message, setFixedWarning_Message] = React.useState("");
+  const [fixedWarningSubmit, setFixedWarningSubmit] = React.useState(false);
 
   const handleProductionFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
@@ -456,6 +472,173 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
 
   };
 
+  const handleUnfixedFormSubmit = async (e) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault();
+    setUnfixedSubmitting(true);
+
+    let contract = e.target["contract"]?.value;
+    let futures_month = e.target["futures_month"]?.value;
+    let fix_by = e.target["fix_by"]?.value;
+    let basis = e.target["basis"]?.value;
+    let percentage = e.target["percentage"]?.value;
+    let remaining = e.target["remaining"]?.value;
+    let fixed_price = e.target["fixed_price"]?.value;
+    let errorMessage = "";
+    let warningMessage = "";
+
+
+    if (warningMessage !== "") {
+      setUnfixedWarning_Message(warningMessage);
+      // throw new Error(errorMessage)
+    } else {
+      if (unfixedWarning_Message != "") {
+        setUnfixedWarning_Message("")
+      }
+    }
+
+    if (errorMessage != "") {
+      setUnfixedError_Message(errorMessage);
+      setUnfixedWarningSubmit(false);
+      setUnfixedSubmitting(false);
+    } else {
+
+      if (unfixedError_Message != "") {
+        setUnfixedError_Message("")
+      }
+
+      if (unfixedWarningSubmit == false && warningMessage != "") {
+        setUnfixedWarningSubmit(true);
+        setUnfixedSubmitting(false);
+      } else {
+        // Get data from the form.
+        const data = {
+          contract,
+          futures_month,
+          fix_by,
+          basis,
+          percentage,
+          remaining,
+          fixed_price,
+          company_id: JSON.parse(companyData)?.record_id,
+          user: session?.user?.name
+        };
+
+        console.log(data);
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data);
+
+        // API endpoint where we send form data.
+        const endpoint = "/api/add-unfixed-cotton";
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: "POST",
+          // Tell the server we're sending JSON.
+          headers: {
+            "Content-Type": "application/json"
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        };
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options);
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => { setUnfixedSubmitted(true); setUnfixedSubmitting(false) });
+        // setSubmitted(true); setSubmitting(false)
+        // console.log(result);
+      }
+    }
+
+  };
+
+  const handleFixedFormSubmit = async (e) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault();
+    setFixedSubmitting(true);
+
+    let contract = e.target["contract"]?.value;
+    let futures_month = e.target["futures_month"]?.value;
+    let basis = e.target["basis"]?.value;
+    let price = e.target["price"]?.value;
+    let amount = e.target["amount"]?.value;
+    let errorMessage = "";
+    let warningMessage = "";
+
+
+    if (warningMessage !== "") {
+      setFixedWarning_Message(warningMessage);
+      // throw new Error(errorMessage)
+    } else {
+      if (fixedWarning_Message != "") {
+        setFixedWarning_Message("")
+      }
+    }
+
+    if (errorMessage != "") {
+      setFixedError_Message(errorMessage);
+      setFixedWarningSubmit(false);
+      setFixedSubmitting(false);
+    } else {
+
+      if (fixedError_Message != "") {
+        setFixedError_Message("")
+      }
+
+      if (fixedWarningSubmit == false && warningMessage != "") {
+        setFixedWarningSubmit(true);
+        setFixedSubmitting(false);
+      } else {
+        // Get data from the form.
+        const data = {
+          contract,
+          futures_month,
+          basis,
+          fixed: price,
+          quantity: amount,
+          selected_contract: modifyingContract,
+          company_id: JSON.parse(companyData)?.record_id,
+          user: session?.user?.name
+        };
+
+        console.log(data);
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data);
+
+        // API endpoint where we send form data.
+        const endpoint = "/api/add-fixed-cotton";
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: "POST",
+          // Tell the server we're sending JSON.
+          headers: {
+            "Content-Type": "application/json"
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        };
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options);
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => { setFixedSubmitted(true); setFixedSubmitting(false) });
+        // setSubmitted(true); setSubmitting(false)
+        // console.log(result);
+      }
+    }
+
+  };
+
   const getEstimatesData = (data, propertyArray, datasetNameArray) => {
     let datasetArray = [];
     data.forEach((item) => {
@@ -472,6 +655,18 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
     })
     return datasetArray
   }
+
+  const [selectedSeason, setSelectedSeason] = React.useState("22/23")
+
+  const data = [
+    { id: 1, name: 'John Doe', age: 30, email: 'john@example.com' },
+    { id: 2, name: 'Jane Smith', age: 25, email: 'jane@example.com' },
+    { id: 3, name: 'Bob Johnson', age: 35, email: 'bob@example.com' },
+  ];
+
+  const [partiallyFixed, setPartiallyFixed] = React.useState(false)
+  const [modifyingExistingContract, setModifyingExistingContract] = React.useState(false)
+  const [modifyingContract, setModifyingContract] = React.useState(undefined)
 
   return (
     <>
@@ -515,19 +710,32 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
             {JSON.parse(costData).length}
             {JSON.parse(commercialisationData).length} */}
             <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <div className="w-[200px] self-center">
+                <SingleSelectDropdown
+                  options={[{ name: "22/23", parameter: "22/23" }, { name: "23/24", parameter: "23/24" }]}
+                  label="Parameter"
+                  variable="name"
+                  colour="bg-deep_blue"
+                  onSelectionChange={(e) => setSelectedSeason(e.parameter)}
+                  placeholder="Select Parameter"
+                  searchPlaceholder="Search Parameter"
+                  includeLabel={false}
+                  defaultValue="22/23"
+                />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Production 22/23</div>
+                  <div className="mt-6 -mb-2 font-semibold text-center">Production {selectedSeason}</div>
                   <div className="mb-16 w-full">
 
-                    <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == "22/23"), ["production_estimate"], ["Production Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                    <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ["production_estimate"], ["Production Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
                   </div>
                 </div>
                 <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Yield 22/23</div>
+                  <div className="mt-6 -mb-2 font-semibold text-center">Yield {selectedSeason}</div>
                   <div className="mb-16 w-full">
 
-                    <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == "22/23"), ["yield_estimate"], ["Yield Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                    <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ["yield_estimate"], ["Yield Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
                   </div>
                 </div>
               </div>
@@ -660,17 +868,17 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Dollars per Hectare 22/23</div>
+                  <div className="mt-6 -mb-2 font-semibold text-center">Dollars per Hectare {selectedSeason}</div>
                   <div className="mb-16 w-full">
 
-                    <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == "22/23"), ["cost_estimate_dollar_per_hectare"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
+                    <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_dollar_per_hectare"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
                   </div>
                 </div>
                 <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Cents per Pound 22/23</div>
+                  <div className="mt-6 -mb-2 font-semibold text-center">Cents per Pound {selectedSeason}</div>
                   <div className="mb-16 w-full">
 
-                    <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == "22/23"), ["cost_estimate_cent_per_pound"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
+                    <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_cent_per_pound"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
                   </div>
                 </div>
               </div>
@@ -803,17 +1011,17 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
               </div>
               <div className="grid grid-cols-1 md:grid-cols-1">
                 <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Commercialisation 22/23</div>
+                  <div className="mt-6 -mb-2 font-semibold text-center">Commercialisation {selectedSeason}</div>
                   <div className="mb-16 w-full">
 
-                    <LineGraph data={getEstimatesData(JSON.parse(commercialisationData).filter((estimate) => estimate.season == "22/23"), ["percentage_sold"], ["Percentage"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Percentage Sold" />
+                    <LineGraph data={getEstimatesData(JSON.parse(commercialisationData).filter((estimate) => estimate.season == selectedSeason), ["percentage_sold"], ["Percentage"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Percentage Sold" />
                   </div>
                 </div>
                 {/* <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Cents per Pound 22/23</div>
+                  <div className="mt-6 -mb-2 font-semibold text-center">Cents per Pound {selectedSeason}</div>
                   <div className="mb-16 w-full">
 
-                    <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == "22/23"), ["cost_estimate_cent_per_pound"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
+                    <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_cent_per_pound"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
                   </div>
                 </div> */}
               </div>
@@ -892,6 +1100,410 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                         </div>
                       </div>
                       <div onClick={() => setOpenCommercialisationForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <div className="text-lg font-semibold text-center mb-4">Fixed Cotton</div>
+              <table className="border border-black">
+                <thead className="text-left border-b border-black">
+                  <tr className="">
+                    <th className="px-4">Contract</th>
+                    <th className="px-4">Futures Month</th>
+                    <th className="px-4">Basis</th>
+                    <th className="px-4">Average Fixed Price</th>
+                    <th className="px-4">Amount Fixed</th>
+                  </tr>
+                </thead>
+                <tbody className="">
+                  {JSON.parse(fixedData).map((row) => (
+                    <tr className="" key={row.record_id}>
+                      <td className="px-4">{row.contract_number}</td>
+                      <td className="px-4">{row.futures_month}</td>
+                      <td className="px-4">{row.basis}</td>
+                      <td className="px-4">{row.fixed_price_without_basis}</td>
+                      <td className="px-4">{row.amount_fixed}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {JSON.parse(fixedData).length == 0 && (
+                <div className="text-center w-full py-4">currently no fixed cotton records</div>
+              )}
+              <div className="grid place-content-center">
+                <div className="bg-deep_blue text-white rounded-lg px-4 py-1 mt-4 mb-4 cursor-pointer" onClick={() => setOpenFixedForm(true)}>Add Fixed Cotton</div>
+                {openFixedForm && (
+                  <div className='absolute text-black modal left-0 top-0 z-40'>
+                    <div className=' fixed grid place-content-center inset-0 z-40'>
+                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                        <div className="my-4 text-black font-semibold text-lg">
+                          Add Fixed Cotton Record
+                        </div>
+                        <div className="w-full">
+                          <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleFixedFormSubmit}>
+                            {/* {modifyingExistingContract ? "true" : "false"} */}
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="existing"
+                                className="text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                              >
+                                Adding to existing contract
+                              </label>
+                              <input
+                                type="checkbox"
+                                id="existing"
+                                onChange={(e) => setModifyingExistingContract(e.target.checked)}
+                                className="w-fit -mb-1 ml-3 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter contract name"
+                              />
+                            </div>
+                            {modifyingExistingContract && (
+                              <>
+                                <SingleSelectDropdown
+                                  options={JSON.parse(unfixedData).map((data) => { const object = { name: data.contract_number, parameter: data.contract_number, ...data }; return object })}
+                                  label="Contract"
+                                  variable="name"
+                                  colour="bg-deep_blue"
+                                  onSelectionChange={(e) => setModifyingContract(e)}
+                                  placeholder="Select Contract"
+                                  searchPlaceholder="Search Contract"
+                                  includeLabel={false}
+                                />
+                              </>
+                            )}
+                            {!modifyingExistingContract && (
+                              <>
+                                <div className="flex gap-x-4">
+                                  <div className="w-full">
+                                    <label
+                                      htmlFor="contract"
+                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                    >
+                                      Contract
+                                    </label>
+                                    <input
+                                      type="text"
+                                      id="contract"
+                                      required
+                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                      placeholder="Enter contract name"
+                                    />
+                                  </div>
+
+                                  <div className="w-full">
+                                    <label
+                                      htmlFor="futures_month"
+                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                    >
+                                      Futures Month
+                                    </label>
+                                    <input
+                                      type="text"
+                                      id="futures_month"
+                                      required
+                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                      placeholder="Enter future month"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex gap-x-4">
+                                  {/* <div className="w-full">
+                                <label
+                                  htmlFor="fix_by"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Fix By
+                                </label>
+                                <input
+                                  type="date"
+                                  id="fix_by"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter your estimate"
+                                />
+                              </div> */}
+                                  <div className="w-full">
+                                    <label
+                                      htmlFor="basis"
+                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                    >
+                                      Basis
+                                    </label>
+                                    <input
+                                      type="number"
+                                      step=".01"
+                                      id="basis"
+                                      required
+                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                      placeholder="Enter basis value"
+                                    />
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                            <div className="flex gap-x-4">
+                              <div className="w-full">
+                                <label
+                                  htmlFor="price"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Fixed Price
+                                </label>
+                                <input
+                                  type="number"
+                                  step=".01"
+                                  id="price"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter price"
+                                />
+                              </div>
+                              <div className="w-full">
+                                <label
+                                  htmlFor="amount"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Amount Fixed
+                                </label>
+                                <input
+                                  type="number"
+                                  step=".01"
+                                  id="amount"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter amount fixed"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-span-2 flex justify-center pt-4">
+                              {/* <button
+                        type="submit"
+                        className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+                      >
+                        Submit
+                      </button> */}
+                              <FormSubmit errorMessage={fixedError_Message} warningMessage={fixedWarning_Message} submitted={fixedSubmitted} submitting={fixedSubmitting} warningSubmit={fixedWarningSubmit} />
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div onClick={() => { setModifyingExistingContract(false); setOpenFixedForm(false) }} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <div className="text-lg font-semibold text-center mb-4">Unfixed Cotton</div>
+              <div className="w-full">
+                <table className="border border-black w-full">
+                  <thead className="text-left border-b border-black">
+                    <tr className="">
+                      <th className="px-4">Contract</th>
+                      <th className="px-4">Futures Month</th>
+                      <th className="px-4">Fix By</th>
+                      <th className="px-4">Basis</th>
+                      <th className="px-4">Percentage Fixed</th>
+                      <th className="px-4">Amount Remaining</th>
+                    </tr>
+                  </thead>
+                  <tbody className="">
+                    {JSON.parse(unfixedData).map((row) => (
+                      <tr className="" key={row.record_id}>
+                        <td className="px-4">{row.contract_number}</td>
+                        <td className="px-4">{row.futures_month}</td>
+                        <td className="px-4">{row.fix_by.split("T")[0]}</td>
+                        <td className="px-4">{row.basis}</td>
+                        <td className="px-4">{(100 - (parseFloat(row.amount_remaining) / parseFloat(row.total_amount) * 100)) ?? 0}</td>
+                        <td className="px-4">{row.amount_remaining}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {JSON.parse(fixedData).length == 0 && (
+                <div className="text-center w-full py-4">currently no unfixed cotton records</div>
+              )}
+              <div className="grid place-content-center">
+                <div className="bg-deep_blue text-white rounded-lg px-4 py-1 mt-4 mb-4 cursor-pointer" onClick={() => setOpenUnfixedForm(true)}>Add Unfixed Cotton</div>
+                {openUnfixedForm && (
+                  <div className='absolute text-black modal left-0 top-0 z-40'>
+                    <div className=' fixed grid place-content-center inset-0 z-40'>
+                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                        <div className="my-4 text-black font-semibold text-lg">
+                          Add Unfixed Cotton Record
+                        </div>
+                        <div className="w-full">
+                          <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleUnfixedFormSubmit}>
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="partially_fixed"
+                                className="text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                              >
+                                Is this contract partially fixed?
+                              </label>
+                              <input
+                                type="checkbox"
+                                id="partially_fixed"
+                                onChange={(e) => setPartiallyFixed(e.target.checked)}
+                                className="w-fit -mb-1 ml-3 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter contract name"
+                              />
+                            </div>
+
+                            <div className="flex gap-x-4">
+                              <div className="w-full">
+                                <label
+                                  htmlFor="contract"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Contract
+                                </label>
+                                <input
+                                  type="text"
+                                  id="contract"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter contract name"
+                                />
+                              </div>
+
+                              <div className="w-full">
+                                <label
+                                  htmlFor="futures_month"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Futures Month
+                                </label>
+                                <input
+                                  type="text"
+                                  id="futures_month"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter future month"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex gap-x-4">
+                              <div className="w-full">
+                                <label
+                                  htmlFor="fix_by"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Fix By
+                                </label>
+                                <input
+                                  type="date"
+                                  id="fix_by"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter your estimate"
+                                />
+                              </div>
+                              <div className="w-full">
+                                <label
+                                  htmlFor="basis"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Basis
+                                </label>
+                                <input
+                                  type="number"
+                                  step=".01"
+                                  id="basis"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter basis value"
+                                />
+                              </div>
+                            </div>
+                            {partiallyFixed && (
+                              <>
+                                <div className="flex gap-x-4">
+                                  <div className="w-full">
+                                    <label
+                                      htmlFor="percentage"
+                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                    >
+                                      Percentage Fixed
+                                    </label>
+                                    <input
+                                      type="number"
+                                      step=".01"
+                                      id="percentage"
+                                      required
+                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                      placeholder="Enter percentage fixed"
+                                    />
+                                  </div>
+                                  <div className="w-full">
+                                    <label
+                                      htmlFor="fixed_price"
+                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                    >
+                                      Average Fixed Price
+                                    </label>
+                                    <input
+                                      type="number"
+                                      step=".01"
+                                      id="fixed_price"
+                                      required
+                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                      placeholder="Enter fixed price"
+                                    />
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                            <div className="flex gap-x-4">
+                              {/* <div className="w-full">
+                                <label
+                                  htmlFor="percentage"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Percentage Fixed
+                                </label>
+                                <input
+                                  type="number"
+                                  step=".01"
+                                  id="percentage"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter percentage fixed"
+                                />
+                              </div> */}
+                              <div className="w-full">
+                                <label
+                                  htmlFor="remaining"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Amount{partiallyFixed ? " Remaining" : ""}
+                                </label>
+                                <input
+                                  type="number"
+                                  step=".01"
+                                  id="remaining"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder={`Enter amount${partiallyFixed ? " remaining" : ""}`}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-span-2 flex justify-center pt-4">
+                              {/* <button
+                        type="submit"
+                        className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+                      >
+                        Submit
+                      </button> */}
+                              <FormSubmit errorMessage={unfixedError_Message} warningMessage={unfixedWarning_Message} submitted={unfixedSubmitted} submitting={unfixedSubmitting} warningSubmit={unfixedWarningSubmit} />
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div onClick={() => { setPartiallyFixed(false); setOpenUnfixedForm(false) }} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
                     </div>
                   </div>
                 )}
@@ -1016,11 +1628,25 @@ export const getServerSideProps = async (context: any) => {
   const today = new Date(); // Current date
   const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 
+  const fixed = await prisma?.fixed_cotton.findMany({
+    where: {
+      company_id: company_id
+    }
+  })
 
+  const fixedData = JSON.stringify(fixed)
+
+  const unfixed = await prisma?.unfixed_cotton.findMany({
+    where: {
+      company_id: company_id
+    }
+  })
+
+  const unfixedData = JSON.stringify(unfixed)
 
   // console.log(monthlyIndexData)
   return {
-    props: { companyData, productionData, costData, commercialisationData, strategyLogData },
+    props: { companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData },
   };
 };
 
