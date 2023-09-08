@@ -70,6 +70,7 @@ model Company {
     name                                 String
     type                                 String
     tier                                 String
+    access_to_marketplace                Boolean?
     company_manager                      User?                                  @relation("CompanyManagerRelation", fields: [company_manager_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
     macrovesta_manager                   User?                                  @relation("MacrovestaManagerRelation", fields: [macrovesta_manager_id], references: [id])
     users                                User[]                                 @relation("UserCompanyRelation")
@@ -91,6 +92,30 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+//Below is the table marketplace
+
+model marketplace {
+    record_id    String   @id @default(cuid())
+    product      String
+    stock_tonnes Decimal?
+    price_usd    Decimal?
+    description  String?
+    added_by     String?
+    date_created DateTime @default(now())
+}
+
+//Below is the table a_index
+
+model a_index {
+    record_id                           String   @id @default(cuid())
+    date                                DateTime @db.Date
+    a_index                             Decimal
+    ice_highest_open_interest_17_months Decimal?
+    cc_index                            Decimal?
+    mcx                                 Decimal?
+    cepea                               Decimal?
 }
 
 //Below is the table Fixed Cotton

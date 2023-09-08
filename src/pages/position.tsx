@@ -125,7 +125,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData }) => {
+const Home: NextPage = ({ companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData, premiumCompaniesData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -668,6 +668,45 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
   const [modifyingExistingContract, setModifyingExistingContract] = React.useState(false)
   const [modifyingContract, setModifyingContract] = React.useState(undefined)
 
+  const handleCompanyChange = async (e) => {
+    const data = {
+      new_company: e.name,
+      new_company_id: e.record_id,
+      email: session?.user.email,
+      user: session?.user?.name
+    };
+
+    console.log(data);
+
+    // Send the data to the server in JSON format.
+    const JSONdata = JSON.stringify(data);
+
+    // API endpoint where we send form data.
+    const endpoint = "/api/change-selected-company";
+
+    // Form the request for sending data to the server.
+    const options = {
+      // The method is POST because we are sending data.
+      method: "POST",
+      // Tell the server we're sending JSON.
+      headers: {
+        "Content-Type": "application/json"
+      },
+      // Body of the request is the JSON data we created above.
+      body: JSONdata
+    };
+
+    // Send the form data to our forms API on Vercel and get a response.
+    const response = await fetch(endpoint, options);
+
+    // Get the response data from server as JSON.
+    // If server returns the name submitted, that means the form works.
+    const result = await response.json().then(() => {
+      router.reload()
+      // setSentimentData([...sentimentData, { record_id: "dummyid", bullish_or_bearish, high, low, intraday_average_points, open_interest }])
+    });
+  }
+
   return (
     <>
       <Head>
@@ -705,596 +744,424 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                 <div>Client Manager Name: {JSON.parse(companyData)?.company_manager?.name}</div>
                 <div>Macrovesta Manager Name: {JSON.parse(companyData)?.macrovesta_manager?.name}</div>
               </div>
+              <div className="w-[200px] self-center">
+                <SingleSelectDropdown
+                  options={JSON.parse(premiumCompaniesData)}
+                  label="Company"
+                  variable="name"
+                  colour="bg-white"
+                  textColour="text-black"
+                  onSelectionChange={handleCompanyChange}
+                  placeholder="Select Company"
+                  searchPlaceholder="Search Company"
+                  includeLabel={false}
+                  defaultValue={JSON.parse(companyData)?.name}
+                />
+              </div>
             </div>
             {/* {JSON.parse(productionData).length}
             {JSON.parse(costData).length}
             {JSON.parse(commercialisationData).length} */}
-            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-              <div className="w-[200px] self-center">
-                <SingleSelectDropdown
-                  options={[{ name: "22/23", parameter: "22/23" }, { name: "23/24", parameter: "23/24" }]}
-                  label="Parameter"
-                  variable="name"
-                  colour="bg-deep_blue"
-                  onSelectionChange={(e) => setSelectedSeason(e.parameter)}
-                  placeholder="Select Parameter"
-                  searchPlaceholder="Search Parameter"
-                  includeLabel={false}
-                  defaultValue="22/23"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2">
-                <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Production {selectedSeason}</div>
-                  <div className="mb-16 w-full">
-
-                    <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ["production_estimate"], ["Production Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+            {JSON.parse(companyData)?.type == "producer" && (
+              <>
+                <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+                  <div className="w-[200px] self-center">
+                    <SingleSelectDropdown
+                      options={[{ name: "22/23", parameter: "22/23" }, { name: "23/24", parameter: "23/24" }, { name: "24/25", parameter: "24/25" }]}
+                      label="Parameter"
+                      variable="name"
+                      colour="bg-deep_blue"
+                      onSelectionChange={(e) => setSelectedSeason(e.parameter)}
+                      placeholder="Select Parameter"
+                      searchPlaceholder="Search Parameter"
+                      includeLabel={false}
+                      defaultValue="22/23"
+                    />
                   </div>
-                </div>
-                <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Yield {selectedSeason}</div>
-                  <div className="mb-16 w-full">
+                  <div className="grid grid-cols-1 md:grid-cols-2">
+                    <div>
+                      <div className="mt-6 -mb-2 font-semibold text-center">Production {selectedSeason}</div>
+                      <div className="mb-16 w-full">
 
-                    <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ["yield_estimate"], ["Yield Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ["production_estimate"], ["Production Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="mt-6 -mb-2 font-semibold text-center">Yield {selectedSeason}</div>
+                      <div className="mb-16 w-full">
+
+                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ["yield_estimate"], ["Yield Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="grid place-content-center">
-                <div className="bg-deep_blue text-white rounded-lg px-4 py-1 -mt-8 mb-4 cursor-pointer" onClick={() => setOpenProductionForm(true)}>Update your Production</div>
-                {openProductionForm && (
-                  <div className='absolute text-black modal left-0 top-0 z-40'>
-                    <div className=' fixed grid place-content-center inset-0 z-40'>
-                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                        <div className="my-4 text-black font-semibold text-lg">
-                          Update your production
-                        </div>
-                        <div className="w-full">
-                          <form className="mt-4 mb-4 pl-4 grid grid-cols-2 gap-x-4 w-full" onSubmit={handleProductionFormSubmit}>
-                            <div className="col-span-2 text-center py-2 font-semibold">22/23 Season</div>
-                            <div>
-                              <label
-                                htmlFor="production1"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Production
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="production1"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
+                  <div className="grid place-content-center">
+                    <div className="bg-deep_blue text-white rounded-lg px-4 py-1 -mt-8 mb-4 cursor-pointer" onClick={() => setOpenProductionForm(true)}>Update your Production</div>
+                    {openProductionForm && (
+                      <div className='absolute text-black modal left-0 top-0 z-40'>
+                        <div className=' fixed grid place-content-center inset-0 z-40'>
+                          <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                            <div className="my-4 text-black font-semibold text-lg">
+                              Update your production
                             </div>
-                            <div>
-                              <label
-                                htmlFor="yield1"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Yield
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="yield1"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div className="col-span-2 text-center py-2 font-semibold">23/24 Season</div>
-                            <div>
-                              <label
-                                htmlFor="production2"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Production
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="production2"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                htmlFor="yield2"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Yield
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="yield2"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div className="col-span-2 text-center py-2 font-semibold">24/25 Season</div>
-                            <div>
-                              <label
-                                htmlFor="production3"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Production
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="production3"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                htmlFor="yield3"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Yield
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="yield3"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div className="col-span-2 flex justify-center pt-4">
-                              {/* <button
+                            <div className="w-full">
+                              <form className="mt-4 mb-4 pl-4 grid grid-cols-2 gap-x-4 w-full" onSubmit={handleProductionFormSubmit}>
+                                <div className="col-span-2 text-center py-2 font-semibold">22/23 Season</div>
+                                <div>
+                                  <label
+                                    htmlFor="production1"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Production
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="production1"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    htmlFor="yield1"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Yield
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="yield1"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div className="col-span-2 text-center py-2 font-semibold">23/24 Season</div>
+                                <div>
+                                  <label
+                                    htmlFor="production2"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Production
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="production2"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    htmlFor="yield2"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Yield
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="yield2"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div className="col-span-2 text-center py-2 font-semibold">24/25 Season</div>
+                                <div>
+                                  <label
+                                    htmlFor="production3"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Production
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="production3"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    htmlFor="yield3"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Yield
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="yield3"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div className="col-span-2 flex justify-center pt-4">
+                                  {/* <button
                         type="submit"
                         className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
                       >
                         Submit
                       </button> */}
-                              <FormSubmit errorMessage={productionError_Message} warningMessage={productionWarning_Message} submitted={productionSubmitted} submitting={productionSubmitting} warningSubmit={productionWarningSubmit} />
+                                  <FormSubmit errorMessage={productionError_Message} warningMessage={productionWarning_Message} submitted={productionSubmitted} submitting={productionSubmitting} warningSubmit={productionWarningSubmit} />
+                                </div>
+                              </form>
                             </div>
-                          </form>
+                          </div>
+                          <div onClick={() => setOpenProductionForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
                         </div>
                       </div>
-                      <div onClick={() => setOpenProductionForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2">
+                    <div>
+                      <div className="mt-6 -mb-2 font-semibold text-center">Dollars per Hectare {selectedSeason}</div>
+                      <div className="mb-16 w-full">
+
+                        <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_dollar_per_hectare"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="mt-6 -mb-2 font-semibold text-center">Cents per Pound {selectedSeason}</div>
+                      <div className="mb-16 w-full">
+
+                        <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_cent_per_pound"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2">
-                <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Dollars per Hectare {selectedSeason}</div>
-                  <div className="mb-16 w-full">
-
-                    <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_dollar_per_hectare"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
-                  </div>
-                </div>
-                <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Cents per Pound {selectedSeason}</div>
-                  <div className="mb-16 w-full">
-
-                    <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_cent_per_pound"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
-                  </div>
-                </div>
-              </div>
-              <div className="grid place-content-center">
-                <div className="bg-deep_blue text-white rounded-lg px-4 py-1 -mt-8 mb-4 cursor-pointer" onClick={() => setOpenCostForm(true)}>Update your Cost of Production</div>
-                {openCostForm && (
-                  <div className='absolute text-black modal left-0 top-0 z-40'>
-                    <div className=' fixed grid place-content-center inset-0 z-40'>
-                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                        <div className="my-4 text-black font-semibold text-lg">
-                          Update your cost of production
-                        </div>
-                        <div className="w-full">
-                          <form className="mt-4 mb-4 pl-4 grid grid-cols-2 gap-x-4 w-full" onSubmit={handleCostFormSubmit}>
-                            <div className="col-span-2 text-center py-2 font-semibold">22/23 Season</div>
-                            <div>
-                              <label
-                                htmlFor="dollars_per_hectare1"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Dollars per Hectare
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="dollars_per_hectare1"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
+                  <div className="grid place-content-center">
+                    <div className="bg-deep_blue text-white rounded-lg px-4 py-1 -mt-8 mb-4 cursor-pointer" onClick={() => setOpenCostForm(true)}>Update your Cost of Production</div>
+                    {openCostForm && (
+                      <div className='absolute text-black modal left-0 top-0 z-40'>
+                        <div className=' fixed grid place-content-center inset-0 z-40'>
+                          <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                            <div className="my-4 text-black font-semibold text-lg">
+                              Update your cost of production
                             </div>
-                            <div>
-                              <label
-                                htmlFor="cents_per_pound1"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Cents per Pound
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="cents_per_pound1"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div className="col-span-2 text-center py-2 font-semibold">23/24 Season</div>
-                            <div>
-                              <label
-                                htmlFor="dollars_per_hectare2"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Dollars per Hectare
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="dollars_per_hectare2"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                htmlFor="cents_per_pound2"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Cents per Pound
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="cents_per_pound2"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div className="col-span-2 text-center py-2 font-semibold">24/25 Season</div>
-                            <div>
-                              <label
-                                htmlFor="dollars_per_hectare3"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Dollars per Hectare
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="dollars_per_hectare3"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                htmlFor="cents_per_pound3"
-                                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                              >
-                                Cents per Pound
-                              </label>
-                              <input
-                                type="number"
-                                step=".01"
-                                id="cents_per_pound3"
-                                required
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter your estimate"
-                              />
-                            </div>
-                            <div className="col-span-2 flex justify-center pt-4">
-                              {/* <button
+                            <div className="w-full">
+                              <form className="mt-4 mb-4 pl-4 grid grid-cols-2 gap-x-4 w-full" onSubmit={handleCostFormSubmit}>
+                                <div className="col-span-2 text-center py-2 font-semibold">22/23 Season</div>
+                                <div>
+                                  <label
+                                    htmlFor="dollars_per_hectare1"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Dollars per Hectare
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="dollars_per_hectare1"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    htmlFor="cents_per_pound1"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Cents per Pound
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="cents_per_pound1"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div className="col-span-2 text-center py-2 font-semibold">23/24 Season</div>
+                                <div>
+                                  <label
+                                    htmlFor="dollars_per_hectare2"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Dollars per Hectare
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="dollars_per_hectare2"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    htmlFor="cents_per_pound2"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Cents per Pound
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="cents_per_pound2"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div className="col-span-2 text-center py-2 font-semibold">24/25 Season</div>
+                                <div>
+                                  <label
+                                    htmlFor="dollars_per_hectare3"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Dollars per Hectare
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="dollars_per_hectare3"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    htmlFor="cents_per_pound3"
+                                    className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                                  >
+                                    Cents per Pound
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step=".01"
+                                    id="cents_per_pound3"
+                                    required
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your estimate"
+                                  />
+                                </div>
+                                <div className="col-span-2 flex justify-center pt-4">
+                                  {/* <button
                         type="submit"
                         className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
                       >
                         Submit
                       </button> */}
-                              <FormSubmit errorMessage={costError_Message} warningMessage={costWarning_Message} submitted={costSubmitted} submitting={costSubmitting} warningSubmit={costWarningSubmit} />
+                                  <FormSubmit errorMessage={costError_Message} warningMessage={costWarning_Message} submitted={costSubmitted} submitting={costSubmitting} warningSubmit={costWarningSubmit} />
+                                </div>
+                              </form>
                             </div>
-                          </form>
+                          </div>
+                          <div onClick={() => setOpenCostForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
                         </div>
                       </div>
-                      <div onClick={() => setOpenCostForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                    </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-1">
-                <div>
-                  <div className="mt-6 -mb-2 font-semibold text-center">Commercialisation {selectedSeason}</div>
-                  <div className="mb-16 w-full">
+                  <div className="grid grid-cols-1 md:grid-cols-1">
+                    <div>
+                      <div className="mt-6 -mb-2 font-semibold text-center">Commercialisation {selectedSeason}</div>
+                      <div className="mb-16 w-full">
 
-                    <LineGraph data={getEstimatesData(JSON.parse(commercialisationData).filter((estimate) => estimate.season == selectedSeason), ["percentage_sold"], ["Percentage"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Percentage Sold" />
-                  </div>
-                </div>
-                {/* <div>
+                        <LineGraph data={getEstimatesData(JSON.parse(commercialisationData).filter((estimate) => estimate.season == selectedSeason), ["percentage_sold"], ["Percentage"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Percentage Sold" />
+                      </div>
+                    </div>
+                    {/* <div>
                   <div className="mt-6 -mb-2 font-semibold text-center">Cents per Pound {selectedSeason}</div>
                   <div className="mb-16 w-full">
 
                     <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_cent_per_pound"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
                   </div>
                 </div> */}
-              </div>
-              <div className="grid place-content-center">
-                <div className="bg-deep_blue text-white rounded-lg px-4 py-1 -mt-8 mb-4 cursor-pointer" onClick={() => setOpenCommercialisationForm(true)}>Update your Commercialisation</div>
-                {openCommercialisationForm && (
-                  <div className='absolute text-black modal left-0 top-0 z-40'>
-                    <div className=' fixed grid place-content-center inset-0 z-40'>
-                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                        <div className="my-4 text-black font-semibold text-lg">
-                          Update your commercialisation
-                        </div>
-                        <div className="w-full">
-                          <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleCommercialisationFormSubmit}>
-                            <div className=" text-center py-2 font-semibold">22/23 Season</div>
-
-                            <label
-                              htmlFor="percentage1"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Percentage Sold
-                            </label>
-                            <input
-                              type="number"
-                              step=".01"
-                              id="percentage1"
-                              required
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                              placeholder="Enter your estimate"
-                            />
-
-                            <div className="col-span-2 text-center py-2 font-semibold">23/24 Season</div>
-
-                            <label
-                              htmlFor="percentage2"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Percentage Sold
-                            </label>
-                            <input
-                              type="number"
-                              step=".01"
-                              id="percentage2"
-                              required
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                              placeholder="Enter your estimate"
-                            />
-
-                            <div className="col-span-2 text-center py-2 font-semibold">24/25 Season</div>
-
-                            <label
-                              htmlFor="percentage3"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Percentage Sold
-                            </label>
-                            <input
-                              type="number"
-                              step=".01"
-                              id="percentage3"
-                              required
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                              placeholder="Enter your estimate"
-                            />
-
-                            <div className="col-span-2 flex justify-center pt-4">
-                              {/* <button
-                        type="submit"
-                        className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
-                      >
-                        Submit
-                      </button> */}
-                              <FormSubmit errorMessage={commercialisationError_Message} warningMessage={commercialisationWarning_Message} submitted={commercialisationSubmitted} submitting={commercialisationSubmitting} warningSubmit={commercialisationWarningSubmit} />
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                      <div onClick={() => setOpenCommercialisationForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                    </div>
                   </div>
-                )}
-              </div>
-            </div>
-            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-              <div className="text-lg font-semibold text-center mb-4">Fixed Cotton</div>
-              <table className="border border-black">
-                <thead className="text-left border-b border-black">
-                  <tr className="">
-                    <th className="px-4">Contract</th>
-                    <th className="px-4">Futures Month</th>
-                    <th className="px-4">Basis</th>
-                    <th className="px-4">Average Fixed Price</th>
-                    <th className="px-4">Amount Fixed</th>
-                  </tr>
-                </thead>
-                <tbody className="">
-                  {JSON.parse(fixedData).map((row) => (
-                    <tr className="" key={row.record_id}>
-                      <td className="px-4">{row.contract_number}</td>
-                      <td className="px-4">{row.futures_month}</td>
-                      <td className="px-4">{row.basis}</td>
-                      <td className="px-4">{row.fixed_price_without_basis}</td>
-                      <td className="px-4">{row.amount_fixed}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {JSON.parse(fixedData).length == 0 && (
-                <div className="text-center w-full py-4">currently no fixed cotton records</div>
-              )}
-              <div className="grid place-content-center">
-                <div className="bg-deep_blue text-white rounded-lg px-4 py-1 mt-4 mb-4 cursor-pointer" onClick={() => setOpenFixedForm(true)}>Add Fixed Cotton</div>
-                {openFixedForm && (
-                  <div className='absolute text-black modal left-0 top-0 z-40'>
-                    <div className=' fixed grid place-content-center inset-0 z-40'>
-                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                        <div className="my-4 text-black font-semibold text-lg">
-                          Add Fixed Cotton Record
-                        </div>
-                        <div className="w-full">
-                          <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleFixedFormSubmit}>
-                            {/* {modifyingExistingContract ? "true" : "false"} */}
-                            <div className="flex items-center">
-                              <label
-                                htmlFor="existing"
-                                className="text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
-                              >
-                                Adding to existing contract
-                              </label>
-                              <input
-                                type="checkbox"
-                                id="existing"
-                                onChange={(e) => setModifyingExistingContract(e.target.checked)}
-                                className="w-fit -mb-1 ml-3 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                placeholder="Enter contract name"
-                              />
+                  <div className="grid place-content-center">
+                    <div className="bg-deep_blue text-white rounded-lg px-4 py-1 -mt-8 mb-4 cursor-pointer" onClick={() => setOpenCommercialisationForm(true)}>Update your Commercialisation</div>
+                    {openCommercialisationForm && (
+                      <div className='absolute text-black modal left-0 top-0 z-40'>
+                        <div className=' fixed grid place-content-center inset-0 z-40'>
+                          <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                            <div className="my-4 text-black font-semibold text-lg">
+                              Update your commercialisation
                             </div>
-                            {modifyingExistingContract && (
-                              <>
-                                <SingleSelectDropdown
-                                  options={JSON.parse(unfixedData).map((data) => { const object = { name: data.contract_number, parameter: data.contract_number, ...data }; return object })}
-                                  label="Contract"
-                                  variable="name"
-                                  colour="bg-deep_blue"
-                                  onSelectionChange={(e) => setModifyingContract(e)}
-                                  placeholder="Select Contract"
-                                  searchPlaceholder="Search Contract"
-                                  includeLabel={false}
-                                />
-                              </>
-                            )}
-                            {!modifyingExistingContract && (
-                              <>
-                                <div className="flex gap-x-4">
-                                  <div className="w-full">
-                                    <label
-                                      htmlFor="contract"
-                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
-                                    >
-                                      Contract
-                                    </label>
-                                    <input
-                                      type="text"
-                                      id="contract"
-                                      required
-                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                      placeholder="Enter contract name"
-                                    />
-                                  </div>
+                            <div className="w-full">
+                              <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleCommercialisationFormSubmit}>
+                                <div className=" text-center py-2 font-semibold">22/23 Season</div>
 
-                                  <div className="w-full">
-                                    <label
-                                      htmlFor="futures_month"
-                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
-                                    >
-                                      Futures Month
-                                    </label>
-                                    <input
-                                      type="text"
-                                      id="futures_month"
-                                      required
-                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                      placeholder="Enter future month"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="flex gap-x-4">
-                                  {/* <div className="w-full">
                                 <label
-                                  htmlFor="fix_by"
-                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                  htmlFor="percentage1"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
                                 >
-                                  Fix By
+                                  Percentage Sold
                                 </label>
                                 <input
-                                  type="date"
-                                  id="fix_by"
+                                  type="number"
+                                  step=".01"
+                                  id="percentage1"
                                   required
                                   className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                                   placeholder="Enter your estimate"
                                 />
-                              </div> */}
-                                  <div className="w-full">
-                                    <label
-                                      htmlFor="basis"
-                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
-                                    >
-                                      Basis
-                                    </label>
-                                    <input
-                                      type="number"
-                                      step=".01"
-                                      id="basis"
-                                      required
-                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                      placeholder="Enter basis value"
-                                    />
-                                  </div>
-                                </div>
-                              </>
-                            )}
-                            <div className="flex gap-x-4">
-                              <div className="w-full">
+
+                                <div className="col-span-2 text-center py-2 font-semibold">23/24 Season</div>
+
                                 <label
-                                  htmlFor="price"
-                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                  htmlFor="percentage2"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
                                 >
-                                  Fixed Price
+                                  Percentage Sold
                                 </label>
                                 <input
                                   type="number"
                                   step=".01"
-                                  id="price"
+                                  id="percentage2"
                                   required
                                   className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                  placeholder="Enter price"
+                                  placeholder="Enter your estimate"
                                 />
-                              </div>
-                              <div className="w-full">
+
+                                <div className="col-span-2 text-center py-2 font-semibold">24/25 Season</div>
+
                                 <label
-                                  htmlFor="amount"
-                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                  htmlFor="percentage3"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
                                 >
-                                  Amount Fixed
+                                  Percentage Sold
                                 </label>
                                 <input
                                   type="number"
                                   step=".01"
-                                  id="amount"
+                                  id="percentage3"
                                   required
                                   className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                  placeholder="Enter amount fixed"
+                                  placeholder="Enter your estimate"
                                 />
-                              </div>
-                            </div>
-                            <div className="col-span-2 flex justify-center pt-4">
-                              {/* <button
+
+                                <div className="col-span-2 flex justify-center pt-4">
+                                  {/* <button
                         type="submit"
                         className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
                       >
                         Submit
                       </button> */}
-                              <FormSubmit errorMessage={fixedError_Message} warningMessage={fixedWarning_Message} submitted={fixedSubmitted} submitting={fixedSubmitting} warningSubmit={fixedWarningSubmit} />
+                                  <FormSubmit errorMessage={commercialisationError_Message} warningMessage={commercialisationWarning_Message} submitted={commercialisationSubmitted} submitting={commercialisationSubmitting} warningSubmit={commercialisationWarningSubmit} />
+                                </div>
+                              </form>
                             </div>
-                          </form>
+                          </div>
+                          <div onClick={() => setOpenCommercialisationForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
                         </div>
                       </div>
-                      <div onClick={() => { setModifyingExistingContract(false); setOpenFixedForm(false) }} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                    </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
+                </div>
+              </>
+            )}
             <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
               <div className="text-lg font-semibold text-center mb-4">Unfixed Cotton</div>
               <div className="w-full">
@@ -1443,7 +1310,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                                       htmlFor="fixed_price"
                                       className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
                                     >
-                                      Average Fixed Price
+                                      Average Fixed Price Without Basis
                                     </label>
                                     <input
                                       type="number"
@@ -1462,7 +1329,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                                 <label
                                   htmlFor="percentage"
                                   className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
-                                >
+                                  >
                                   Percentage Fixed
                                 </label>
                                 <input
@@ -1472,14 +1339,14 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                                   required
                                   className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
                                   placeholder="Enter percentage fixed"
-                                />
+                                  />
                               </div> */}
                               <div className="w-full">
                                 <label
                                   htmlFor="remaining"
                                   className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
                                 >
-                                  Amount{partiallyFixed ? " Remaining" : ""}
+                                  Amount{partiallyFixed ? " Remaining" : ""}&nbsp;(tonnes)
                                 </label>
                                 <input
                                   type="number"
@@ -1510,19 +1377,213 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
               </div>
             </div>
             <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-              <div className="text-lg font-semibold text-center">
+              <div className="text-lg font-semibold text-center mb-4">Fixed Cotton</div>
+              <table className="border border-black">
+                <thead className="text-left border-b border-black">
+                  <tr className="">
+                    <th className="px-4">Contract</th>
+                    <th className="px-4">Futures Month</th>
+                    <th className="px-4">Basis</th>
+                    <th className="px-4">Average Fixed Without Basis</th>
+                    <th className="px-4">Average Total Fixed Price</th>
+                    <th className="px-4">Amount Fixed</th>
+                  </tr>
+                </thead>
+                <tbody className="">
+                  {JSON.parse(fixedData).map((row) => (
+                    <tr className="" key={row.record_id}>
+                      <td className="px-4">{row.contract_number}</td>
+                      <td className="px-4">{row.futures_month}</td>
+                      <td className="px-4">{row.basis}</td>
+                      <td className="px-4">{row.fixed_price_without_basis}</td>
+                      <td className="px-4">{parseFloat(row.fixed_price_without_basis) + parseFloat(row.basis) / 100}</td>
+                      <td className="px-4">{row.amount_fixed}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {JSON.parse(fixedData).length == 0 && (
+                <div className="text-center w-full py-4">currently no fixed cotton records</div>
+              )}
+              <div className="grid place-content-center">
+                <div className="bg-deep_blue text-white rounded-lg px-4 py-1 mt-4 mb-4 cursor-pointer" onClick={() => setOpenFixedForm(true)}>Add Fixed Cotton</div>
+                {openFixedForm && (
+                  <div className='absolute text-black modal left-0 top-0 z-40'>
+                    <div className=' fixed grid place-content-center inset-0 z-40'>
+                      <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                        <div className="my-4 text-black font-semibold text-lg">
+                          Add Fixed Cotton Record
+                        </div>
+                        <div className="w-full">
+                          <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleFixedFormSubmit}>
+                            {/* {modifyingExistingContract ? "true" : "false"} */}
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="existing"
+                                className="text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                              >
+                                Add from an existing unfixed contract
+                              </label>
+                              <input
+                                type="checkbox"
+                                id="existing"
+                                onChange={(e) => setModifyingExistingContract(e.target.checked)}
+                                className="w-fit -mb-1 ml-3 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                placeholder="Enter contract name"
+                              />
+                            </div>
+                            {modifyingExistingContract && (
+                              <>
+                                <SingleSelectDropdown
+                                  options={JSON.parse(unfixedData).map((data) => { const object = { name: data.contract_number, parameter: data.contract_number, ...data }; return object })}
+                                  label="Contract"
+                                  variable="name"
+                                  colour="bg-deep_blue"
+                                  onSelectionChange={(e) => setModifyingContract(e)}
+                                  placeholder="Select Contract"
+                                  searchPlaceholder="Search Contract"
+                                  includeLabel={false}
+                                />
+                              </>
+                            )}
+                            {!modifyingExistingContract && (
+                              <>
+                                <div className="flex gap-x-4">
+                                  <div className="w-full">
+                                    <label
+                                      htmlFor="contract"
+                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                    >
+                                      Contract
+                                    </label>
+                                    <input
+                                      type="text"
+                                      id="contract"
+                                      required
+                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                      placeholder="Enter contract name"
+                                    />
+                                  </div>
+
+                                  <div className="w-full">
+                                    <label
+                                      htmlFor="futures_month"
+                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                    >
+                                      Futures Month
+                                    </label>
+                                    <input
+                                      type="text"
+                                      id="futures_month"
+                                      required
+                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                      placeholder="Enter future month"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex gap-x-4">
+                                  {/* <div className="w-full">
+                                                      <label
+                                                        htmlFor="fix_by"
+                                                        className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                                      >
+                                                        Fix By
+                                                      </label>
+                                                      <input
+                                                        type="date"
+                                                        id="fix_by"
+                                                        required
+                                                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                                        placeholder="Enter your estimate"
+                                                      />
+                                                    </div> */}
+                                  <div className="w-full">
+                                    <label
+                                      htmlFor="basis"
+                                      className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                    >
+                                      Basis
+                                    </label>
+                                    <input
+                                      type="number"
+                                      step=".01"
+                                      id="basis"
+                                      required
+                                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                      placeholder="Enter basis value"
+                                    />
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                            <div className="flex gap-x-4">
+                              <div className="w-full">
+                                <label
+                                  htmlFor="price"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Fixed Price Without Basis
+                                </label>
+                                <input
+                                  type="number"
+                                  step=".01"
+                                  id="price"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter price"
+                                />
+                              </div>
+                              <div className="w-full">
+                                <label
+                                  htmlFor="amount"
+                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
+                                >
+                                  Amount Fixed (Tonnes)
+                                </label>
+                                <input
+                                  type="number"
+                                  step=".01"
+                                  id="amount"
+                                  required
+                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                                  placeholder="Enter amount fixed"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-span-2 flex justify-center pt-4">
+                              {/* <button
+                                              type="submit"
+                                              className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
+                                            >
+                                              Submit
+                                            </button> */}
+                              <FormSubmit errorMessage={fixedError_Message} warningMessage={fixedWarning_Message} submitted={fixedSubmitted} submitting={fixedSubmitting} warningSubmit={fixedWarningSubmit} />
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div onClick={() => { setModifyingExistingContract(false); setOpenFixedForm(false) }} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+              <div className="text-lg font-semibold text-center mb-2">
                 Strategy Log
               </div>
-              {JSON.parse(strategyLogData).map((strategy) => (
-                <div className="border flex justify-between hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setStrategyPopup(strategy)}>
-                  <div>
-                    {strategy?.title}
+              <div className="flex flex-col gap-y-4">
+                {JSON.parse(strategyLogData).map((strategy) => (
+                  <div className="border flex justify-between hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setStrategyPopup(strategy)}>
+                    <div>
+                      {strategy?.title}
+                    </div>
+                    <div>
+                      {parseDateString(strategy?.date_created)}
+                    </div>
                   </div>
-                  <div>
-                    {parseDateString(strategy?.date_created)}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
               {strategyPopup != null && (
                 <div className='absolute modal left-0 top-0 z-40'>
                   <div className=' fixed grid place-content-center inset-0 z-40'>
@@ -1566,18 +1627,18 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
 
-  if (!session) {
+  if (!session || (session?.type != "producer" && session?.type != "spinner" && session?.company_id != "cllxqmywr0000zbdg10nqp2up")) {
     return {
       redirect: {
         permanent: false,
-        destination: `/auth/signin`,
+        destination: `/`,
       }
     }
   }
 
   let company_id = session?.company_id
 
-  if (session.company_id == "cllxqmywr0000zbdg10nqp2up") {
+  if (session?.company_id == "cllxqmywr0000zbdg10nqp2up") {
     company_id = session?.selected_company_id
   }
 
@@ -1596,6 +1657,9 @@ export const getServerSideProps = async (context: any) => {
   const production = await prisma?.producer_production_estimates.findMany({
     where: {
       company_id: company_id
+    },
+    orderBy: {
+      date_created: "asc"
     }
   })
 
@@ -1604,6 +1668,9 @@ export const getServerSideProps = async (context: any) => {
   const cost = await prisma?.producer_cost_estimates.findMany({
     where: {
       company_id: company_id
+    },
+    orderBy: {
+      date_created: "asc"
     }
   })
 
@@ -1612,6 +1679,9 @@ export const getServerSideProps = async (context: any) => {
   const commercialisation = await prisma?.producer_commercialisation_estimates.findMany({
     where: {
       company_id: company_id
+    },
+    orderBy: {
+      date_created: "asc"
     }
   })
 
@@ -1644,9 +1714,17 @@ export const getServerSideProps = async (context: any) => {
 
   const unfixedData = JSON.stringify(unfixed)
 
+  const premiumCompany = await prisma?.company.findMany({
+    where: {
+      tier: "premium"
+    }
+  })
+
+  const premiumCompaniesData = JSON.stringify(premiumCompany)
+
   // console.log(monthlyIndexData)
   return {
-    props: { companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData },
+    props: { companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData, premiumCompaniesData },
   };
 };
 

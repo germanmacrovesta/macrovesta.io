@@ -17,6 +17,8 @@ import { text, html, } from "../../../components/nextAuthCustom/verificationEmai
 
 type ExtendedSession<T> = T & {
     role: string | null;
+    type: string | null;
+    access_to_marketplace: boolean | null;
     company: string | null;
     company_id: string | null;
     selected_company: string | null;
@@ -70,6 +72,8 @@ export const authOptions: NextAuthOptions = {
             let extendedSession: ExtendedSession<typeof session> = {
                 ...session,
                 role: null,
+                type: null,
+                access_to_marketplace: null,
                 company: null,
                 company_id: null,
                 selected_company: null,
@@ -78,6 +82,8 @@ export const authOptions: NextAuthOptions = {
             }
             extendedSession.role = userData?.role ?? null;
             extendedSession.submittedSurvey = userData?.submittedSurvey ?? null;
+            extendedSession.type = userData?.company?.type ?? null;
+            extendedSession.access_to_marketplace = userData?.company?.access_to_marketplace ?? null;
             extendedSession.company = userData?.company?.name ?? null;
             extendedSession.company_id = userData?.company_id ?? null;
             extendedSession.selected_company = userData?.selected_company?.name ?? null;

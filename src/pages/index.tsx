@@ -125,7 +125,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData }) => {
+const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -1101,6 +1101,22 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return datasetArray
   }
 
+  const getAIndexData = (data, propertyArray, datasetNameArray) => {
+    let datasetArray = [];
+    data.forEach((item) => {
+      propertyArray.forEach((property, index) => {
+        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
+          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          dataset.data.push({ x: item.date, y: parseInt(item[property]) })
+        } else {
+          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          dataset.data.push({ x: item.date, y: parseInt(item[property]) })
+          datasetArray.push(dataset)
+        }
+      })
+    })
+    return datasetArray
+  }
   const getUSExportSalesData = (data, propertyArray, datasetNameArray) => {
     let datasetArray = [];
     data.forEach((item) => {
@@ -1287,10 +1303,16 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo));
   const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today));
 
+  const [selectedIndexStartDate, setSelectedIndexStartDate] = React.useState(parseDate(`2023-01-01`));
+  const [selectedIndexEndDate, setSelectedIndexEndDate] = React.useState(parseDate(today));
+
   // const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["open_interest_all", "producer_merchant_net", "swap_position_net", "managed_money_net", "other_reportables_net", "total_reportables_net", "non_reportables_net", "specs_net"])
   // const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Open Interest All", "Producer Merchant Net", "Swap Position Net", "Managed Money Net", "Other Reportables Net", "Total Reportables Net", "Non Reportables Net", "Specs Net"])
   const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["specs_net"])
   const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Specs Net"])
+
+  const [indexPropertiesArray, setIndexPropertiesArray] = React.useState(["a_index", "ice_highest_open_interest_17_months"])
+  const [indexNamesArray, setIndexNamesArray] = React.useState(["A-Index", "Ice Highest"])
 
   const [supplyAndDemandPropertiesArray, setSupplyAndDemandPropertiesArray] = React.useState(["production_usda"])
   const [supplyAndDemandNamesArray, setSupplyAndDemandNamesArray] = React.useState(["Production USDA"])
@@ -1562,6 +1584,115 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
               </div>
             </div>
+            <div className="relative flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8">
+
+              <div className="relative grid grid-cols-2">
+                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <div className="col-span-2 text-center text-xl font-semibold mb-4">
+                  A-Index
+                </div>
+                <div className="col-span-2 grid grid-cols-2 w-full gap-x-4 px-8">
+                  <div className="mb-4 w-full">
+                    <DateField label='Start Date' setDate={setSelectedIndexStartDate} date={selectedIndexStartDate} formatter={formatter} />
+                  </div>
+                  <div className="mb-4 w-full">
+                    <DateField label='Start Date' setDate={setSelectedIndexEndDate} date={selectedIndexEndDate} formatter={formatter} />
+                  </div>
+
+                  {/* <div className="mb-4 w-full">
+
+                      <SingleSelectDropdown
+                        options={[{ name: "Week" }, { name: "Year" }]}
+                        label="Week or Year"
+                        variable="name"
+                        colour="bg-deep_blue"
+                        onSelectionChange={(e) => setCommitmentWeekOrYear(e.name)}
+                        placeholder="Select Week or Year"
+                        searchPlaceholder="Search Options"
+                        includeLabel={false}
+                        defaultValue="Week"
+                      />
+                    </div>
+                    {commitmentWeekOrYear == "Year" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(commitmentData), "calendar_year")}
+                            label="Year"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setCommitmentYear(parseInt(e.value))}
+                            placeholder="Select a specific year"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="2010"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {commitmentWeekOrYear == "Week" && (
+                      <>
+                        <div className="mb-4 w-full">
+
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(JSON.parse(commitmentData), "week")}
+                            label="Week"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setCommitmentWeek(parseInt(e.value))}
+                            placeholder="Select a specific week"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="1"
+                          />
+                        </div>
+                      </>
+                    )} */}
+                  <div className="col-span-2 mb-4 w-full">
+
+                    <MultipleSelectDropdown
+                      options={[{ property: "a_index", name: "A-Index" }, { property: "ice_highest_open_interest_17_months", name: "Ice Highest" }, { property: "cc_index", name: "CC Index" }, { property: "mcx", name: "MCX" }, { property: "cepea", name: "CEPEA" }]}
+                      variable="name"
+                      colour="bg-deep_blue"
+                      label="Variables"
+                      onSelectionChange={(e) => { if (e.length > 0) { setIndexPropertiesArray(e.map((selection) => selection.property)); setIndexNamesArray(e.map((selection) => selection.name)) } }}
+                      // onSelectionChange={(e) => { setCommitmentPropertiesArray(["open_interest_all"]); setCommitmentNamesArray(["Open Interest All"]) }}
+                      placeholder="Select Variables"
+                      searchPlaceholder="Search Variables"
+                      includeLabel={false}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-span-2 flex flex-col items-center w-full">
+                  <div className="mt-6 -mb-2 font-semibold">A-Index by Week</div>
+                  <div className="mb-4 w-full">
+
+                    <LineGraph verticalTooltip={true} data={getAIndexData(JSON.parse(aIndexData).filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
+                  </div>
+                  {/* {commitmentWeekOrYear == "Year" && (
+                      <>
+                        <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
+                        <div className="mb-16 w-full">
+
+                          <LineGraph data={getUSExportSalesWeekData(JSON.parse(exportSalesData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} xDomain2={52} xAxisTitle="Week" />
+                        </div>
+                      </>
+                    )}
+                    {commitmentWeekOrYear == "Week" && (
+                      <>
+                        <div className="mt-6 -mb-2 font-semibold">US Export Sales by Year</div>
+                        <div className="mb-16 w-full">
+
+                          <LineGraphNotTime data={getUSExportSalesSeasonData(JSON.parse(exportSalesData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
+                        </div>
+                      </>
+                    )} */}
+                </div>
+              </div>
+              <Comments styling="px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Export Sales")} session={session} section="Export Sales" />
+            </div>
             {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <TVChartContainer {...defaultWidgetProps} />
             </div> */}
@@ -1818,7 +1949,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div>
                         {snapshot.title_of_snapshot_strategy}
                       </div>
-                      <div>
+                      <div className="min-w-[80px]">
                         {snapshot.news_type}
                       </div>
                     </div>
@@ -3293,9 +3424,13 @@ export const getServerSideProps = async (context: any) => {
 
   const conclusionData = JSON.stringify(conclusion)
 
+  const aIndex = await prisma?.a_index.findMany({})
+
+  const aIndexData = JSON.stringify(aIndex)
+
   // console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData },
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData },
   };
 };
 

@@ -7,12 +7,28 @@ import { prisma } from "../../server/db";
 const AddSentimentSurveyResults = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
 
+        let high = String(req?.body?.high);
+        if (high != undefined) {
+            if (high.split(".")[0].length > 3) {
+                const newHigh = String(req?.body?.high).split(".")[0]
+                high = `${newHigh?.slice(0, newHigh.length - 2)}.${newHigh?.slice(newHigh.length - 2)}`
+            }
+        }
+
+        let low = String(req?.body?.low);
+        if (low != undefined) {
+            if (low.split(".")[0].length > 3) {
+                const newLow = String(req?.body?.low).split(".")[0]
+                low = `${newLow?.slice(0, newLow.length - 2)}.${newLow?.slice(newLow.length - 2)}`
+            }
+        }
+
         const record = await prisma?.sentiment_survey.create({
             data: {
                 bullish_or_bearish: req.body.bullish_or_bearish,
                 bullish_or_bearish_value: parseInt(req.body.bullish_or_bearish_value),
-                high: parseFloat(req.body.high),
-                low: parseFloat(req.body.low),
+                high: parseFloat(high),
+                low: parseFloat(low),
                 intraday_average_points: parseFloat(req.body.intraday_average_points),
                 open_interest: parseFloat(req.body.open_interest),
                 date_of_survey: new Date(),
@@ -27,7 +43,7 @@ const AddSentimentSurveyResults = async (req: NextApiRequest, res: NextApiRespon
                 table: "Sentiment Survey",
                 type: "Supervision",
                 thing_id: record.record_id,
-                information: `Sentiment: ${req.body.bullish_or_bearish_value},\nHigh: ${req.body.high},\nLow: ${req.body.low},\nIntraday: ${req.body.intraday_average_points},\nOpen Interest: ${req.body.open_interest} `,
+                information: `Sentiment: ${req.body.bullish_or_bearish_value},\nHigh: ${high},\nLow: ${low},\nIntraday: ${req.body.intraday_average_points},\nOpen Interest: ${req.body.open_interest} `,
                 added_by: req.body.user
             }
         })
