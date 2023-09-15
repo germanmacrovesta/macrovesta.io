@@ -4,32 +4,15 @@ import Link from "next/link";
 import { prisma } from '../server/db';
 import Sidebar from '../components/sidebar';
 import Breadcrumbs from '../components/breadcrumbs';
-import TabMenu from '../components/tabmenu';
 import { useRouter } from "next/router";
-import { TabMenuArray } from '../components/tabMenuArray';
 import React from "react";
 import SingleSelectDropdown from '../components/singleSelectDropdown';
-import { TVChartContainer } from "../components/TVChartContainer";
 import {
   ChartingLibraryWidgetOptions,
   ResolutionString,
 } from "../../public/static/charting_library/charting_library";
-import GroupedBarChart from '../components/groupedBarChart';
-import LineGraph from '../components/lineGraph';
-import LineGraphNotTime from '../components/lineGraphNotTime';
 import FormSubmit from '../components/formSubmit';
-import ReactMarkdown from 'react-markdown';
-import { render } from "react-dom";
-import BullishBearishDonut from '../components/bullishBearishDonut';
 import { useSession, getSession } from "next-auth/react";
-import Comments from '../components/comments';
-import IndexDial from '../components/indexDial';
-import SemiCircleDial from '../components/semiCircleDial';
-import MultipleSelectDropdown from '../components/multipleSelectDropdown';
-import DateField from '../components/dateField';
-import { useDateFormatter, useLocale } from 'react-aria';
-import { parseDate } from '@internationalized/date';
-import { WeglotLanguageSwitcher } from "~/components/weglotLanguageSwitcher";
 import useWeglotLang from '../components/useWeglotLang';
 import InfoButton from '../components/infoButton';
 

@@ -20,7 +20,7 @@ const Comments = ({
     comments,
     session,
     section,
-    commentLength = 280
+    commentLength = 512
 
 }) => {
     const [componentComments, setComments] = React.useState(comments)

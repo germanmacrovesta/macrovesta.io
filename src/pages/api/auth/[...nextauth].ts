@@ -19,6 +19,7 @@ type ExtendedSession<T> = T & {
     role: string | null;
     type: string | null;
     access_to_marketplace: boolean | null;
+    tier: string | null;
     company: string | null;
     company_id: string | null;
     selected_company: string | null;
@@ -74,6 +75,7 @@ export const authOptions: NextAuthOptions = {
                 role: null,
                 type: null,
                 access_to_marketplace: null,
+                tier: null,
                 company: null,
                 company_id: null,
                 selected_company: null,
@@ -83,6 +85,7 @@ export const authOptions: NextAuthOptions = {
             extendedSession.role = userData?.role ?? null;
             extendedSession.submittedSurvey = userData?.submittedSurvey ?? null;
             extendedSession.type = userData?.company?.type ?? null;
+            extendedSession.tier = userData?.company?.tier ?? null;
             extendedSession.access_to_marketplace = userData?.company?.access_to_marketplace ?? null;
             extendedSession.company = userData?.company?.name ?? null;
             extendedSession.company_id = userData?.company_id ?? null;
