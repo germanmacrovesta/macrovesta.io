@@ -45,7 +45,7 @@ const CookieConsent = () => {
                         <button
                             type="button"
                             onClick={handleAccept}
-                            className="py-2 px-4 bg-primary hover:bg-navy focus:ring-navy focus:ring-offset-navy text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+                            className="py-2 px-4 bg-deep_blue hover:bg-navy focus:ring-navy focus:ring-offset-navy text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
                         >
                             Accept
                         </button>
