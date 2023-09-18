@@ -1314,7 +1314,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [exportPropertiesArray, setExportPropertiesArray] = React.useState(["net_sales", "next_marketing_year_net_sales"])
   const [exportNamesArray, setExportNamesArray] = React.useState(["Net Sales", "Next Marketing Year Net Sales"])
 
-  const [cottonPropertiesArray, setCottonPropertiesArray] = React.useState(["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"])
+  const [cottonSalesPropertiesArray, setCottonSalesPropertiesArray] = React.useState(["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"])
+  const [cottonPurchasesPropertiesArray, setCottonPurchasesPropertiesArray] = React.useState(["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"])
   const [cottonNamesArray, setCottonNamesArray] = React.useState(["October", "December", "March", "May", "July"])
 
   const [indexPropertiesArray, setIndexPropertiesArray] = React.useState(["a_index", "ice_highest_open_interest_17_months"])
@@ -1705,14 +1706,15 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             {/* ((session?.submittedSurvey == true) || ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1))) */}
             {((session?.submittedSurvey == true) || ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1))) && (
               <div className="relative flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                 {/* {stages[currentStage]} */}
                 {/* (currentStage == 0) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && (session?.submittedSurvey != true) */}
                 {(currentStage == 0) && ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1)) && (session?.submittedSurvey != true) && (
-                  <div className="grid grid-cols-2">
-                    <div className="col-span-2 mb-4 text-center text-xl font-semibold">Weekly Macrovesta Sentiment Survey</div>
-                    <div className="col-span-2 grid grid-cols-2 gap-x-4 pl-4">
-                      {/* <div className="flex flex-col justify-end items-end">
+                  <>
+                    <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                    <div className="grid grid-cols-2">
+                      <div className="col-span-2 mb-4 text-center text-xl font-semibold">Weekly Macrovesta Sentiment Survey</div>
+                      <div className="col-span-2 grid grid-cols-2 gap-x-4 pl-4">
+                        {/* <div className="flex flex-col justify-end items-end">
                         <div className="w-full">
                           <label
                             className="block text-gray-700 text-sm font-bold mb-2 pl-3"
@@ -1735,146 +1737,150 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           />
                         </div>
                       </div> */}
-                    </div>
-                    <form className="mt-4 mb-4 pl-4 grid grid-cols-2 col-span-2 gap-x-4 w-full" onSubmit={handleSentimentFormSubmit}>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="bullishbearish"
-                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                        >
-                          What is your feeling of the market?
-                        </label>
-                        <input
-                          type="number"
-                          step="1"
-                          min={-5}
-                          max={5}
-                          id="bullishbearish"
-                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                          placeholder="From -5 to 5"
-                        />
-                        <div className="pl-3 text-sm">-5 for very bearish, 0 for neutral and 5 for very bullish</div>
                       </div>
-                      <div className="flex flex-col">
-                        <div className="font-semibold leading-4 mb-3">Please submit your guesstimates to view the unanimous opinions of our other partners</div>
-                        <div className="text-sm leading-4">This new feature displays unanimously the opinion of our partners about December 2023 Futures for the week ahead, offering a view of market sentiment for both short and long-term seasonal trends in the cotton industry.</div>
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="high"
-                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                        >
-                          High
-                        </label>
-                        <input
-                          type="number"
-                          step=".01"
-                          id="high"
-                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                          placeholder="Enter your estimate"
-                        />
-                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(2)}</div>
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="low"
-                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                        >
-                          Low
-                        </label>
-                        <input
-                          type="number"
-                          step=".01"
-                          id="low"
-                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                          placeholder="Enter your estimate"
-                        />
-                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data?.length - 2]?.value).toFixed(2)}</div>
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="intraday"
-                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                        >
-                          Intraday Average in Points
-                        </label>
-                        <input
-                          type="number"
-                          step=".01"
-                          id="intraday"
-                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                          placeholder="Enter your estimate"
-                        />
-                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(0)}</div>
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="open_interest"
-                          className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                        >
-                          Open Interest (Futures only)
-                        </label>
-                        <input
-                          type="number"
-                          step=".01"
-                          id="open_interest"
-                          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                          placeholder="Enter your estimate"
-                        />
-                        <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(0)}</div>
-                      </div>
+                      <form className="mt-4 mb-4 pl-4 grid grid-cols-2 col-span-2 gap-x-4 w-full" onSubmit={handleSentimentFormSubmit}>
+                        <div className="mb-4">
+                          <label
+                            htmlFor="bullishbearish"
+                            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                          >
+                            What is your feeling of the market?
+                          </label>
+                          <input
+                            type="number"
+                            step="1"
+                            min={-5}
+                            max={5}
+                            id="bullishbearish"
+                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                            placeholder="From -5 to 5"
+                          />
+                          <div className="pl-3 text-sm">-5 for very bearish, 0 for neutral and 5 for very bullish</div>
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="font-semibold leading-4 mb-3">Please submit your guesstimates to view the unanimous opinions of our other partners</div>
+                          <div className="text-sm leading-4">This new feature displays unanimously the opinion of our partners about December 2023 Futures for the week ahead, offering a view of market sentiment for both short and long-term seasonal trends in the cotton industry.</div>
+                        </div>
+                        <div className="mb-4">
+                          <label
+                            htmlFor="high"
+                            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                          >
+                            High
+                          </label>
+                          <input
+                            type="number"
+                            step=".01"
+                            id="high"
+                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                            placeholder="Enter your estimate"
+                          />
+                          <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'high')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(2)}</div>
+                        </div>
+                        <div className="mb-4">
+                          <label
+                            htmlFor="low"
+                            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                          >
+                            Low
+                          </label>
+                          <input
+                            type="number"
+                            step=".01"
+                            id="low"
+                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                            placeholder="Enter your estimate"
+                          />
+                          <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'low')?.find((group) => group.name == "Average")?.data?.length - 2]?.value).toFixed(2)}</div>
+                        </div>
+                        <div className="mb-4">
+                          <label
+                            htmlFor="intraday"
+                            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                          >
+                            Intraday Average in Points
+                          </label>
+                          <input
+                            type="number"
+                            step=".01"
+                            id="intraday"
+                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                            placeholder="Enter your estimate"
+                          />
+                          <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'intraday_average_points')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(0)}</div>
+                        </div>
+                        <div className="mb-4">
+                          <label
+                            htmlFor="open_interest"
+                            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                          >
+                            Open Interest (Futures only)
+                          </label>
+                          <input
+                            type="number"
+                            step=".01"
+                            id="open_interest"
+                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                            placeholder="Enter your estimate"
+                          />
+                          <div className="pl-3 text-sm">Last week's estimates average was {(transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data[transformSurveyData(sentimentData, 'open_interest')?.find((group) => group.name == "Average")?.data?.length - 2]?.value)?.toFixed(0)}</div>
+                        </div>
 
-                      <div className="col-span-2 flex justify-center">
-                        {/* <button
+                        <div className="col-span-2 flex justify-center">
+                          {/* <button
             type="submit"
             className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
           >
             Submit
           </button> */}
-                        <FormSubmit errorMessage={sentimentError_Message} warningMessage={sentimentWarning_Message} submitted={sentimentSubmitted} submitting={sentimentSubmitting} warningSubmit={sentimentWarningSubmit} />
-                      </div>
-                    </form>
-                  </div>
+                          <FormSubmit errorMessage={sentimentError_Message} warningMessage={sentimentWarning_Message} submitted={sentimentSubmitted} submitting={sentimentSubmitting} warningSubmit={sentimentWarningSubmit} />
+                        </div>
+                      </form>
+                    </div>
+                  </>
                 )}
                 {((currentStage == 1) || (session?.submittedSurvey === true)) && (
-                  <div className="grid grid-cols-2 mb-12">
-                    <div className="col-span-2 text-center text-xl font-semibold mb-4">
-                      Sentiment Survey Results
-                    </div>
-                    <div className="col-span-2 grid grid-cols-2">
-                      <div className="flex flex-col items-center">
-                        <div className="font-semibold">Market Sentiment</div>
-                        <BullishBearishDonut Bullish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bullish" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} Bearish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bearish" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} Neutral={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Neutral" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} />
+                  <>
+                    <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                    <div className="grid grid-cols-2 mb-12">
+                      <div className="col-span-2 text-center text-xl font-semibold mb-4">
+                        Sentiment Survey Results
+                      </div>
+                      <div className="col-span-2 grid grid-cols-2">
+                        <div className="flex flex-col items-center">
+                          <div className="font-semibold">Market Sentiment</div>
+                          <BullishBearishDonut Bullish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bullish" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} Bearish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bearish" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} Neutral={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Neutral" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} />
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <div className="flex justify-center font-semibold">
+                            Disclaimer
+                          </div>
+                          <div className="pl-20 pr-16 mt-6">
+                            We understand the importance of privacy and confidentiality. Rest assured that when you submit information or interact with our platform, your data remains anonymous and we uphold strict safeguards to protect your privacy. We do not share any personal data, individually identifiable information, or user submissions with any third parties.
+                          </div>
+                          <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200 mt-8">
+                            Privacy Policies
+                          </div>
+                        </div>
                       </div>
                       <div className="flex flex-col items-center">
-                        <div className="flex justify-center font-semibold">
-                          Disclaimer
-                        </div>
-                        <div className="pl-20 pr-16 mt-6">
-                          We understand the importance of privacy and confidentiality. Rest assured that when you submit information or interact with our platform, your data remains anonymous and we uphold strict safeguards to protect your privacy. We do not share any personal data, individually identifiable information, or user submissions with any third parties.
-                        </div>
-                        <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200 mt-8">
-                          Privacy Policies
-                        </div>
+                        <div className="mt-6 -mb-2 font-semibold">High</div>
+                        <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'high')} monthsTicks={1} />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="mt-6 -mb-2 font-semibold">Low</div>
+                        <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'low')} monthsTicks={1} />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="mt-6 -mb-2 font-semibold">Intraday Average in Points</div>
+                        <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'intraday_average_points')} monthsTicks={1} />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="mt-6 -mb-2 font-semibold">Open Interest</div>
+                        <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'open_interest', 0)} monthsTicks={1} />
                       </div>
                     </div>
-                    <div className="flex flex-col items-center">
-                      <div className="mt-6 -mb-2 font-semibold">High</div>
-                      <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'high')} monthsTicks={1} />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <div className="mt-6 -mb-2 font-semibold">Low</div>
-                      <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'low')} monthsTicks={1} />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <div className="mt-6 -mb-2 font-semibold">Intraday Average in Points</div>
-                      <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'intraday_average_points')} monthsTicks={1} />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <div className="mt-6 -mb-2 font-semibold">Open Interest</div>
-                      <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'open_interest', 0)} monthsTicks={1} />
-                    </div>
-                  </div>
+                  </>
                 )}
                 <div className="flex justify-between px-8">
                   {currentStage == 0 && (
@@ -1997,8 +2003,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         </div>
                       )}
                       {index != 0 && (
-                        <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
-                          {snapshot.title_of_snapshot_strategy}
+                        <div className="border grid grid-cols-[auto_80px] hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
+                          <div>
+                            {snapshot.title_of_snapshot_strategy}
+                          </div>
+                          <div>
+                            {snapshot.news_type}
+                          </div>
                         </div>
                       )}
                     </>
@@ -2572,11 +2583,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     )}
                     <div className="">
                       <MultipleSelectDropdown
-                        options={[{ property: "october_sales", name: "October" }, { property: "december_sales", name: "December" }, { property: "march_sales", name: "March" }, { property: "may_sales", name: "May" }, { property: "july_sales", name: "July" }]}
+                        options={[{ sales: "october_sales", purchases: "october_purchases", name: "October" }, { sales: "december_sales", purchases: "december_purchases", name: "December" }, { sales: "march_sales", purchases: "march_purchases", name: "March" }, { sales: "may_sales", purchases: "may_purchases", name: "May" }, { sales: "july_sales", purchases: "july_purchases", name: "July" }]}
                         variable="name"
                         colour="bg-deep_blue"
                         label="Variables"
-                        onSelectionChange={(e) => { if (e.length > 0) { setCottonPropertiesArray(e.map((selection) => selection.property)); setCottonNamesArray(e.map((selection) => selection.name)) } }}
+                        onSelectionChange={(e) => { if (e.length > 0) { setCottonSalesPropertiesArray(e.map((selection) => selection.sales)); setCottonPurchasesPropertiesArray(e.map((selection) => selection.purchases)); setCottonNamesArray(e.map((selection) => selection.name)) } }}
                         // onSelectionChange={(e) => { setCommitmentPropertiesArray(["open_interest_all"]); setCommitmentNamesArray(["Open Interest All"]) }}
                         placeholder="Select Variables"
                         searchPlaceholder="Search Variables"
@@ -2645,7 +2656,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Sales by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonSalesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2654,7 +2665,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Sales by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), cottonPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), cottonSalesPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2719,7 +2730,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Purchases by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" />
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonPurchasesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" />
                       </div>
                     </>
                   )}
@@ -2728,7 +2739,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Purchases by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), cottonPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Purchases" />
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), cottonPurchasesPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Purchases" />
                       </div>
                     </>
                   )}

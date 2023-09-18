@@ -3,9 +3,8 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import Header from "../components/header"
-import Footer from "../components/footer"
 
-const Introduction: NextPage = () => {
+const About: NextPage = () => {
     return (
         <>
             <Head>
@@ -25,12 +24,11 @@ const Introduction: NextPage = () => {
           })}
         </script> */}
             </Head>
-            <Header />
-            <div className='h-screen'></div>
-
-            <Footer />
+            <main>
+                <Header />
+            </main>
         </>
     )
 }
 
-export default Introduction
+export default About
