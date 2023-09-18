@@ -2,7 +2,7 @@ import React from 'react';
 import Link from "next/link";
 import { useRouter } from 'next/router';
 
-const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white", bannerGradient = "bg-gradient-to-r from-deep_blue to-navy" }) => {
+const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white", bannerGradient = "bg-[#ffffff20]" }) => {
     const router = useRouter();
 
     const [mobileHeaderOpen, setMobileHeaderOpen] = React.useState(false)
@@ -97,6 +97,13 @@ const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white
                                     <img className={`w-[15px] opacity-40 duration-300 scale-x-150 ${servicesOpen ? "-scale-y-100" : ""}`} src="/ArrowDown_B_SQ.png" />
 
                                 </div> */}
+                                <div onClick={(e) => { e.stopPropagation(); closeDropdowns(); setAboutOpen(!aboutOpen); }} className="flex justify-between text-center cursor-pointer pr-10">
+                                    <div className='mr-1 text-xl font-semibold text-gray-700' onClick={(e) => { e.stopPropagation(); router.push('/contact') }}>
+                                        Contact
+                                    </div>
+                                    {/* <img className={`w-[15px] opacity-40 duration-300 scale-x-150 ${aboutOpen ? "-scale-y-100" : ""}`} src="/ArrowDown_B_SQ.png" /> */}
+
+                                </div>
                                 {servicesOpen && (
                                     <div className='flex flex-col gap-y-2 ml-4'>
                                         <Link href="/services#rubbish-portal">
@@ -212,12 +219,12 @@ const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white
                                         <a href="/services" className={`${textColour} ${textHoverColour} text-md `}>
                                             Services
                                         </a>
-                                    </li>
+                                    </li> */}
                                     <li>
                                         <a href="/contact" className={`${textColour} ${textHoverColour} text-md `}>
                                             Contact
                                         </a>
-                                    </li> */}
+                                    </li>
                                 </ul>
 
                                 <div className="md:flex items-center hidden space-x-4 ml-8 lg:ml-12">

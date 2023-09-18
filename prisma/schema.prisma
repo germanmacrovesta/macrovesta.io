@@ -251,15 +251,41 @@ model conclusion {
     date_created DateTime @default(now())
 }
 
+//Below is the table Demo Requests
+
+model Demo_Requests {
+    record_id      String    @id @default(cuid())
+    first_name     String
+    last_name      String
+    email          String
+    company_name   String?
+    company_type   String?
+    preferred_date DateTime? @db.Date()
+    preferred_time DateTime? @db.Time()
+    date_created   DateTime  @default(now())
+}
+
+//Below is the table General Inquiries
+
+model General_Inquiries {
+    record_id    String   @id @default(cuid())
+    name         String?
+    email        String?
+    company      String?
+    message      String?
+    date_created DateTime @default(now())
+}
+
 //Below is the table Things to Review
 
 model things_to_review {
-    record_id   String @id @default(cuid())
-    added_by    String
-    table       String
-    type        String
-    thing_id    String
-    information String @db.Text
+    record_id    String   @id @default(cuid())
+    added_by     String
+    table        String
+    type         String
+    thing_id     String?
+    information  String   @db.Text
+    date_created DateTime @default(now())
 }
 
 //Below is the table External Links
