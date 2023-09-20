@@ -178,7 +178,8 @@ export default function About() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="/JE.jpeg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/JE.jpeg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/JE.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Jo Earlam</p>
@@ -188,7 +189,8 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="/Olly.jpeg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Olly.jpeg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/Olly.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Oliver Jobling</p>
@@ -198,7 +200,8 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="/Nafisah Badmos.jpeg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Nafisah Badmos.jpeg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/Nafisah Badmos.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Nafisah Badmos</p>
@@ -209,7 +212,8 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="Vic.jpeg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Vic.jpeg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="Vic.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Victor Fernandes</p>
@@ -220,7 +224,8 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/default-avatar-icon-of-social-media-user-vector.jpeg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Gary Ferguson</p>
@@ -231,7 +236,8 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="/NJB.jpg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/NJB.jpg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/NJB.jpg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Nick Brice</p>
@@ -242,7 +248,8 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/default-avatar-icon-of-social-media-user-vector.jpeg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Chris Williams</p>
@@ -253,7 +260,8 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="/HWB.jpeg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/HWB.jpeg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/HWB.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Harry Bennett</p>
@@ -264,7 +272,8 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/BW.jpeg"} alt='Nick Brice Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Ben Williams</p>
