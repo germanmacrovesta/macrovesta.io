@@ -22,17 +22,17 @@
 // //             .rangeRound([0, width])
 // //             .paddingInner(0.1);
 
-// //         const x1 = d3.scaleBand().padding(0.05);
+// //         const x1 = scaleBand().padding(0.05);
 
-// //         const y = d3.scaleLinear().rangeRound([height, 0]);
+// //         const y = scaleLinear().rangeRound([height, 0]);
 
-// //         const z = d3.scaleOrdinal().range(['#98abc5', '#8a89a6']);
+// //         const z = scaleOrdinal().range(['#98abc5', '#8a89a6']);
 
 // //         const keys = ['propertyOne', 'propertyTwo'];
 
 // //         x0.domain(data.map((d) => d.name));
 // //         x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-// //         y.domain([0, d3.max(data, (d) => d3.max(keys, (key) => d[key]))]).nice();
+// //         y.domain([0, max(data, (d) => max(keys, (key) => d[key]))]).nice();
 
 // //         svg
 // //             .append('g')
@@ -55,12 +55,12 @@
 // //             .append('g')
 // //             .attr('class', 'axis')
 // //             .attr('transform', 'translate(0,' + height + ')')
-// //             .call(d3.axisBottom(x0));
+// //             .call(axisBottom(x0));
 
 // //         svg
 // //             .append('g')
 // //             .attr('class', 'axis')
-// //             .call(d3.axisLeft(y))
+// //             .call(axisLeft(y))
 // //             .append('text')
 // //             .attr('x', 2)
 // //             .attr('y', y(y.ticks().pop()) + 0.5)
@@ -101,17 +101,17 @@
 //             .rangeRound([0, width])
 //             .paddingInner(0.1);
 
-//         const x1 = d3.scaleBand().padding(0.05);
+//         const x1 = scaleBand().padding(0.05);
 
-//         const y = d3.scaleLinear().rangeRound([height, 0]);
+//         const y = scaleLinear().rangeRound([height, 0]);
 
-//         const z = d3.scaleOrdinal().range(['#051D6D', '#051D38']);
+//         const z = scaleOrdinal().range(['#051D6D', '#051D38']);
 
 //         const keys = ['propertyOne', 'propertyTwo'];
 
 //         x0.domain(data.map((d) => d.name));
 //         x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-//         y.domain([0, d3.max(data, (d) => d3.max(keys, (key) => d[key]))]).nice();
+//         y.domain([0, max(data, (d) => max(keys, (key) => d[key]))]).nice();
 
 //         svg
 //             .append('g')
@@ -134,12 +134,12 @@
 //             .append('g')
 //             .attr('class', 'axis')
 //             .attr('transform', 'translate(0,' + height + ')')
-//             .call(d3.axisBottom(x0));
+//             .call(axisBottom(x0));
 
 //         svg
 //             .append('g')
 //             .attr('class', 'axis')
-//             .call(d3.axisLeft(y))
+//             .call(axisLeft(y))
 //             .append('text')
 //             .attr('x', 2)
 //             .attr('y', y(y.ticks().pop()) + 0.5)
@@ -158,7 +158,31 @@
 // export default GroupedBarChart;
 
 import React, { useRef, useEffect } from 'react';
-import * as d3 from 'd3';
+// import * as d3 from 'd3';
+
+// Selection
+import { select } from 'd3-selection';
+
+// Scales
+import { scaleOrdinal, scaleLinear, scaleBand } from 'd3-scale';
+
+// Line generator
+// import { line } from 'd3-shape';
+
+// Extent and bisector
+import { max } from 'd3-array';
+
+// Pointer for interaction
+// import { pointer } from 'd3-selection-multi';
+
+// Time formatting
+// import { timeFormat } from 'd3-time-format';
+
+// Axes
+import { axisBottom, axisLeft } from 'd3-axis';
+
+//Format
+// import { format } from 'd3-format';
 
 function GroupedBarChart({ data }) {
     const ref = useRef();
@@ -189,7 +213,7 @@ function GroupedBarChart({ data }) {
         if (!ref.current) return;
         if (dimensions.width === 0 || dimensions.height === 0) return;
 
-        d3.select(ref.current).selectAll("*").remove();
+        select(ref.current).selectAll("*").remove();
 
         if (data != undefined && data != null) {
 
@@ -197,29 +221,27 @@ function GroupedBarChart({ data }) {
             const width = dimensions.width - margin.left - margin.right;
             const height = dimensions.height - margin.top - margin.bottom;
 
-            const svg = d3
-                .select(ref.current)
+            const svg = select(ref.current)
                 .attr('width', width + margin.left + margin.right)
                 .attr('height', height + margin.top + margin.bottom)
                 .append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-            const x0 = d3
-                .scaleBand()
+            const x0 = scaleBand()
                 .rangeRound([0, width])
                 .paddingInner(0.1);
 
-            const x1 = d3.scaleBand().padding(0.05);
+            const x1 = scaleBand().padding(0.05);
 
-            const y = d3.scaleLinear().rangeRound([height, 0]);
+            const y = scaleLinear().rangeRound([height, 0]);
 
-            const z = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC']);
+            const z = scaleOrdinal().range(['#051D6D', '#3BBCAC']);
 
             const keys = ['CTZ23', 'CTZ24'];
 
             x0.domain(data.map((d) => d.country));
             x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-            y.domain([0, d3.max(data, (d) => d3.max(keys, (key) => d[key])) + 5]).nice();
+            y.domain([0, max(data, (d) => max(keys, (key) => d[key])) + 5]).nice();
 
             const bar = svg
                 .append('g')
@@ -265,14 +287,14 @@ function GroupedBarChart({ data }) {
                 .append('g')
                 .attr('class', 'axis')
                 .attr('transform', 'translate(0,' + height + ')')
-                .call(d3.axisBottom(x0))
+                .call(axisBottom(x0))
                 .selectAll("text")
                 .style("font-size", "15px");;
 
             svg
                 .append('g')
                 .attr('class', 'axis')
-                .call(d3.axisLeft(y))
+                .call(axisLeft(y))
                 .append('text')
                 .attr('x', 2)
                 .attr('y', y(y.ticks().pop()) + 0.5)

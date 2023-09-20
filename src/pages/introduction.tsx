@@ -120,7 +120,7 @@ export default function Introduction() {
 
                             {/* Render the provided title */}
                             <div className="pb-8">
-                                <h2 className="text-lg sm:text-2xl text-center  mb-8">Book your Rubbish Portal demo</h2>
+                                <h2 className="text-lg sm:text-2xl text-center  mb-8">Book your Macrovesta demo</h2>
                                 <div className="flex flex-col-reverse sm:flex-row justify-center">
                                     <text className="text-[10px] sm:text-xs px-4">
                                         This usually takes around 30 minutes and will be done via Google Meet. A member
@@ -128,7 +128,7 @@ export default function Introduction() {
                                         as soon as possible.
                                     </text>
                                     <div>
-                                        <img src="/Full_Logo.svg" alt="Tracker" className="mx-auto w-[150px] sm:w-[500px]" />
+                                        <img src="/Full_Logo.svg" alt="Tracker" className="mx-auto w-[150px] invert -hue-rotate-90 sm:w-[500px]" />
                                     </div>
                                 </div>
                             </div>

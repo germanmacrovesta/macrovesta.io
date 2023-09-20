@@ -5,17 +5,17 @@
 //     const ref = useRef();
 
 //     useEffect(() => {
-//         const svg = d3.select(ref.current);
+//         const svg = select(ref.current);
 //         const width = 200, height = 100;
 //         svg.attr("width", width).attr("height", height);
 
 //         // Create a scale to map values to angles
-//         const scale = d3.scaleLinear()
+//         const scale = scaleLinear()
 //             .domain([-100, 100])
 //             .range([-90, 90]);
 
 //         // Draw the semi-circle dial
-//         const arc = d3.arc()
+//         const arc = arc()
 //             .innerRadius(height - 70)
 //             .outerRadius(height)
 //             .startAngle(-Math.PI / 2)
@@ -28,8 +28,8 @@
 
 //         // Draw additional arcs
 //         const arcAngle = Math.PI / 5; // 36 degrees in radians
-//         // const colors = d3.scaleOrdinal(d3.schemeCategory10); // colors for the arcs
-//         const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
+//         // const colors = scaleOrdinal(schemeCategory10); // colors for the arcs
+//         const colors = scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
 //         const anglesArray = [[- Math.PI / 2, Math.PI / 4], [- Math.PI / 4, Math.PI / 6], [- Math.PI / 12, Math.PI / 6], [Math.PI / 4, - Math.PI / 6], [Math.PI / 2, - Math.PI / 4]]
 
 //         const arcs = []; // keep track of the arcs
@@ -37,7 +37,7 @@
 //         for (let i = 0; i < 5; i++) {
 //             const startAngle = anglesArray[i][0];
 //             const endAngle = startAngle + anglesArray[i][1];
-//             const arcPath = d3.arc()
+//             const arcPath = arc()
 //                 .innerRadius(height - 70)
 //                 .outerRadius(height)
 //                 .startAngle(startAngle)
@@ -56,7 +56,7 @@
 //         }
 //         // const startAngle1 = - Math.PI / 2;
 //         // const endAngle1 = startAngle1 + (Math.PI / 4);
-//         // const arcPath1 = d3.arc()
+//         // const arcPath1 = arc()
 //         //     .innerRadius(height - 70)
 //         //     .outerRadius(height)
 //         //     .startAngle(startAngle1)
@@ -69,7 +69,7 @@
 
 //         // const startAngle2 = Math.PI / 2
 //         // const endAngle2 = startAngle2 - (Math.PI / 4);
-//         // const arcPath2 = d3.arc()
+//         // const arcPath2 = arc()
 //         //     .innerRadius(height - 70)
 //         //     .outerRadius(height)
 //         //     .startAngle(startAngle2)
@@ -94,7 +94,7 @@
 //         //     needle.transition()
 //         //         .duration(1000)
 //         //         .attrTween("transform", () => {
-//         //             const interpolate = d3.interpolate(scale(0), scale(newValue));
+//         //             const interpolate = interpolate(scale(0), scale(newValue));
 //         //             return t => `translate(${width / 2},${height}) rotate(${interpolate(t)})`;
 //         //         });
 //         // };
@@ -106,7 +106,7 @@
 //             needle.transition()
 //                 .duration(1000)
 //                 .attrTween("transform", () => {
-//                     const interpolate = d3.interpolate(scale(0), targetAngle);
+//                     const interpolate = interpolate(scale(0), targetAngle);
 //                     return t => {
 //                         const currentAngle = interpolate(t);
 //                         arcs.forEach(arc => {
@@ -139,17 +139,17 @@
 //     const ref = useRef();
 
 //     useEffect(() => {
-//         const svg = d3.select(ref.current);
+//         const svg = select(ref.current);
 //         const width = 200, height = 100;
 //         svg.attr("width", width).attr("height", height);
 
 //         // Create a scale to map values to angles
-//         const scale = d3.scaleLinear()
+//         const scale = scaleLinear()
 //             .domain([-100, 100])
 //             .range([-90, 90]);
 
 //         // Draw the semi-circle dial
-//         const arc = d3.arc()
+//         const arc = arc()
 //             .innerRadius(height - 70)
 //             .outerRadius(height)
 //             .startAngle(-Math.PI / 2)
@@ -167,7 +167,7 @@
 //         for (let i = 0; i < 5; i++) {
 //             const startAngle = -Math.PI / 2 + arcAngle * i;
 //             const endAngle = startAngle + arcAngle;
-//             const arcPath = d3.arc()
+//             const arcPath = arc()
 //                 .innerRadius(height - 70)
 //                 .outerRadius(height)
 //                 .startAngle(startAngle)
@@ -201,7 +201,7 @@
 //             needle.transition()
 //                 .duration(1000)
 //                 .attrTween("transform", () => {
-//                     const interpolate = d3.interpolate(scale(0), targetAngle);
+//                     const interpolate = interpolate(scale(0), targetAngle);
 //                     return t => `translate(${width / 2},${height}) rotate(${interpolate(t)})`;
 //                 })
 //                 .on("end", () => {
@@ -227,7 +227,34 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import React, { useRef, useEffect } from "react";
-import * as d3 from "d3";
+// import * as d3 from "d3";
+
+// Selection
+import { select } from 'd3-selection';
+
+// Scales
+import { scaleOrdinal, scaleLinear, scaleBand } from 'd3-scale';
+
+// Line generator
+import { arc } from 'd3-shape';
+
+// Interpolate
+import { interpolate } from 'd3-interpolate';
+
+// Extent and bisector
+import { max } from 'd3-array';
+
+// Pointer for interaction
+// import { pointer } from 'd3-selection-multi';
+
+// Time formatting
+// import { timeFormat } from 'd3-time-format';
+
+// Axes
+import { axisBottom, axisLeft } from 'd3-axis';
+
+//Format
+// import { format } from 'd3-format';
 
 
 const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisText = ["100", "60", "0", "60", "100"], leftText = "Inverse", rightText = "Non Inverse", decimals = 0 }) => {
@@ -235,9 +262,9 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
     const ref = useRef();
 
     useEffect(() => {
-        d3.select(ref.current).selectAll("*").remove();
+        select(ref.current).selectAll("*").remove();
 
-        const svg = d3.select(ref.current);
+        const svg = select(ref.current);
         const width = 460, height = 230;
         const dialHeight = height - 60;
         const dialWidth = width - 120;
@@ -248,12 +275,12 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
             .attr("transform", "translate(60,10)");
 
         // Create a scale to map values to angles
-        const scale = d3.scaleLinear()
+        const scale = scaleLinear()
             .domain([rangeStart, rangeEnd])
             .range([-90, 90]);
 
         // Draw the semi-circle dial
-        const arc = d3.arc()
+        const graphArc = arc()
             .innerRadius(dialHeight - 70)
             .outerRadius(dialHeight)
             .startAngle(-Math.PI / 2)
@@ -265,7 +292,7 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
         //     .style("fill", "#ccc");
 
         // Draw additional arcs
-        const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
+        const colors = scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
         const arcAngle = Math.PI / 5; // 36 degrees in radians
         const arcs = []; // keep track of the arcs
 
@@ -275,7 +302,7 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
         for (let i = 0; i < 5; i++) {
             const startAngle = -Math.PI / 2 + arcAngle * i;
             const endAngle = startAngle + arcAngle;
-            const arcPath = d3.arc()
+            const arcPath = arc()
                 .innerRadius(dialHeight - 70)
                 .outerRadius(dialHeight)
                 .startAngle(startAngle + (Math.PI / 256))
@@ -398,7 +425,7 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
 
         // Add text labels
 
-        // const colors = d3.scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
+        // const colors = scaleOrdinal().range(['#051D6D', '#3BBCAC', '#44B549', '#3BBCAC', '#051D6D']);
         // const anglesArray = [[- Math.PI / 2, Math.PI / 4], [- Math.PI / 4, Math.PI / 6], [- Math.PI / 12, Math.PI / 6], [Math.PI / 4, - Math.PI / 6], [Math.PI / 2, - Math.PI / 4]]
 
         // const arcs = []; // keep track of the arcs
@@ -406,7 +433,7 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
         // for (let i = 0; i < 5; i++) {
         //     const startAngle = anglesArray[i][0];
         //     const endAngle = startAngle + anglesArray[i][1];
-        //     const arcPath = d3.arc()
+        //     const arcPath = arc()
         //         .innerRadius(dialHeight - 70)
         //         .outerRadius(dialHeight)
         //         .startAngle(startAngle)
@@ -435,7 +462,7 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
             .attr("transform", `translate(${dialWidth / 2},${dialHeight})`)
             .raise();
 
-        const arcPath = d3.arc()
+        const arcPath = arc()
             .innerRadius(0)
             .outerRadius(40)
             .startAngle(0)
@@ -459,7 +486,7 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
             .attr("transform", `translate(170,150)`)
 
         // // Radial scale
-        // const radialScale = d3.scaleLinear()
+        // const radialScale = scaleLinear()
         //     .domain([-100, 100])
         //     .range([-90, 90]);
 
@@ -486,18 +513,18 @@ const SemiCircleDial = ({ value = 0, rangeStart = -100, rangeEnd = 100, arcAxisT
             needle.transition()
                 .duration(3000)
                 .attrTween("transform", () => {
-                    const interpolate = d3.interpolate(scale(0), targetAngle);
+                    const graphInterpolate = interpolate(scale(0), targetAngle);
                     return t => {
-                        const currentAngle = interpolate(t);
+                        const currentAngle = graphInterpolate(t);
                         arcs.forEach((arc, index) => {
-                            // const currentLabel = d3.select(`#${random}-arcLabel-4`)
+                            // const currentLabel = select(`#${random}-arcLabel-4`)
                             // console.log("currentLabel", currentLabel)
                             if (currentAngle >= arc.startAngle * 180 / Math.PI && currentAngle <= arc.endAngle * 180 / Math.PI) {
                                 arc.element.style("fill", colors(arc.index));
-                                d3.select(`#${random}-arcLabel-${index}`).style("fill", "white");
+                                select(`#${random}-arcLabel-${index}`).style("fill", "white");
                                 // currentLabel.style("fill", '#ffffff')
                             } else {
-                                d3.select(`#${random}-arcLabel-${index}`).style("fill", "black");
+                                select(`#${random}-arcLabel-${index}`).style("fill", "black");
                                 // currentLabel.style("fill", 'black')
                                 arc.element.style("fill", "#f2f2f2");
                             }

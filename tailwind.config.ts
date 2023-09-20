@@ -1,4 +1,6 @@
 import { type Config } from "tailwindcss";
+/** @type {import('tailwindcss').Config} */
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
@@ -26,6 +28,7 @@ export default {
         'insideleft': 'insideleft 10s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
         'bottomright': 'bottomright 10s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
         'contract': 'contract 10s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
+        'fadein': 'fadein 1.5s ease-in-out',
         'slidein': 'slidein 1.5s ease-in-out',
         'slidedown': 'slidedown 0.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
         'dynamic': 'dynamic 4000ms ease-in-out infinite',
@@ -342,6 +345,16 @@ export default {
           },
         },
 
+        "fadein": {
+          '0%': {
+            opacity: '0',
+          },
+          '100%': {
+            opacity: '1',
+
+
+          },
+        },
         slidein: {
           '0%': {
             transform: 'translateX(100%) scale(0.5)',
@@ -438,6 +451,9 @@ export default {
         white: {
           DEFAULT: '#FAF6F3'
         }
+      },
+      fontFamily: {
+        'sans': ['Montserrat', 'Inter var', 'SF Compact', ...defaultTheme.fontFamily.sans]
       },
       boxShadow: {
         'center-sm': '0 0 2px 0 #00000050)',

@@ -1,5 +1,28 @@
 import React, { useRef, useEffect } from 'react';
-import * as d3 from 'd3';
+// import * as d3 from 'd3';
+// Selection
+import { select, pointer } from 'd3-selection';
+
+// Scales
+import { scaleOrdinal, scaleLinear } from 'd3-scale';
+
+// Line generator
+import { line } from 'd3-shape';
+
+// Extent and bisector
+import { extent, bisector } from 'd3-array';
+
+// Pointer for interaction
+// import { pointer } from 'd3-selection-multi';
+
+// Time formatting
+// import { timeFormat } from 'd3-time-format';
+
+// Axes
+import { axisBottom, axisLeft } from 'd3-axis';
+
+//Format
+import { format } from 'd3-format';
 
 const capitalizeText = (text) => {
     const firstLetter = text.slice(0, 1).toUpperCase()
@@ -38,32 +61,32 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
         if (!ref.current) return;
         if (dimensions.width === 0 || dimensions.height === 0) return;
 
-        d3.select(ref.current).selectAll("*").remove();
+        select(ref.current).selectAll("*").remove();
         if (data[0]?.data != undefined) {
 
             const margin = { top: 20, right: 30, bottom: 40, left: 60 },
                 width = dimensions.width - margin.left - margin.right,
                 height = dimensions.height - margin.top - margin.bottom;
 
-            // const colors = d3.scaleOrdinal(d3.schemeCategory10);
-            const colors = d3.scaleOrdinal().range(['#44B549', '#051D6D', '#3BBCAC', '#D060D6', '#051D38']);
+            // const colors = scaleOrdinal(schemeCategory10);
+            const colors = scaleOrdinal().range(['#44B549', '#051D6D', '#3BBCAC', '#D060D6', '#051D38']);
 
-            const svg = d3.select(ref.current)
+            const svg = select(ref.current)
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .append("g")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-            const x = d3.scaleLinear().range([0, width]);
-            const y = d3.scaleLinear().range([height, 0]);
+            const x = scaleLinear().range([0, width]);
+            const y = scaleLinear().range([height, 0]);
 
-            const line = d3.line()
+            const graphLine = line()
                 .x(d => x(d[xValue]))
                 .y(d => y(d[yValue]));
 
             const allData = data.reduce((acc, series) => acc.concat(series.data), []);
 
-            const timeDomain = d3.extent(allData, d => d[xValue]);
+            const timeDomain = extent(allData, d => d[xValue]);
             const timeRange = Math.abs(timeDomain[1] - timeDomain[0]);
             const timepadding = timeRange * 0.1; // 10% padding
 
@@ -71,7 +94,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
             const minDate = timeDomain[0] - timepadding;
             const maxDate = timeDomain[1] + timepadding;
 
-            const valueDomain = d3.extent(allData, d => parseFloat(d[yValue]));
+            const valueDomain = extent(allData, d => parseFloat(d[yValue]));
             const valuepadding = Math.abs(parseFloat(valueDomain[1]) - parseFloat(valueDomain[0])) * 0.1; // 10% padding
 
             console.log("valueDomain", valueDomain, "valuepadding", valuepadding, data[0].name)
@@ -83,7 +106,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
             // x.domain(timeDomain);
             // y.domain(valueDomain);
 
-            const tooltip = d3.select("body").append("div")
+            const tooltip = select("body").append("div")
                 .attr("id", tooltipId)
                 .attr("class", "tooltip")
                 .style("opacity", 0);
@@ -106,7 +129,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
 
                 overlay.on('mousemove', function (event) {
                     // clearTimeout(tooltipTimeout);
-                    const [mx] = d3.pointer(event);
+                    const [mx] = pointer(event);
 
                     // tooltipTimeout = setTimeout(() => {
                     // Place your tooltip update logic here
@@ -118,7 +141,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                     const tooltipData = [];
 
                     data.forEach(series => {
-                        const bisectDate = d3.bisector(d => d[xValue]).left;
+                        const bisectDate = bisector(d => d[xValue]).left;
                         const idx = bisectDate(series.data, date);
 
                         const d0 = series.data[idx - 1];
@@ -208,7 +231,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                     .attr("stroke", colors(i))
                     .attr("stroke-width", 1.5)
                     .attr("class", `line line-${i}`)
-                    .attr("d", line);
+                    .attr("d", graphLine);
                 let invisiblePath = svg.append("path")
                     .datum(series.data)
                     .attr("fill", "none")
@@ -216,7 +239,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                     .attr("stroke-width", 10)
                     .attr("stroke-opacity", 0)
                     .attr("class", `line line-${i}`)
-                    .attr("d", line);
+                    .attr("d", graphLine);
 
 
                 if (series.dottedLine) {
@@ -235,10 +258,10 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
 
                         invisiblePath.on('mousemove', function (event) {
                             // clearTimeout(tooltipTimeout);
-                            const [mx] = d3.pointer(event);
+                            const [mx] = pointer(event);
 
                             // this.parentNode.appendChild(this);
-                            // d3.select(this).transition()
+                            // select(this).transition()
                             //     .duration(200)
                             //     .attr("stroke-width", 6);
 
@@ -252,7 +275,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                             const tooltipData = [];
 
 
-                            const bisectDate = d3.bisector(d => d[xValue]).left;
+                            const bisectDate = bisector(d => d[xValue]).left;
                             const idx = bisectDate(series.data, date);
 
                             const d0 = series.data[idx - 1];
@@ -292,7 +315,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
 
                         })
                             .on('mouseleave', function () {
-                                // d3.select(this).transition()
+                                // select(this).transition()
                                 //     .duration(200)
                                 //     .attr("stroke-width", 1.5);
                                 tooltip.style('opacity', 0);
@@ -301,13 +324,13 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                     }
                 } else if (series.noCircles) {
                     invisiblePath.on("mouseover", function (e, d) {
-                        var mouse = d3.pointer(e);
+                        var mouse = pointer(e);
 
                         // Convert those coordinates into your graph's domain
                         let x0 = x.invert(mouse[0]);
                         let y0 = y.invert(mouse[1]);
                         this.parentNode.appendChild(this);
-                        d3.select(this).transition()
+                        select(this).transition()
                             .duration(200)
                             .attr("stroke-width", 6);
                         tooltip.transition()
@@ -319,7 +342,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                             .style("padding",);
                     })
                         .on("mouseout", function (e) {
-                            d3.select(this).transition()
+                            select(this).transition()
                                 .duration(200)
                                 .attr("stroke-width", 3);
                             tooltip.transition()
@@ -328,7 +351,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                         });
                 } else {
                     invisiblePath.on("mouseover", function (e, d) {
-                        d3.select(this).transition()
+                        select(this).transition()
                             .duration(200)
                             .attr("stroke-width", 6);
                         tooltip.transition()
@@ -340,7 +363,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                             .style("padding",);
                     })
                         .on("mouseout", function (e) {
-                            d3.select(this).transition()
+                            select(this).transition()
                                 .duration(200)
                                 .attr("stroke-width", 3);
                             tooltip.transition()
@@ -377,13 +400,13 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
             });
 
 
-            // const monthFormat = d3.timeFormat("%B");
-            // const yearFormat = d3.timeFormat("%Y");
+            // const monthFormat = timeFormat("%B");
+            // const yearFormat = timeFormat("%Y");
 
-            const xAxis = d3.axisBottom(x)
+            const xAxis = axisBottom(x)
                 .ticks(tickNumber)
-                // .tickValues(d3.range(xDomain1, xDomain2 + 1))
-                .tickFormat(d3.format(".0f"));
+                // .tickValues(range(xDomain1, xDomain2 + 1))
+                .tickFormat(format(".0f"));
 
             // svg.append("g")
             //     .attr("transform", `translate(0, ${height})`)
@@ -394,10 +417,10 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
                 .call(xAxis);
 
             svg.append("g")
-                .call(d3.axisLeft(y));
+                .call(axisLeft(y));
 
             // svg.append("g")
-            //     .call(d3.axisBottom(x));
+            //     .call(axisBottom(x));
 
             svg.append("text")
                 .attr("transform", "rotate(-90)")
@@ -417,7 +440,7 @@ const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", g
         }
 
         return () => {
-            d3.select(`#${tooltipId}`).remove();
+            select(`#${tooltipId}`).remove();
         }
     }, [data, xValue, yValue, dimensions]);
 

@@ -25,13 +25,13 @@ const AnimatedHeadline = ({ dynamicText, staticText, }) => {
 
     return (
         <>
-            <div className={`flex flex-col sm:flex-row text-center text-black justify-center leading-tighter mb-6 text-5xl font-extrabold tracking-tighter md:text-6xl relative`}>
+            <div className={`flex flex-col xl:flex-row text-center text-black justify-center leading-tighter mb-6 text-5xl font-extrabold tracking-tighter md:text-6xl relative`}>
                 <div>
                     {staticText}
                 </div>
                 <div className='relative pr-4'>
                     <div className='invisible'>&nbsp;{dynamicText[0]}</div>
-                    <div className={`absolute inset-0 text-center sm:text-left bg-gradient-to-r from-deep_blue to-navy bg-clip-text text-transparent transition-opacity duration-[2000] delay-[2000] animate-dynamic`}
+                    <div className={`absolute inset-0 text-center xl:text-left bg-gradient-to-r from-deep_blue to-navy bg-clip-text text-transparent transition-opacity duration-[2000] delay-[2000] animate-dynamic`}
 
                     >
                         &nbsp;{dynamicText[activeIndex]}

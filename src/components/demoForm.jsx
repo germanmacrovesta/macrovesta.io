@@ -227,15 +227,13 @@ const DemoForm = ({ onSubmit }) => {
                                     className="px-4 py-2 border rounded w-full"
                                     required
                                 >
-                                    <option value="select industry type">
-                                        Select Industry Type
+                                    <option value="select company type">
+                                        Select Company Type
                                     </option>
-                                    <option value="events">Events</option>
-                                    <option value="stadiums">Stadiums / Venues</option>
-                                    <option value="distribution">Distribution</option>
-                                    <option value="manufacturing">Manufacturing</option>
-                                    <option value="waste_manager">Waste Management</option>
-                                    <option value="laboratory">Laboratories</option>
+                                    <option value="farmers">Farmers</option>
+                                    <option value="processors">Processors</option>
+                                    <option value="merchants">Merchants</option>
+                                    <option value="retailers">Retailers</option>
                                     {/* <option value="festival">Festival</option>
                   <option value="venue">Venue</option>
                   <option value="organiser">Organiser</option>

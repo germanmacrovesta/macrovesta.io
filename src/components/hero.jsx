@@ -9,8 +9,8 @@ import { useRouter } from "next/router";
 
 const Hero = ({ setIsModalOpen }) => {
     const router = useRouter()
-    const customdynamicText = ['Impact ', 'Carbon', 'Waste'];
-    const customstaticText = 'Measure Your';
+    const customdynamicText = ['Processors ', 'Farmers', 'Merchants', 'Retailers'];
+    const customstaticText = 'AI-Powered Cotton Trading for';
     // const [isModalOpen, setIsModalOpen] = useState(router.query.demo == "true" ? true : false);
 
 
@@ -38,7 +38,7 @@ const Hero = ({ setIsModalOpen }) => {
                                 data-aos="zoom-y-out"
                                 data-aos-delay="150"
                             >
-                                Welcome to the Rubbish Portal, the ultimate solution for waste tracking, reduction, and reporting.
+                                Welcome to Macrovesta, your digital assistant for tailored market analysis services.
                             </p>
                             <div
                                 className="mx-auto max-w-xs flex flex-col sm:flex-row sm:max-w-none sm:justify-center"
@@ -46,16 +46,16 @@ const Hero = ({ setIsModalOpen }) => {
                                 data-aos-delay="300"
                             >
 
-                                <a
+                                {/* <a
                                     className="btn mb-4 w-full rounded-xl bg-deep_blue p-4 text-white hover:bg-gray-800 sm:mb-0 sm:w-auto"
                                     href="/services#rubbish-portal"
                                 >
                                     How it works
-                                </a>
+                                </a> */}
 
 
                                 <a
-                                    className="btn w-full rounded-xl bg-navy p-4 text-white hover:bg-gray-800 sm:ml-4 sm:w-auto"
+                                    className="btn w-full rounded-xl bg-deep_blue p-4 text-white hover:bg-gray-800 sm:ml-4 sm:w-auto"
                                     href="/contact"
                                 >
                                     Get in touch

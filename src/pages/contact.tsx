@@ -144,7 +144,7 @@ export default function ContactPage() {
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl lg:mx-0">
                             <h2 className="text-4xl font-bold tracking-tight text-white  sm:text-6xl">Contact Us</h2>
-                            <p className="mt-6 pb-20 text-lg leading-8 text-white opacity-70">We work with and connect stakeholders involved at each stage of the product and recycling supply chain, enabling transparent & circular solutions to be achieved. </p>
+                            <p className="mt-6 pb-20 text-lg leading-8 text-white opacity-70">We work with and connect stakeholders involved at each stage of the cotton supply chain, enabling clearer insights to be achieved. </p>
                         </div>
                     </div>
                 </div>
@@ -260,7 +260,7 @@ export default function ContactPage() {
                                             <div className="ml-6 grow text-xs sm:text-base">
                                                 <p className="mb-2 font-bold">Sales questions</p>
                                                 <p className="text-neutral-500">
-                                                    sales@rubbishportal.com
+                                                    sales@macrovesta.ai
                                                 </p>
                                             </div>
                                         </div>
@@ -279,7 +279,7 @@ export default function ContactPage() {
                                             <div className="ml-6 grow text-xs sm:text-base">
                                                 <p className="mb-2 font-bold">General Inquiries</p>
                                                 <p className="text-neutral-500">
-                                                    contact@rubbishportal.com
+                                                    contact@macrovesta.ai
                                                 </p>
                                             </div>
                                         </div>
@@ -298,11 +298,11 @@ export default function ContactPage() {
                                             <div className="ml-6 grow text-xs sm:text-base">
                                                 <p className="mb-2 font-bold">Technical support</p>
                                                 <p className="text-neutral-500">
-                                                    support@rubbishportal.com
+                                                    support@macrovesta.ai
                                                 </p>
-                                                <p className="text-neutral-500 text-xs italic pt-2">
+                                                {/* <p className="text-neutral-500 text-xs italic pt-2">
                                                     If you are a member, you can open a ticket within the portal.
-                                                </p>
+                                                </p> */}
                                             </div>
                                         </div>
                                     </div>
