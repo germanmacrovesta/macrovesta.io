@@ -1676,7 +1676,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   <div className="mt-6 -mb-2 font-semibold">A-Index by Week</div>
                   <div className="mb-4 w-full">
 
-                    <LineGraph verticalTooltip={true} data={getAIndexData(JSON.parse(aIndexData).filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
+                    {/* <LineGraph verticalTooltip={true} data={getAIndexData(JSON.parse(aIndexData).filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" /> */}
                   </div>
                   {/* {commitmentWeekOrYear == "Year" && (
                       <>
@@ -3520,9 +3520,10 @@ export const getServerSideProps = async (context: any) => {
 
   const conclusionData = JSON.stringify(conclusion)
 
-  const aIndex = await prisma?.a_index.findMany({})
+  // const aIndex = await prisma?.a_index.findMany({})
 
-  const aIndexData = JSON.stringify(aIndex)
+  // const aIndexData = JSON.stringify(aIndex)
+  const aIndexData = JSON.stringify({ variable: "hello world" })
 
   // console.log(monthlyIndexData)
   return {
