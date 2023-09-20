@@ -43,6 +43,7 @@ import SlideInImage from '../components/slideInImage'
 import CookieConsent from '../components/cookieConsent';
 import Head from "next/head";
 import Link from "next/link";
+import Image from 'next/image';
 
 export const metadata = {
   title: 'About',
@@ -177,7 +178,7 @@ export default function About() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="/JE.jpeg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Jo Earlam</p>
@@ -187,7 +188,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="/Olly.jpeg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Oliver Jobling</p>
@@ -197,7 +198,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1176&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="/Nafisah Badmos.jpeg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Nafisah Badmos</p>
@@ -208,7 +209,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="Vic.jpeg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Victor Fernandes</p>
@@ -219,7 +220,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Gary Ferguson</p>
@@ -230,7 +231,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1176&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="/NJB.jpg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Nick Brice</p>
@@ -241,7 +242,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1176&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Chris Williams</p>
@@ -252,7 +253,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1176&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="/HWB.jpeg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Harry Bennett</p>
@@ -263,7 +264,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <img className="object-center object-cover rounded-full h-36 w-36" src="https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1176&q=80" alt="photo" />
+                    <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" />
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Ben Williams</p>

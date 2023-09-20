@@ -1101,16 +1101,16 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return datasetArray
   }
 
-  const getAIndexData = (data, propertyArray, datasetNameArray) => {
+  const getAIndexData = (data, spreadVariable, propertyArray, datasetNameArray) => {
     let datasetArray = [];
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
           let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: item.date, y: parseInt(item[property]) })
+          dataset.data.push({ x: item.date, y: parseInt(item[spreadVariable]) - parseInt(item[property]) })
         } else {
           let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: item.date, y: parseInt(item[property]) })
+          dataset.data.push({ x: item.date, y: parseInt(item[spreadVariable]) - parseInt(item[property]) })
           datasetArray.push(dataset)
         }
       })
@@ -1318,8 +1318,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [cottonPurchasesPropertiesArray, setCottonPurchasesPropertiesArray] = React.useState(["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"])
   const [cottonNamesArray, setCottonNamesArray] = React.useState(["October", "December", "March", "May", "July"])
 
-  const [indexPropertiesArray, setIndexPropertiesArray] = React.useState(["a_index", "ice_highest_open_interest_17_months"])
-  const [indexNamesArray, setIndexNamesArray] = React.useState(["A-Index", "Ice Highest"])
+  const [indexPropertiesArray, setIndexPropertiesArray] = React.useState(["ice_highest_open_interest_17_months"])
+  const [indexNamesArray, setIndexNamesArray] = React.useState(["Ice Highest"])
 
   const [supplyAndDemandPropertiesArray, setSupplyAndDemandPropertiesArray] = React.useState(["production_usda"])
   const [supplyAndDemandNamesArray, setSupplyAndDemandNamesArray] = React.useState(["Production USDA"])
@@ -1433,6 +1433,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [selectedCostType, setSelectedCostType] = React.useState("FOB")
 
   const [clientAIndexData, setClientAIndexData] = React.useState([])
+  const [clientCottonContractsData, setClientCottonContractsData] = React.useState({ ctz23: [], cth24: [], ctk24: [], ctn24: [], ctz24: [] })
+  const [clientUSExportSalesData, setClientUSExportSalesData] = React.useState([])
+  const [clientCottonOnCallData, setClientCottonOnCallData] = React.useState([])
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -1447,6 +1450,58 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
           // Update the state with the fetched data
           setClientAIndexData(result);
+        } else {
+          console.error(`API request failed with status ${response.status}`);
+        }
+      } catch (error) {
+        console.error(`An error occurred while fetching data: ${error}`);
+      }
+    };
+
+    // Call the fetchData function
+    fetchData();
+
+  }, [])
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Make the API call using the fetch method
+        const response = await fetch('/api/get-us-export-sales-data');
+
+        // Check if the request was successful
+        if (response.ok) {
+          // Parse the JSON data from the response
+          const result = await response.json();
+
+          // Update the state with the fetched data
+          setClientUSExportSalesData(result);
+        } else {
+          console.error(`API request failed with status ${response.status}`);
+        }
+      } catch (error) {
+        console.error(`An error occurred while fetching data: ${error}`);
+      }
+    };
+
+    // Call the fetchData function
+    fetchData();
+
+  }, [])
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Make the API call using the fetch method
+        const response = await fetch('/api/get-cotton-on-call-data');
+
+        // Check if the request was successful
+        if (response.ok) {
+          // Parse the JSON data from the response
+          const result = await response.json();
+
+          // Update the state with the fetched data
+          setClientCottonOnCallData(result);
         } else {
           console.error(`API request failed with status ${response.status}`);
         }
@@ -1687,7 +1742,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   <div className="col-span-2 mb-4 w-full">
 
                     <MultipleSelectDropdown
-                      options={[{ property: "a_index", name: "A-Index" }, { property: "ice_highest_open_interest_17_months", name: "Ice Highest" }, { property: "cc_index", name: "CC Index" }, { property: "mcx", name: "MCX" }, { property: "cepea", name: "CEPEA" }]}
+                      options={[{ property: "ice_highest_open_interest_17_months", name: "Ice Highest" }, { property: "cc_index", name: "CC Index" }, { property: "mcx", name: "MCX" }, { property: "cepea", name: "CEPEA" }]}
                       variable="name"
                       colour="bg-deep_blue"
                       label="Variables"
@@ -1705,7 +1760,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   <div className="mb-4 w-full">
 
                     {/* <LineGraph verticalTooltip={true} data={getAIndexData(JSON.parse(aIndexData).filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" /> */}
-                    <LineGraph verticalTooltip={true} data={getAIndexData(clientAIndexData.filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
+                    <LineGraph showPositiveSign={true} verticalTooltip={true} data={getAIndexData(clientAIndexData.filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), "a_index", indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
                   </div>
                   {/* {commitmentWeekOrYear == "Year" && (
                       <>
@@ -2374,7 +2429,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
                     <div className="mb-4 w-full">
 
-                      <LineGraph verticalTooltip={true} data={getUSExportSalesData(JSON.parse(exportSalesData).filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), exportPropertiesArray, exportNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
+                      {/* <LineGraph verticalTooltip={true} data={getUSExportSalesData(JSON.parse(exportSalesData).filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), exportPropertiesArray, exportNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" /> */}
+                      <LineGraph verticalTooltip={true} data={getUSExportSalesData(clientUSExportSalesData.filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), exportPropertiesArray, exportNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
                     </div>
                     {/* {commitmentWeekOrYear == "Year" && (
                       <>
@@ -2578,8 +2634,19 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <>
                         <div className="mb-4 w-full">
 
-                          <SingleSelectDropdown
+                          {/* <SingleSelectDropdown
                             options={getUniqueOptions(JSON.parse(cottonOnCallData), "season")}
+                            label="Season"
+                            variable="value"
+                            colour="bg-deep_blue"
+                            onSelectionChange={(e) => setYear(e.value)}
+                            placeholder="Select a specific season"
+                            searchPlaceholder="Search Options"
+                            includeLabel={false}
+                            defaultValue="2324"
+                          /> */}
+                          <SingleSelectDropdown
+                            options={getUniqueOptions(clientCottonOnCallData, "season")}
                             label="Season"
                             variable="value"
                             colour="bg-deep_blue"
@@ -2597,7 +2664,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         <div className="mb-4 w-full">
 
                           <SingleSelectDropdown
-                            options={getUniqueOptions(JSON.parse(cottonOnCallData), "season_week")}
+                            options={getUniqueOptions(clientCottonOnCallData, "season_week")}
                             label="Week"
                             variable="value"
                             colour="bg-deep_blue"
@@ -2685,7 +2752,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Sales by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonSalesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
+                        {/* <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonSalesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" /> */}
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), cottonSalesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2694,7 +2762,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Sales by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), cottonSalesPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
+                        {/* <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), cottonSalesPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" /> */}
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(clientCottonOnCallData.filter((data) => data.week == Week), cottonSalesPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2759,7 +2828,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Purchases by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonPurchasesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" />
+                        {/* <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonPurchasesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" /> */}
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), cottonPurchasesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" />
                       </div>
                     </>
                   )}
@@ -2768,7 +2838,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Purchases by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), cottonPurchasesPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Purchases" />
+                        {/* <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), cottonPurchasesPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Purchases" /> */}
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(clientCottonOnCallData.filter((data) => data.week == Week), cottonPurchasesPropertiesArray, cottonNamesArray)} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Purchases" />
                       </div>
                     </>
                   )}
@@ -2833,7 +2904,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Total" />
+                        {/* <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Total" /> */}
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Total" />
                       </div>
                     </>
                   )}
@@ -2842,7 +2914,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total on call sales and purchases by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Total" />
+                        {/* <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Total" /> */}
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(clientCottonOnCallData.filter((data) => data.week == Week), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Total" />
                       </div>
                     </>
                   )}
@@ -2907,7 +2980,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by week</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Net" />
+                        {/* <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Net" /> */}
+                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Net" />
                       </div>
                     </>
                   )}
@@ -2916,7 +2990,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="mt-6 -mb-2 font-semibold">Total net U OC position by year</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Net" />
+                        {/* <LineGraphNotTime data={getCottonOnCallSeasonData(JSON.parse(cottonOnCallData).filter((data) => data.week == Week), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Net" /> */}
+                        <LineGraphNotTime data={getCottonOnCallSeasonData(clientCottonOnCallData.filter((data) => data.week == Week), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xDomain1={2001} xDomain2={2023} xAxisTitle="Year" yAxisTitle="Net" />
                       </div>
                     </>
                   )}
@@ -3414,6 +3489,12 @@ export const getServerSideProps = async (context: any) => {
   const CTN24Data = JSON.stringify(CTN24)
   const CTZ24Data = JSON.stringify(CTZ24)
 
+  // const CTZ23Data = JSON.stringify({ variable: "hello world" })
+  // const CTH24Data = JSON.stringify({ variable: "hello world" })
+  // const CTK24Data = JSON.stringify({ variable: "hello world" })
+  // const CTN24Data = JSON.stringify({ variable: "hello world" })
+  // const CTZ24Data = JSON.stringify({ variable: "hello world" })
+
   const sentiment = await prisma?.sentiment_survey.findMany({
     orderBy: {
       date_of_survey: "asc"
@@ -3510,11 +3591,12 @@ export const getServerSideProps = async (context: any) => {
   })
   const commentsData = JSON.stringify(comment)
 
-  const onCall = await prisma?.cotton_on_call.findMany({
+  // const onCall = await prisma?.cotton_on_call.findMany({
 
-  })
+  // })
 
-  const cottonOnCallData = JSON.stringify(onCall)
+  // const cottonOnCallData = JSON.stringify(onCall)
+  const cottonOnCallData = JSON.stringify({ variable: "hello world" })
 
   const commitment = await prisma?.commitment_of_traders.findMany({
 
@@ -3522,9 +3604,10 @@ export const getServerSideProps = async (context: any) => {
 
   const commitmentData = JSON.stringify(commitment)
 
-  const exportdata = await prisma?.us_export_sales.findMany({})
+  // const exportdata = await prisma?.us_export_sales.findMany({})
 
-  const exportSalesData = JSON.stringify(exportdata)
+  // const exportSalesData = JSON.stringify(exportdata)
+  const exportSalesData = JSON.stringify({ variable: "hello world" })
 
   const supplydemand = await prisma?.supply_and_demand.findMany({})
 

@@ -40,7 +40,7 @@ function weekNumber(date) {
 }
 
 
-const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400, weekNumberTicks = false, xAxisTitle = "", yAxisTitle = "", verticalTooltip = true, lineLimit = 4 }) => {
+const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", graphWidth = 550, graphHeight = 400, weekNumberTicks = false, xAxisTitle = "", yAxisTitle = "", verticalTooltip = true, lineLimit = 4, showPositiveSign = false }) => {
     let tooltipTimeout;
     const tooltipId = `tooltip-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -190,7 +190,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                     const closestDate = new Date(closestX)
                     const closestDateString = `${closestDate.getDate()}-${closestDate.getMonth() + 1}-${closestDate.getFullYear()}`
                     let tooltipX = `${closestDateString}<br/>`
-                    let tooltipY = tooltipData.map(item => item.name != "" ? `${item.name}: ${(item.value)}` : `${(item.value)}`).join('<br/>');
+                    let tooltipY = tooltipData.map(item => item.name != "" ? `${item.name}: ${showPositiveSign ? parseFloat(item.value) > 0 ? "+" : "" : ""}${(item.value)}` : `${(item.value)}`).join('<br/>');
                     let tooltipContent = tooltipX + tooltipY
 
                     tooltip
@@ -353,7 +353,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                                 closestDateString = `${closestDate.getDate()}-${closestDate.getMonth() + 1}-${closestDate.getFullYear()}`
                             }
                             let tooltipX = `${closestDateString}<br/>`
-                            let tooltipY = tooltipData.map(item => `${item.name}: ${(item.value)}`).join('<br/>');
+                            let tooltipY = tooltipData.map(item => `${item.name}: ${showPositiveSign ? parseFloat(item.value) > 0 ? "+" : "" : ""}${(item.value)}`).join('<br/>');
                             let tooltipContent = tooltipX + tooltipY
 
                             tooltip
