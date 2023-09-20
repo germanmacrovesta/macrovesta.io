@@ -1432,6 +1432,34 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const [selectedCostType, setSelectedCostType] = React.useState("FOB")
 
+  const [clientAIndexData, setClientAIndexData] = React.useState([])
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Make the API call using the fetch method
+        const response = await fetch('/api/get-a-index-data');
+
+        // Check if the request was successful
+        if (response.ok) {
+          // Parse the JSON data from the response
+          const result = await response.json();
+
+          // Update the state with the fetched data
+          setClientAIndexData(result);
+        } else {
+          console.error(`API request failed with status ${response.status}`);
+        }
+      } catch (error) {
+        console.error(`An error occurred while fetching data: ${error}`);
+      }
+    };
+
+    // Call the fetchData function
+    fetchData();
+
+  }, [])
+
   return (
     <>
       <Head>
@@ -1677,6 +1705,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   <div className="mb-4 w-full">
 
                     {/* <LineGraph verticalTooltip={true} data={getAIndexData(JSON.parse(aIndexData).filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" /> */}
+                    <LineGraph verticalTooltip={true} data={getAIndexData(clientAIndexData.filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
                   </div>
                   {/* {commitmentWeekOrYear == "Year" && (
                       <>
