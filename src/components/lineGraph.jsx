@@ -159,23 +159,58 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                     // and store the respective y-values along with series names
                     const tooltipData = [];
 
+                    // const overallClosestDate = data.reduce((acc, obj) => {
+                    //     if (new Date(obj[xValue]) > acc) {
+                    //         acc = new Date(obj[xValue])
+                    //     }
+                    //     return acc;
+                    // }, new Date('1800-01-01T00:00:00'))
+
                     data.forEach(series => {
                         const bisectDate = bisector(d => new Date(d[xValue])).left;
-                        const idx = bisectDate(series.data, date);
+                        let idx = bisectDate(series.data, date);
+
+                        if (idx == 0) {
+                            const bisectDate2 = bisector(d => new Date(d[xValue])).right;
+                            idx = bisectDate2(series.data, date);
+
+                        }
+
+                        console.log("idx", idx)
 
                         const d0 = series.data[idx - 1];
                         const d1 = series.data[idx];
                         const d = !d1 ? d0 : (!d0 ? d1 : (date - new Date(d0[xValue]) > new Date(d1[xValue]) - date ? d1 : d0));
 
-                        tooltipData.push({
-                            name: series.name,
-                            value: d[yValue],
-                            time: d[xValue]
-                        });
+                        if (d0 != undefined) {
+                            tooltipData.push({
+                                name: series.name,
+                                value: d0[yValue],
+                                time: d0[xValue]
+                            });
+                        } else {
+                            tooltipData.push({
+                                name: series.name,
+                                value: d1[yValue],
+                                time: d1[xValue]
+                            });
+                        }
                     });
 
+                    const overallClosestDate = tooltipData.reduce((acc, obj) => {
+                        if (new Date(obj.time) > acc) {
+                            acc = new Date(obj.time)
+                        }
+                        return acc;
+                    }, new Date('1800-01-01T00:00:00'))
+
+                    const filteredTooltipData = tooltipData.filter((tooltip) => new Date(tooltip.time).getDate() == overallClosestDate.getDate())
+
+                    console.log("overallClosestDate", overallClosestDate)
+                    console.log("filteredTooltipData", filteredTooltipData)
+
                     // Setting position for vertical line based on nearest x-point
-                    const closestX = tooltipData[0] && tooltipData[0].time;
+                    const closestX = filteredTooltipData[0] && filteredTooltipData[0].time;
 
                     console.log("Mouse X:", mx);
                     console.log("Closest Data X:", closestX);
@@ -190,7 +225,7 @@ const LineGraph = ({ data, monthsTicks = 4, xValue = "time", yValue = "value", g
                     const closestDate = new Date(closestX)
                     const closestDateString = `${closestDate.getDate()}-${closestDate.getMonth() + 1}-${closestDate.getFullYear()}`
                     let tooltipX = `${closestDateString}<br/>`
-                    let tooltipY = tooltipData.map(item => item.name != "" ? `${item.name}: ${showPositiveSign ? parseFloat(item.value) > 0 ? "+" : "" : ""}${(item.value)}` : `${(item.value)}`).join('<br/>');
+                    let tooltipY = filteredTooltipData.map(item => item.name != "" ? `${item.name}: ${showPositiveSign ? parseFloat(item.value) > 0 ? "+" : "" : ""}${(item.value)}` : `${(item.value)}`).join('<br/>');
                     let tooltipContent = tooltipX + tooltipY
 
                     tooltip

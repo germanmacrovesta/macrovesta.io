@@ -38,7 +38,7 @@ const Footer = () => {
                                     <a href="/signup" className="hover:underline">Sign Up</a>
                                 </li> */}
                                 <li className='block sm:hidden'>
-                                    <a href="/api/auth/signin" className=" items-center text-center text-text-gray-600 py-2 hover:cursor-pointer px-4 rounded text-white bg-gradient-to-r from-primary to-tertiary hover:shadow-lg">
+                                    <a href="/api/auth/signin" className=" items-center text-center text-gray-600 py-2 hover:cursor-pointer px-4 rounded bg-gradient-to-r from-primary to-tertiary hover:shadow-lg">
                                         Login
                                     </a>
                                 </li>

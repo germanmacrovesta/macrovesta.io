@@ -15,7 +15,7 @@ export default function Testimonials() {
                         <p className="text-m text-gray-600" data-aos="zoom-y-out">Over the last decade the Macrovesta team have delivered world-reknowned commodity market consultancy to some of the largest farms, mills and retailers in the world. Through Macrovesta we are making our expertise and crititcal analysis available to organisations of all sizes.</p>
                     </div>
 
-                    <div className="max-w-sm md:max-w-4xl h-[420px] mx-auto relative">
+                    <div className="h-fit  mx-auto relative">
                         <img className='absolute inset-0' src='/Maps_Map_Background.svg' />
                         <FadeInImage imageUrl={"/Maps_Map_Pins.svg"} hasShadow={false} />
                         {/* <img className='absolute inset-0 opacity-0' src='/Maps_Map_Pins.svg' /> */}

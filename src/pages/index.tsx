@@ -1930,22 +1930,30 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       <div className="col-span-2 text-center text-xl font-semibold mb-4">
                         Sentiment Survey Results
                       </div>
+                      <div className="col-span-2 flex flex-col items-center">
+                        <div className="flex justify-center font-semibold">
+                          Disclaimer
+                        </div>
+                        <div className="pl-20 pr-16 mt-6">
+                          We understand the importance of privacy and confidentiality. Rest assured that when you submit information or interact with our platform, your data remains anonymous and we uphold strict safeguards to protect your privacy. We do not share any personal data, individually identifiable information, or user submissions with any third parties.
+                        </div>
+                        <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200 mt-8">
+                          Privacy Policies
+                        </div>
+                      </div>
                       <div className="col-span-2 grid grid-cols-2">
                         <div className="flex flex-col items-center">
-                          <div className="font-semibold">Market Sentiment</div>
+                          <div className="font-semibold">Market Sentiment Distribution</div>
                           <BullishBearishDonut Bullish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bullish" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} Bearish={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Bearish" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} Neutral={sentimentData.filter((sentiment) => sentiment.bullish_or_bearish == "Neutral" && new Date(sentiment.date_of_survey) > oneWeekAgo).length} />
                         </div>
+
                         <div className="flex flex-col items-center">
-                          <div className="flex justify-center font-semibold">
-                            Disclaimer
-                          </div>
-                          <div className="pl-20 pr-16 mt-6">
-                            We understand the importance of privacy and confidentiality. Rest assured that when you submit information or interact with our platform, your data remains anonymous and we uphold strict safeguards to protect your privacy. We do not share any personal data, individually identifiable information, or user submissions with any third parties.
-                          </div>
-                          <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200 mt-8">
-                            Privacy Policies
-                          </div>
+                          <div className="font-semibold mb-20">Market Sentiment Strength</div>
+
+                          <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} />
                         </div>
+                        {/* <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? -1 : 1)} /> */}
+
                       </div>
                       <div className="flex flex-col items-center">
                         <div className="mt-6 -mb-2 font-semibold">High</div>
@@ -2087,7 +2095,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         </div>
                       )}
                       {index != 0 && (
-                        <div className="border grid grid-cols-[auto_80px] hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
+                        <div className="border grid grid-cols-[auto_100px] hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
                           <div>
                             {snapshot.title_of_snapshot_strategy}
                           </div>
