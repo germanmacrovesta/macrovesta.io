@@ -78,28 +78,28 @@ const ResetSurveys = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET' && req.query?.access == "abc123") {
         try {
             const users = await prisma?.user.findMany({
-                where: {
-                    OR: [
-                        {
-                            id: "cljzpccri0000zbdovqvictuk"
-                        },
-                        {
-                            id: "cljzx1vgn0000zbegn63qn1xg"
-                        }
-                    ]
-                }
+                // where: {
+                //     OR: [
+                //         {
+                //             id: "cljzpccri0000zbdovqvictuk"
+                //         },
+                //         {
+                //             id: "cljzx1vgn0000zbegn63qn1xg"
+                //         }
+                //     ]
+                // }
             });
             const updateUsersResponse = await prisma?.user.updateMany({
-                where: {
-                    OR: [
-                        {
-                            id: "cljzpccri0000zbdovqvictuk"
-                        },
-                        {
-                            id: "cljzx1vgn0000zbegn63qn1xg"
-                        }
-                    ]
-                },
+                // where: {
+                //     OR: [
+                //         {
+                //             id: "cljzpccri0000zbdovqvictuk"
+                //         },
+                //         {
+                //             id: "cljzx1vgn0000zbegn63qn1xg"
+                //         }
+                //     ]
+                // },
                 data: {
                     submittedSurvey: false
                 }
