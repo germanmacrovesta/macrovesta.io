@@ -202,11 +202,13 @@ const Sidebar = (props) => {
         <div className="fixed print:hidden h-screen text-md z-50">
             <div className="relative z-50 flex flex-col justify-between bg-gradient-to-br from-navy to-deep_blue w-40 h-full px-4 ">
                 <div>
-                    <div className="flex justify-center pt-4 py-4 pb-8 -mr-8">
+                    <div className="flex justify-center pt-4 py-4 pb-8">
                         <Link href={{ pathname: `/` }} >
                             <div className="flex justify-center w-full">
-                                <img className="" width="100%" src="/Full_Logo.svg" />
+                                {/* <img className="" width="100%" src="/Full_Logo.svg" /> */}
                                 {/* <img className="" width="100%" src="/watermark.svg" /> */}
+                                <img src={"/Logo File-14.png"} className="object-fill" />
+
                             </div>
                         </Link>
                     </div>

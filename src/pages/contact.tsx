@@ -3,6 +3,7 @@ import Footer from '../components/footer'
 import React from 'react'
 import CookieConsent from '../components/cookieConsent'
 import Head from "next/head";
+import { getSession } from 'next-auth/react'
 
 export default function ContactPage() {
     const [error_Message, setError_Message] = React.useState("");
@@ -317,3 +318,20 @@ export default function ContactPage() {
         </>
     );
 }
+
+export const getServerSideProps = async (context: any) => {
+    const session = await getSession({ req: context.req })
+
+    if (session && session?.company_id != null) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: `/`,
+            }
+        }
+    }
+
+    return {
+        props: {},
+    };
+};

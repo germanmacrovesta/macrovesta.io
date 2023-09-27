@@ -41,6 +41,7 @@ import Header from '../components/header';
 import Footer from '../components/footer';
 import SlideInImage from '../components/slideInImage'
 import CookieConsent from '../components/cookieConsent';
+import { getSession } from 'next-auth/react'
 import Head from "next/head";
 import Link from "next/link";
 import Image from 'next/image';
@@ -106,13 +107,13 @@ export default function About() {
           </div>
 
           {/* New div for the image */}
-          {/* <div className="flex-1 hidden p-8 lg:block object-center -z-10 animate-fade-in">
-            <div className='flex items-center relative top-0 bottom-0 pl-20 pb-20 w-400 h-400'>
-              <img className="block absolute animate-rotate" src="Service_Animation-11.png" alt="Recycle" />
-              <img className="block absolute animate-poptwo" src="Service_Animation-10.png" alt="Trees" />
-              <img className="block absolute animate-popone" src="Service_Animation-09.png" alt="Waste" />
+          <div className="flex-1 hidden p-8 lg:block object-center -z-10">
+            <div className='flex items-center relative top-0 bottom-0  pb-20 w-[400px] xl:w-[600px] h-[400px] xl:h-[600px]'>
+              <img className="block absolute" src="Isometric Macrovesta Images_AI Market Prediction.png" alt="Recycle" />
+              {/* <img className="block absolute animate-poptwo" src="Service_Animation-10.png" alt="Trees" />
+              <img className="block absolute animate-popone" src="Service_Animation-09.png" alt="Waste" /> */}
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
 
@@ -130,7 +131,7 @@ export default function About() {
             </div>
           </div>
           <div className="-ml-12 -mt-12 p-12 pb-0 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden">
-            <SlideInImage imageUrl="/Full_Logo.svg" />
+            <SlideInImage hasShadow={false} imageUrl="/Isometric Macrovesta Images_Farm.png" />
             <div className="flex justify-center mt-10 ">
               <a className="btn flex text-center mx-10 rounded-xl bg-deep_blue p-4 text-white hover:bg-navy animate duration-500 sm:ml-4 sm:w-auto" href="/#subscribe">
                 Become a pilot client
@@ -336,7 +337,7 @@ export default function About() {
           </div>
 
           <div className="-ml-12 -mt-12 p-12 pb-0 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden">
-            <SlideInImage imageUrl="/Full_Logo.svg" />
+            <SlideInImage hasShadow={false} imageUrl="/Isometric Macrovesta Images_Multilingual.png" />
             <div className="flex justify-center mt-10">
               <a
                 className="btn flex text-center mx-10 rounded-xl bg-deep_blue p-4 text-white hover:bg-navy transition-transform duration-500 sm:ml-4 sm:w-auto"
@@ -396,3 +397,20 @@ export default function About() {
     </>
   );
 }
+
+export const getServerSideProps = async (context: any) => {
+  const session = await getSession({ req: context.req })
+
+  if (session && session?.company_id != null) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/`,
+      }
+    }
+  }
+
+  return {
+    props: {},
+  };
+};

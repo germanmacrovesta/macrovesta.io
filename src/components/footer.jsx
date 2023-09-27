@@ -10,7 +10,8 @@ const Footer = () => {
                 <div className="md:flex md:justify-between">
                     <div className="mb-6 md:mb-0 flex items-center">
                         <a href="https://rubbishportal.com" className="flex items-center">
-                            <img src="/Full_Logo.svg" className="h-28 mr-3 invert -hue-rotate-90" alt="Rubbish Portal Logo" />
+                            {/* <img src="/Full_Logo.svg" className="h-28 mr-3 invert -hue-rotate-90" alt="Rubbish Portal Logo" /> */}
+                            <img src={"/Logo File-13.png"} className="h-28 object-fill" />
                         </a>
                     </div>
                     <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">

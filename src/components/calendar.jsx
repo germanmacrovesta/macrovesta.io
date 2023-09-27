@@ -1,12 +1,22 @@
-import { useCalendar, useCalendarGrid, useCalendarCell, useLocale } from 'react-aria';
+import { useCalendar, useCalendarGrid, useCalendarCell, useDateFormatter, useLocale } from 'react-aria';
 import { useCalendarState } from 'react-stately';
-import { createCalendar, getWeeksInMonth } from '@internationalized/date';
+import { createCalendar, getWeeksInMonth, parseDateTime } from '@internationalized/date';
 import * as React from 'react';
 import Button from '../components/button';
 
 // Reuse the Button from your component library. See below for details.
 
-export default function Calendar({ setIsOpen, ...props }) {
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+export default function Calendar({ setIsOpen, yearOptions = [-43, 1], ...props }) {
     let { locale } = useLocale();
     let state = useCalendarState({
         ...props,
@@ -26,11 +36,11 @@ export default function Calendar({ setIsOpen, ...props }) {
             <div className="p-2 bg-secondarywhite text-black text-center rounded-t-xl">
                 <div className='flex justify-between'>
                     <Button {...prevButtonProps}>&lt;</Button>
-                    <h2>{title}</h2>
-                    {/* <div className={styles.dropdowns}>
+                    {/* <h2>{title}</h2> */}
+                    <div className={"flex text-sm"}>
                         <MonthDropdown state={state} />
-                        <YearDropdown state={state} />
-                    </div> */}
+                        <YearDropdown state={state} yearOptions={yearOptions} />
+                    </div>
                     <Button {...nextButtonProps}>&gt;</Button>
                 </div>
             </div>
@@ -66,19 +76,33 @@ function MonthDropdown({ state }) {
         <select
             aria-label="Month"
             onChange={onChange}
-            value={state.focusedDate.month}
-            className={styles.select}
+            className={"bg-white text-center py-2"}
         >
             {months.map((month, i) => (
-                <option key={i} value={i + 1}>
-                    {month}
-                </option>
+                <>
+                    {state.focusedDate.month == i + 1 && (
+                        <>
+                            <option className='text-center' key={i} value={i + 1} selected>
+                                {month}
+                            </option>
+                        </>
+                    )}
+                    {state.focusedDate.month != i + 1 && (
+                        <>
+                            {/* {console.log("state.focusedDate", state.focusedDate)} */}
+                            {/* {console.log("state.focusedDate", state.focusedDate)} */}
+                            <option className='text-center' key={i} value={i + 1}>
+                                {month}
+                            </option>
+                        </>
+                    )}
+                </>
             ))}
         </select>
     );
 }
 
-function YearDropdown({ state }) {
+function YearDropdown({ state, yearOptions }) {
     let years = [];
     let formatter = useDateFormatter({
         year: "numeric",
@@ -87,8 +111,11 @@ function YearDropdown({ state }) {
 
     // Format 20 years on each side of the current year according
     // to the current locale and calendar system.
-    for (let i = -20; i <= 20; i++) {
-        let date = state.focusedDate.add({ years: i });
+    // for (let i = -20; i <= 20; i++) {
+    const todaysDate = formatDate(new Date())
+    const todaysCalendarDate = parseDateTime(todaysDate)
+    for (let i = yearOptions[0]; i <= yearOptions[1]; i++) {
+        let date = todaysCalendarDate.add({ years: i });
         years.push({
             value: date,
             formatted: formatter.format(date.toDate(state.timeZone))
@@ -98,24 +125,43 @@ function YearDropdown({ state }) {
     let onChange = (e) => {
         let index = Number(e.target.value);
         let date = years[index].value;
-        state.setFocusedDate(date);
+        state.setFocusedDate((prevDate) => prevDate.set({ year: date.year }));
+        // state.setFocusedDate(JSON.parse(e.target.value));
     };
 
     return (
         <select
             aria-label="Year"
             onChange={onChange}
-            value={20}
-            className={styles.select}
+            className={"bg-white text-center py-2"}
         >
             {years.map((year, i) => (
                 // use the index as the value so we can retrieve the full
                 // date object from the list in onChange. We cannot only
                 // store the year number, because in some calendars, such
                 // as the Japanese, the era may also change.
-                <option key={i} value={i}>
-                    {year.formatted}
-                </option>
+                <>
+                    {year.value.year == state.focusedDate.year && (
+                        <>
+                            {/* {console.log("year.value", year.value)} */}
+                            <option className='text-center' key={i} value={i} selected>
+                                {/* <option key={i} value={JSON.stringify(year.value)} selected={year.formatted == state.focusedDate}> */}
+                                {year.formatted}
+                            </option>
+                        </>
+                    )}
+                    {year.value.year != state.focusedDate.year && (
+                        <>
+                            {/* {console.log("year.value", year.value)}
+                            {console.log("state.focusedDate", state.focusedDate)} */}
+                            <option className='text-center' key={i} value={i}>
+                                {/* <option key={i} value={JSON.stringify(year.value)} selected={year.formatted == state.focusedDate}> */}
+                                {year.formatted}
+                            </option>
+                        </>
+                    )}
+
+                </>
             ))}
         </select>
     );

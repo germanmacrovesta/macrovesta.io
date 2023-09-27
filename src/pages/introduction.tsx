@@ -128,7 +128,9 @@ export default function Introduction() {
                                         as soon as possible.
                                     </text>
                                     <div>
-                                        <img src="/Full_Logo.svg" alt="Tracker" className="mx-auto w-[150px] invert -hue-rotate-90 sm:w-[500px]" />
+                                        {/* <img src="/Full_Logo.svg" alt="Tracker" className="mx-auto w-[150px] invert -hue-rotate-90 sm:w-[500px]" /> */}
+                                        <img src={"/Logo File-13.png"} className="mx-auto w-[150px] sm:w-[500px] object-fill" />
+
                                     </div>
                                 </div>
                             </div>
@@ -150,6 +152,17 @@ export default function Introduction() {
 }
 
 export const getServerSideProps = async (context: any) => {
+    const session = await getSession({ req: context.req })
+
+    if (session && session?.company_id != null) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: `/`,
+            }
+        }
+    }
+
     return {
         props: {},
     };

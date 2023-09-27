@@ -1219,7 +1219,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [basisCountry, setBasisCountry] = React.useState("Brazil");
 
   const [WeekOrYear, setWeekOrYear] = React.useState("Year")
-  const [Year, setYear] = React.useState("0102")
+  const [Year, setYear] = React.useState("2324")
   const [Week, setWeek] = React.useState(1)
 
   const [salesWeekOrYear, setSalesWeekOrYear] = React.useState("Week")
@@ -1517,6 +1517,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   }, [])
 
+  const averageMarketSentiment = () => {
+    const data = sentimentData.filter((sentiment) => new Date(sentiment.date_of_survey) > oneWeekAgo)
+    const total = data.reduce((acc, obj) => { acc += parseFloat(obj.bullish_or_bearish_value); return acc; }, 0)
+    console.log("total", total)
+    return sentimentData.length > 0 ? total / data.length : 0
+  }
+
   return (
     <>
       <Head>
@@ -1623,10 +1630,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="grid grid-cols-2 auto-row-[300px] gap-x-8 gap-y-4 pb-12 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-4 py-2 mb-8 mx-8">
                 <div className="flex col-span-2 gap-x-8 mx-8 mt-4">
                   <div className="mb-4 w-full">
-                    <DateField label='Start Date' setDate={setSelectedCottonContractsStartDate} date={selectedCottonContractsStartDate} formatter={formatter} />
+                    <DateField yearOptions={[-2, 0]} label='Start Date' setDate={setSelectedCottonContractsStartDate} date={selectedCottonContractsStartDate} formatter={formatter} />
                   </div>
                   <div className="mb-4 w-full">
-                    <DateField label='Start Date' setDate={setSelectedCottonContractsEndDate} date={selectedCottonContractsEndDate} formatter={formatter} />
+                    <DateField yearOptions={[-2, 0]} label='Start Date' setDate={setSelectedCottonContractsEndDate} date={selectedCottonContractsEndDate} formatter={formatter} />
                   </div>
                 </div>
                 <div className="relative flex flex-col col-span-2 items-center">
@@ -1685,10 +1692,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
                 <div className="col-span-2 grid grid-cols-2 w-full gap-x-4 px-8">
                   <div className="mb-4 w-full">
-                    <DateField label='Start Date' setDate={setSelectedIndexStartDate} date={selectedIndexStartDate} formatter={formatter} />
+                    <DateField yearOptions={[-28, 0]} label='Start Date' setDate={setSelectedIndexStartDate} date={selectedIndexStartDate} formatter={formatter} />
                   </div>
                   <div className="mb-4 w-full">
-                    <DateField label='Start Date' setDate={setSelectedIndexEndDate} date={selectedIndexEndDate} formatter={formatter} />
+                    <DateField yearOptions={[-28, 0]} label='Start Date' setDate={setSelectedIndexEndDate} date={selectedIndexEndDate} formatter={formatter} />
                   </div>
 
                   {/* <div className="mb-4 w-full">
@@ -1952,7 +1959,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         <div className="flex flex-col items-center">
                           <div className="font-semibold mb-20">Market Sentiment Strength</div>
 
-                          <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} />
+                          <SemiCircleDial value={averageMarketSentiment()} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} />
                         </div>
                         {/* <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? -1 : 1)} /> */}
 
@@ -1967,11 +1974,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       </div>
                       <div className="flex flex-col items-center">
                         <div className="mt-6 -mb-2 font-semibold">Intraday Average in Points</div>
-                        <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'intraday_average_points')} monthsTicks={1} />
+                        <LineGraph decimalPlaces={0} lineLimit={5} data={transformSurveyData(sentimentData, 'intraday_average_points')} monthsTicks={1} />
                       </div>
                       <div className="flex flex-col items-center">
                         <div className="mt-6 -mb-2 font-semibold">Open Interest</div>
-                        <LineGraph lineLimit={5} data={transformSurveyData(sentimentData, 'open_interest', 0)} monthsTicks={1} />
+                        <LineGraph decimalPlaces={0} lineLimit={5} data={transformSurveyData(sentimentData, 'open_interest', 0)} monthsTicks={1} />
                       </div>
                     </div>
                   </>
@@ -2245,7 +2252,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="relative flex flex-col items-center">
                 <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                 <div className="-mb-2 text-center font-semibold text-xl">Historical Basis Cost</div>
-                <LineGraph verticalTooltip={true} data={transformData(JSON.parse(basisData).filter((basis) => (basis.country == basisCountry) && (basis.cost_type == selectedCostType)))} xValue="time" yValue="value" monthsTicks={6} />
+                <LineGraph decimalPlaces={0} verticalTooltip={true} data={transformData(JSON.parse(basisData).filter((basis) => (basis.country == basisCountry) && (basis.cost_type == selectedCostType)))} xValue="time" yValue="value" monthsTicks={6} />
               </div>
               <div className="col-span-2 grid grid-cols-2 mb-4">
                 <div className="grid place-content-center">
@@ -2442,7 +2449,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                     <div className="mb-4 w-full">
 
                       {/* <LineGraph verticalTooltip={true} data={getUSExportSalesData(JSON.parse(exportSalesData).filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), exportPropertiesArray, exportNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" /> */}
-                      <LineGraph verticalTooltip={true} data={getUSExportSalesData(clientUSExportSalesData.filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), exportPropertiesArray, exportNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
+                      <LineGraph decimalPlaces={0} verticalTooltip={true} data={getUSExportSalesData(clientUSExportSalesData.filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), exportPropertiesArray, exportNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
                     </div>
                     {/* {commitmentWeekOrYear == "Year" && (
                       <>
@@ -2765,7 +2772,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                       <div className="mb-16 w-full">
 
                         {/* <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonSalesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" /> */}
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), cottonSalesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
+                        <LineGraph decimalPlaces={0} weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), cottonSalesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Sales" />
                       </div>
                     </>
                   )}
@@ -2841,7 +2848,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                       <div className="mb-16 w-full">
 
                         {/* <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), cottonPurchasesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" /> */}
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), cottonPurchasesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" />
+                        <LineGraph decimalPlaces={0} weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), cottonPurchasesPropertiesArray, cottonNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Purchases" />
                       </div>
                     </>
                   )}
@@ -2917,7 +2924,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                       <div className="mb-16 w-full">
 
                         {/* <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Total" /> */}
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Total" />
+                        <LineGraph decimalPlaces={0} weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), ["total_on_call_sales", "total_on_call_purchases"], ["Total on Call Sales", "Total on Call Purchases"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Total" />
                       </div>
                     </>
                   )}
@@ -2993,7 +3000,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                       <div className="mb-16 w-full">
 
                         {/* <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(JSON.parse(cottonOnCallData).filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Net" /> */}
-                        <LineGraph weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Net" />
+                        <LineGraph decimalPlaces={0} weekNumberTicks={true} data={getCottonOnCallWeekData(clientCottonOnCallData.filter((data) => data.season == Year), ["total_net_u_oc_position"], ["Total Net U OC Position"])} xValue="x" yValue="y" xAxisTitle="Week" yAxisTitle="Net" />
                       </div>
                     </>
                   )}
@@ -3480,7 +3487,7 @@ export const getServerSideProps = async (context: any) => {
     return {
       redirect: {
         permanent: false,
-        destination: `/auth/signin`,
+        destination: `/introduction`,
       }
     }
   }

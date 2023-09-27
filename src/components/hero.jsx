@@ -76,7 +76,7 @@ const Hero = ({ setIsModalOpen }) => {
                         <div className="grid place-content-center">
                             <div className="pointer-events-none absolute -top-[150%] -bottom-[150%] left-0 right-0  grid place-content-center overflow-clip">
                                 <div className="flex">
-                                    <img
+                                    {/* <img
                                         src="/Logo_Colour.svg"
                                         width="50px"
                                         height="50px"
@@ -87,39 +87,39 @@ const Hero = ({ setIsModalOpen }) => {
                                         width="50px"
                                         height="50px"
                                         className="animate-bottomright"
-                                    />
+                                    /> */}
                                     <img
-                                        src="/Logo_Colour.svg"
+                                        src="/ICONS_Live Market Forecasting.svg"
                                         width="50px"
                                         height="50px"
                                         className="animate-topleft"
                                     />
                                     <img
-                                        src="/Logo_Colour.svg"
+                                        src="/ICONS_Multilingual.svg"
                                         width="50px"
                                         height="50px"
                                         className="animate-left"
                                     />
                                     <img
-                                        src="/Logo_Colour.svg"
+                                        src="/ICONS_Expert Reports.svg"
                                         width="50px"
                                         height="50px"
                                         className="animate-insideright"
                                     />
                                     <img
-                                        src="/Logo_Colour.svg"
+                                        src="/ICONS_Position Management.svg"
                                         width="50px"
                                         height="50px"
                                         className="animate-right"
                                     />
                                     <img
-                                        src="/Logo_Colour.svg"
+                                        src="/ICONS_Analysis Tools.svg"
                                         width="50px"
                                         height="50px"
                                         className="animate-topright"
                                     />
                                     <img
-                                        src="/Logo_Colour.svg"
+                                        src="/ICONS_Learning Tools Icon.svg"
                                         width="50px"
                                         height="50px"
                                         className="animate-insideleft"
@@ -132,7 +132,7 @@ const Hero = ({ setIsModalOpen }) => {
                             </div>
                             {/* laptop image here */}
                             <Image className="animate-contract"
-                                src="/Logo_Colour.svg"
+                                src="/Isometric Macrovesta Images_AI Market Prediction.png"
                                 width={768}
                                 height={432}
                                 alt="Modal video thumbnail"

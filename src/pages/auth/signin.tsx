@@ -129,8 +129,9 @@ const SignIn: NextPage<SigninPageProps> = ({ csrfToken }) => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <div className="flex flex-col items-center bg-gradient-to-br from-deep_blue to-navy h-[100vh] text-white">
-                <div className=" my-10 -mr-16">
-                    <img width='300px' src="/Full_Logo.svg" />
+                <div className=" my-10">
+                    {/* <img width='300px' src="/Full_Logo.svg" /> */}
+                    <img src={"/Logo File-14.png"} className="w-[300px] object-fill" />
                 </div>
                 {showVerificationStep && (
                     <div>

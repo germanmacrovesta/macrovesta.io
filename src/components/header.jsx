@@ -190,9 +190,10 @@ const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white
                 {/* <div className='absolute inset-0 -bottom-36 z-20 pointer-events-none bg-gradient-to-b from-[#00a2c380] from-[#00000040] to-transparent'></div> */}
                 <div className="z-50">
                     <div className=" flex -mb-[112px] justify-between items-center py-6 px-10 container mx-auto">
-                        <div className='z-50'>
+                        <div className='z-50 w-full'>
                             {/* <img src={"Portal_Logo.png"} className="h-16" /> */}
-                            <img src={"/Full_Logo.svg"} className="h-16" />
+                            {/* <img src={"/Full_Logo.svg"} className="h-16" /> */}
+                            <img src={"/Logo File-14.png"} className="h-16 object-fill" />
                         </div>
                         <div className='z-50'>
                             <div className="cursor-pointer sm:hidden" onClick={() => setMobileHeaderOpen(!mobileHeaderOpen)}>

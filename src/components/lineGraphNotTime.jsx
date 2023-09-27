@@ -30,7 +30,7 @@ const capitalizeText = (text) => {
     return `${firstLetter}${rest}`
 }
 
-const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", graphWidth = 550, graphHeight = 400, xDomain1 = 0, xDomain2 = 17, xAxisTitle = "", yAxisTitle = "", tickNumber = 15, verticalTooltip = true }) => {
+const LineGraphNotTime = ({ data, monthsTicks = 4, xValue = "x", yValue = "y", graphWidth = 550, graphHeight = 400, xDomain1 = 0, xDomain2 = 17, xAxisTitle = "", yAxisTitle = "", tickNumber = 15, verticalTooltip = true, decimalPlaces = 2 }) => {
     const tooltipId = `tooltip-${Math.random().toString(36).substr(2, 9)}`;
 
     const ref = useRef();

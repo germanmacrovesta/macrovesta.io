@@ -3,7 +3,7 @@ import Calendar from '../components/calendar';
 import { parseDate, getLocalTimeZone, today, isWeekend } from '@internationalized/date';
 import { useDateFormatter, useLocale } from 'react-aria';
 
-export default function DateField({ setDate, date, label, formatter }) {
+export default function DateField({ setDate, date, label, formatter, yearOptions = [-43, 1] }) {
 
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState(null);
@@ -31,6 +31,12 @@ export default function DateField({ setDate, date, label, formatter }) {
 
     return (
         <>
+            {/* { }
+            {date && (
+                <>
+                    {formatter.format(date.toDate(getLocalTimeZone()))}
+                </>
+            )} */}
             <div className='w-full flex'>
                 <div className='flex w-full justify-between rounded-lg'>
                     {/* <div className='px-8 py-2'>
@@ -55,8 +61,10 @@ export default function DateField({ setDate, date, label, formatter }) {
                                     setIsOpen={toggleMenu}
                                     aria-label="Date (controlled)"
                                     value={date}
-                                    onChange={
-                                        setDate} />
+                                    onChange={setDate}
+                                    yearOptions={yearOptions}
+                                />
+
                             </div>
                         )}
                     </div>
