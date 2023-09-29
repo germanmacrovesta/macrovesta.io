@@ -444,16 +444,16 @@ const PuppeteerCustomReportGenerator = (props) => {
                             <img className="absolute -z-10 w-[210mm] h-[297mm]" src="/Template.jpg" />
                             <div className="absolute z-20 left-0 top-0 pl-[8mm] h-[100px] w-[600px] text-white text-2xl font-semibold grid place-content-center">
                                 <div>
-                                    {`${JSON.parse(props.venueData)[0]?.name} Waste Impact Report`}
+                                    {/* {`${JSON.parse(props.venueData)[0]?.name} Waste Impact Report`} */}
                                     <span className="whitespace-nowrap text-base font-normal">&nbsp;&nbsp;{parseDateString(new Date().toISOString())}</span>
                                     Hello World
                                 </div>
                             </div>
                             {/* <div className="grid grid-cols-2 h-full pt-[180px] pb-[140px]"> */}
                             <div className="z-20 grid grid-cols-4 h-fit pt-[180px] px-[8mm] pb-[140px] place-items-center">
-                                {JSON.parse(JSON.parse(props.templateData))?.templateArray?.slice(pageIndex.start, pageIndex.end)?.map((templateModule, moduleIndex) => (
+                                {/* {JSON.parse(JSON.parse(props.templateData))?.templateArray?.slice(pageIndex.start, pageIndex.end)?.map((templateModule, moduleIndex) => (
                                     <TemplateModule module={templateModule} pageIndex={pageIndex} moduleIndex={moduleIndex} mapIndex={mapIndex} />
-                                ))}
+                                ))} */}
                             </div>
                         </div>
                     </>
