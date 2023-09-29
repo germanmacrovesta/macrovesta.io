@@ -497,6 +497,7 @@ model basis_comparison {
 
 model in_country_news {
     record_id                String   @id @default(cuid())
+    country                  String?
     image_of_in_country_news String?  @db.VarChar(255)
     title_of_in_country_news String   @db.VarChar(255)
     text_of_in_country_news  String   @db.Text
@@ -547,4 +548,36 @@ model comparison_charts_with_17_months_year {
     world_population_mov       Int      @default(0)
     world_acreage              Int      @default(0)
     world_acreage_movement     Int      @default(0)
+}
+
+model Temporary_Storage {
+    record_id  String   @id @default(cuid())
+    data       String   @db.Text
+    created_at DateTime @default(now())
+}
+
+model Report_Templates {
+    record_id  String   @id @default(cuid())
+    name       String
+    data       String   @db.Text
+    company    String
+    created_at DateTime @default(now())
+}
+
+model Dashboard_Templates {
+    record_id  String   @id @default(cuid())
+    data       String   @db.Text
+    company    String
+    created_at DateTime @default(now())
+}
+
+model Document {
+    id         String  @id @default(cuid())
+    company    String  @db.VarChar(255)
+    user_id    String?
+    filetype   String
+    linkedType String
+    fileName   String?
+
+    createdAt DateTime? @default(now())
 }

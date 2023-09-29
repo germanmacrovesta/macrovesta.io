@@ -107,9 +107,9 @@ export default function About() {
           </div>
 
           {/* New div for the image */}
-          <div className="flex-1 hidden p-8 lg:block object-center -z-10">
-            <div className='flex items-center relative top-0 bottom-0  pb-20 w-[400px] xl:w-[600px] h-[400px] xl:h-[600px]'>
-              <img className="block absolute" src="Isometric Macrovesta Images_AI Market Prediction.png" alt="Recycle" />
+          <div className="flex-1 hidden px-4 -mr-16 xl:-mr-28 lg:block object-center -z-10">
+            <div className='flex items-center relative top-0 bottom-0  pb-20 w-full min-w-[450px] xl:w-full h-full min-h-[450px] xl:h-full'>
+              <img className="block" src="Isometric Macrovesta Images_AI Market Prediction.png" alt="Recycle" />
               {/* <img className="block absolute animate-poptwo" src="Service_Animation-10.png" alt="Trees" />
               <img className="block absolute animate-popone" src="Service_Animation-09.png" alt="Waste" /> */}
             </div>
@@ -117,7 +117,7 @@ export default function About() {
         </div>
       </div>
 
-      <div className="relative isolate overflow-hidden bg-white px-6 py-12 sm:py-32 lg:overflow-visible lg:px-0">
+      <div className="relative isolate overflow-hidden bg-white px-6 py-12 sm:py-12 lg:overflow-visible lg:px-0">
         <div className="absolute inset-0 -z-10 overflow-hidden">
         </div>
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">
@@ -125,7 +125,7 @@ export default function About() {
             <div className="lg:pr-4">
               <div className="lg:max-w-lg">
                 {/* <p id="our-story" className="text-base font-semibold leading-7 text-indigo-600">Mission Rubbish</p> */}
-                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Our Story</h1>
+                {/* <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Our Story</h1> */}
                 {/* <p className="mt-6 text-xl leading-8 text-gray-700">At Rubbish Ideas, our commitment to driving circularity extends beyond technology development.</p> */}
               </div>
             </div>
@@ -141,6 +141,8 @@ export default function About() {
           <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
             <div className="lg:pr-4">
               <div className="max-w-xl text-base leading-7 text-gray-700 lg:max-w-lg">
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-8">Our Story</h1>
+
                 <p>The global commodities market needs a scalable approach to risk management and hedging strategies. 10 years ago our analysts have provided these services to a small group of large players in across the global cotton supply chain.<br /><br /> In 2021, our analysts met with leading software and Artificial Intelligence technologists to strategise how their services could be scaled to help the wider market. Together we identified the opportunity to leverage market-leading expertise and services through software backed by Artificial Intelligence rather than traditional consultancy methods. Thus overcoming the physical limitations that have previously prevented scalability, despite reliable and in-demand services.</p>
                 {/* <p className='mt-4'>Through these initiatives, we not only address the immediate waste challenges faced by the events community but also foster a culture of sustainability. We believe that by working together with organisations and event organisers, we can create a significant and lasting impact on the journey towards a waste-free future.</p>
                 <h2 className="mt-16 text-2xl font-bold tracking-tight text-gray-900">Join our mission.</h2>
@@ -151,7 +153,7 @@ export default function About() {
         </div>
       </div>
 
-      <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
+      <div className="relative isolate overflow-hidden bg-white px-6 py-12 sm:py-12 lg:overflow-visible lg:px-0">
         {/* <div className="absolute inset-0 -z-10 overflow-hidden">
           <svg className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-gray-200 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]" aria-hidden="true">
             <defs>
@@ -179,7 +181,7 @@ export default function About() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/JE.jpeg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/JE.jpeg"} alt='Jo Earlam Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/JE.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -190,7 +192,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Olly.jpeg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Olly.jpeg"} alt='Oliver Jobling Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/Olly.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -201,7 +203,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Nafisah Badmos.jpeg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Nafisah Badmos.jpeg"} alt='Nafisah Badmos Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/Nafisah Badmos.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -213,7 +215,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Vic.jpeg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Vic.jpeg"} alt='Victor Fernandes Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="Vic.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -225,7 +227,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/default-avatar-icon-of-social-media-user-vector.jpeg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/default-avatar-icon-of-social-media-user-vector.jpeg"} alt='Gary Ferguson Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -249,7 +251,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/default-avatar-icon-of-social-media-user-vector.jpeg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/default-avatar-icon-of-social-media-user-vector.jpeg"} alt='Chris Williams Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -261,7 +263,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/HWB.jpeg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/HWB.jpeg"} alt='Harry Bennett Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/HWB.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -273,13 +275,37 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/BW.jpeg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/BW.jpeg"} alt='Ben Williams Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
                     <p className="text-xl text-gray-700 font-bold mb-2">Ben Williams</p>
                     <p className="text-base text-gray-400 font-normal">Commodity Consultant</p>
                     <p className='text-[14px] text-gray-500'>Having previously worked in logistics for a food ingredients trading company, importing and exporting products all around the globe, he comes with an in depth knowledge of shipping and the administration.</p>
+
+                  </div>
+                </div>
+                <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
+                  <div className="mb-8">
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/simone_profile.jpg"} alt='Simone Massardi Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" /> */}
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xl text-gray-700 font-bold mb-2">Simone Massardi</p>
+                    <p className="text-base text-gray-400 font-normal">Junior Data Scientist</p>
+                    <p className='text-[14px] text-gray-500'>Simone grew up with a deep passion for science and mathematics, which led him to earn a degree in mathematics and a Master's in Data Science from the University of Milan. During his time there, he developed a strong interest in creating and optimizing predictive models and finding value within data.</p>
+
+                  </div>
+                </div>
+                <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
+                  <div className="mb-8">
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/nick_profile.jpg"} alt='Nick Newns Profile' />
+                    {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" /> */}
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xl text-gray-700 font-bold mb-2">Nick Newns</p>
+                    <p className="text-base text-gray-400 font-normal">Commodity Consultant</p>
+                    <p className='text-[14px] text-gray-500'>Nick has been involved in the cotton and textile industries for nearly 25 years, trading raw cotton for Liverpool cotton merchant and then relocating to Singapore to run a sales desk concentrating on managing customers requirements in the South East Asian and Indian Subcontinent markets.</p>
 
                   </div>
                 </div>
@@ -322,7 +348,7 @@ export default function About() {
       </div>
 
 
-      <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
+      <div className="relative isolate overflow-hidden bg-white px-6 py-12 sm:py-12 lg:overflow-visible lg:px-0">
         <div className="absolute inset-0 -z-10 overflow-hidden">
         </div>
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">
@@ -330,7 +356,7 @@ export default function About() {
             <div className="lg:pr-4">
               <div className="lg:max-w-lg">
                 {/* <p id="mission" className="text-base font-semibold leading-7 text-indigo-600">Why choose The Rubbish Portal?</p> */}
-                <h1 id="mission" className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"> Our mission</h1>
+                {/* <h1 id="mission" className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"> Our mission</h1> */}
                 {/* <p className="mt-6 text-xl leading-8 text-gray-700">Track recycling performance at events in real-time, compare and rank results for healthy competition and improvement, and receive actionable recommendations to optimize recycling rates and create a sustainable future.</p> */}
               </div>
             </div>
@@ -352,6 +378,8 @@ export default function About() {
           <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
             <div className="lg:pr-4">
               <div className="max-w-xl text-base leading-7 text-gray-700 lg:max-w-lg">
+                <h1 id="mission" className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-8"> Our mission</h1>
+
                 <p className="mt-6 text-xl leading-8 text-gray-700">To educate and assist farmers, processors, merchants and retailers in understanding the agricultural commodity markets, providing guidance on navigating global price fluctuations and minimising any negative impacts on their business. To do this Macrovesta is displaying data and insights from our Commodity Price Prediction system - a lightweight and explainable AI technology. This tool enhances market understanding and facilitates informed decision-making that affects the livelihood of agricultural professionals around the world.<br /><br />
 
                   In 2022, The World Bank and the US Treasury expressed concerns over increasing commodity market volatility and shortened seasons, which will have profound implications for developing countries over the coming decade. A more resilient supply chain for agricultural commodities can have a momentous impact on developing countries across the globe. Providing them with actionable insights is a crucial step towards achieving this goal.<br /><br />

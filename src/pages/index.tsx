@@ -562,6 +562,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     e.preventDefault();
     setCountryNewsSubmitting(true);
 
+    let country = countryNewsFormCountry;
     let title = e.target["title"].value;
     let text = e.target["text"].value;
     let image = e.target["image"].value;
@@ -570,6 +571,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
     // console.log("textarea", text == "")
 
+    if (country == null || country == "") {
+      errorMessage += "Please select a country. ";
+    }
     if (title == null || title == "") {
       errorMessage += "Please enter a title. ";
     }
@@ -605,6 +609,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       } else {
         // Get data from the form.
         const data = {
+          country,
           title,
           text,
           image,
@@ -1523,6 +1528,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     console.log("total", total)
     return sentimentData.length > 0 ? total / data.length : 0
   }
+
+  const [countryNewsFilter, setCountryNewsFilter] = React.useState("All Countries")
+  const [countryNewsFormCountry, setCountryNewsFormCountry] = React.useState("")
 
   return (
     <>
@@ -2477,12 +2485,25 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                 <img src="/Charts_Under_Construction_Half_width.png" />
               </div> */}
               <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
-                <div className="relative text-center font-semibold text-xl">
+                <div className="relative text-center font-semibold text-xl mb-4">
                   <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
                   In Country News
                 </div>
+                <div className="">
+                  <SingleSelectDropdown
+                    options={[{ country: "All Countries" }, { country: "Brazil" }, { country: "USA" }, { country: "Bangladesh" }, { country: "Australia" }, { country: "Pakistan" }, { country: "Vietnam" }, { country: "India" }, { country: "China" }, { country: "Thailand" }, { country: "Turkey" }, { country: "Spain" }, { country: "UK" }, { country: "West Africa" }, { country: "Indonesia" }, { country: "Greece" }, { country: "Other" }]}
+                    label="Country"
+                    variable="country"
+                    colour="bg-deep_blue"
+                    onSelectionChange={(e) => setCountryNewsFilter(e.country)}
+                    placeholder="Select Country"
+                    searchPlaceholder="Search Countries"
+                    includeLabel={false}
+                    defaultValue="All Countries"
+                  />
+                </div>
                 <div className="flex flex-col justify-around items-start gap-4 mt-4">
-                  {JSON.parse(countryNewsData).filter((object: any, index: number) => index < 10).map((news, index) => (
+                  {JSON.parse(countryNewsData).filter((object) => countryNewsFilter != "Select Country" && countryNewsFilter != "All Countries" ? object?.country == countryNewsFilter : true).filter((object: any, index: number) => index < 10).map((news, index) => (
                     // <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setCountryNewsPopup(news)}>
                     //   {news.title_of_in_country_news}
                     // </div>
@@ -2559,6 +2580,18 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                         </div>
                         <div className="w-full">
                           <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleCountryNewsFormSubmit}>
+                            <div className="mb-4">
+                              <SingleSelectDropdown
+                                options={[{ country: "Brazil" }, { country: "USA" }, { country: "Bangladesh" }, { country: "Australia" }, { country: "Pakistan" }, { country: "Vietnam" }, { country: "India" }, { country: "China" }, { country: "Thailand" }, { country: "Turkey" }, { country: "Spain" }, { country: "UK" }, { country: "West Africa" }, { country: "Indonesia" }, { country: "Greece" }, { country: "Other" }]}
+                                label="Country"
+                                variable="country"
+                                colour="bg-deep_blue"
+                                onSelectionChange={(e) => setCountryNewsFormCountry(e.country)}
+                                placeholder="Select Country"
+                                searchPlaceholder="Search Countries"
+                                includeLabel={false}
+                              />
+                            </div>
                             <div className="mb-4">
                               <label
                                 htmlFor="image"

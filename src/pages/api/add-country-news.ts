@@ -9,6 +9,7 @@ const AddSnapshot = async (req: NextApiRequest, res: NextApiResponse) => {
 
         const record = await prisma?.in_country_news.create({
             data: {
+                country: req.body.country,
                 title_of_in_country_news: req.body.title,
                 text_of_in_country_news: req.body.text,
                 image_of_in_country_news: req.body.image,
