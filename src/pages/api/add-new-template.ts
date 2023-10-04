@@ -20,6 +20,13 @@ const GenerateCustomReport = async (req: NextApiRequest, res: NextApiResponse) =
       }
     })
 
+    await prisma?.dashboard_Templates.create({
+      data: {
+        company: req.body.venue,
+        data: JSON.stringify(dataObject)
+      }
+    })
+
     res.status(200).json({ message: 'Success' })
 
   } else {

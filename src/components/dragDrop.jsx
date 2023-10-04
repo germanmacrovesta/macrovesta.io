@@ -69,6 +69,7 @@ import SingleSelectDropdown from './singleSelectDropdown';
 import DateField from './dateField';
 import { parseDate } from '@internationalized/date';
 import { useDateFormatter, useLocale } from 'react-aria';
+import { useSession } from 'next-auth/react';
 
 
 const defaultFunction = (e) => {
@@ -350,38 +351,53 @@ const CustomSingleSelectDropdown = ({
 
 
 const DragDrop = (props) => {
+  const { data: session } = useSession();
+
   const snapPoints = [{ x: 50, y: 100 }, { x: 250, y: 200 } /* Define more snap points as needed */];
 
   const initialLibraryItems = [
-    // { library: ["Products", "All"], subLibrary: ["All", "Full"], id: 'item1', title: 'Products Text', imageUrl: '/full_width_products_text.png', width: 2, height: 95, printHeight: 40 },
+    // { library: ["Products", "All"], subLibrary: ["All", "Full"], id: 'item1', title: 'Products Text', imageUrl: '/full_width_products_text.png', width: 4, height: 95, printHeight: 40 },
     // { library: ["All"], subLibrary: ["All", "Full"], id: 'item2', title: 'Waste Lifecycle', imageUrl: '/full_width_waste_lifecycle.png', width: 2, height: 150, printHeight: 66 },
     // { library: ["All"], subLibrary: ["All", "Half"], id: 'item3', title: 'General Streams Info', imageUrl: '/half_width_general_streams_info.png', width: 1, height: 195, printHeight: 95 },
     // { library: ["All"], subLibrary: ["All", "Half"], id: 'item4', title: 'Capture Rate Donut', imageUrl: '/half_width_product_capture_rate_donut.png', width: 1, height: 195, printHeight: 95 },
     // { library: ["All"], subLibrary: ["All", "Half"], id: 'item5', title: 'Recycling Recovery Donut', imageUrl: '/half_width_recycling_recovery_donut.png', width: 1, height: 195, printHeight: 95 },
     // { library: ["All"], subLibrary: ["All", "Half"], id: 'item6', title: 'Streams Donut', imageUrl: '/half_width_streams_donut.png', width: 1, height: 195, printHeight: 95 },
     // { library: ["All"], subLibrary: ["All", "Full"], id: 'item7', title: 'Table', imageUrl: '/full_width_table.png', width: 2, height: undefined, printHeight: undefined, length: 46, start: 0, end: undefined, type: "table" },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item1', title: 'Product Text', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item2', title: 'Delivery Text', imageUrl: '/Report_Modules_Products-21.jpg', width: 4, height: 33, printHeight: 50, timePeriod: { start: undefined, end: undefined } },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item3', title: 'Stock Check Text', imageUrl: '/Report_Modules_Products-22.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item14', title: 'Products Used', imageUrl: '/Report_Modules_Products-08.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item15', title: 'Products Delivered', imageUrl: '/Report_Modules_Products-09.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item16', title: 'Total Products', imageUrl: '/Report_Modules_Products-10.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item17', title: 'Deliveries', imageUrl: '/Report_Modules_Products-11.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item18', title: 'Product Carbon', imageUrl: '/Report_Modules_Products-12.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item19', title: 'Delivery Carbon', imageUrl: '/Report_Modules_Products-13.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item20', title: 'Current Stock', imageUrl: '/Report_Modules_Products-14.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Half"], id: 'item21', title: 'Product Capture Rate', imageUrl: '/Report_Modules_Products-15.jpg', width: 2, height: 66, printHeight: 100 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item4', title: 'Stream Text', imageUrl: '/Report_Modules_Streams-33.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item5', title: 'Collection Text', imageUrl: '/Report_Modules_Streams-37.jpg', width: 4, height: 36, printHeight: 55 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item6', title: 'Sorting Text', imageUrl: '/Report_Modules_Streams-38.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item7', title: 'Weight Collected', imageUrl: '/Report_Modules_Streams-23.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item8', title: 'Waste Collections', imageUrl: '/Report_Modules_Streams-24.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item9', title: 'Total Streams', imageUrl: '/Report_Modules_Streams-25.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item10', title: 'Percentage Sorted', imageUrl: '/Report_Modules_Streams-26.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item11', title: 'Contamination', imageUrl: '/Report_Modules_Streams-27.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item12', title: 'Collection Carbon', imageUrl: '/Report_Modules_Streams-28.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item13', title: 'Closed Loop Carbon Saving', imageUrl: '/Report_Modules_Streams-29.jpg', width: 1, height: 33, printHeight: 50 },
-    { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Half"], id: 'item22', title: 'Stream Capture Rate', imageUrl: '/Report_Modules_Streams-30.jpg', width: 2, height: 66, printHeight: 100 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item1', title: 'Macrovesta Index', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item2', title: 'Conclusion Of Market Report', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item3', title: 'Cotton Contracts', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item4', title: 'Domestic Prices', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item5', title: 'Market Sentiment', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item6', title: 'News Snapshot', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item7', title: 'Basis Cost', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item8', title: 'US Export Sales', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item9', title: 'In Country News', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item10', title: 'Cotton On Call', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item11', title: 'Commitment Of Traders', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item12', title: 'Supply And Demand', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item13', title: 'Future Contracts', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item14', title: 'V4', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item2', title: 'Delivery Text', imageUrl: '/Report_Modules_Products-21.jpg', width: 4, height: 33, printHeight: 50, timePeriod: { start: undefined, end: undefined } },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item3', title: 'Stock Check Text', imageUrl: '/Report_Modules_Products-22.jpg', width: 4, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item14', title: 'Products Used', imageUrl: '/Report_Modules_Products-08.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item15', title: 'Products Delivered', imageUrl: '/Report_Modules_Products-09.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item16', title: 'Total Products', imageUrl: '/Report_Modules_Products-10.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item17', title: 'Deliveries', imageUrl: '/Report_Modules_Products-11.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item18', title: 'Product Carbon', imageUrl: '/Report_Modules_Products-12.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item19', title: 'Delivery Carbon', imageUrl: '/Report_Modules_Products-13.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item20', title: 'Current Stock', imageUrl: '/Report_Modules_Products-14.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Half"], id: 'item21', title: 'Product Capture Rate', imageUrl: '/Report_Modules_Products-15.jpg', width: 4, height: 66, printHeight: 100 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item4', title: 'Stream Text', imageUrl: '/Report_Modules_Streams-33.jpg', width: 4, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item5', title: 'Collection Text', imageUrl: '/Report_Modules_Streams-37.jpg', width: 4, height: 36, printHeight: 55 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item6', title: 'Sorting Text', imageUrl: '/Report_Modules_Streams-38.jpg', width: 4, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item7', title: 'Weight Collected', imageUrl: '/Report_Modules_Streams-23.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item8', title: 'Waste Collections', imageUrl: '/Report_Modules_Streams-24.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item9', title: 'Total Streams', imageUrl: '/Report_Modules_Streams-25.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item10', title: 'Percentage Sorted', imageUrl: '/Report_Modules_Streams-26.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item11', title: 'Contamination', imageUrl: '/Report_Modules_Streams-27.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item12', title: 'Collection Carbon', imageUrl: '/Report_Modules_Streams-28.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item13', title: 'Closed Loop Carbon Saving', imageUrl: '/Report_Modules_Streams-29.jpg', width: 2, height: 33, printHeight: 50 },
+    // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Half"], id: 'item22', title: 'Stream Capture Rate', imageUrl: '/Report_Modules_Streams-30.jpg', width: 4, height: 66, printHeight: 100 },
 
     // Add more draggable items
   ];
@@ -806,7 +822,7 @@ const DragDrop = (props) => {
     const data = {
       templateArray: state[1],
       pageIndices: startEndPageIndices,
-      venue: "Example Venue",
+      venue: session?.company,
       timePeriod: isUsingDateFilter ? { start: selectedStartDate.toDate().toISOString(), end: selectedEndDate.toDate().toISOString() } : { start: undefined, end: undefined }
       // record_id: record_id
     }
@@ -879,7 +895,7 @@ const DragDrop = (props) => {
     const data = {
       templateArray: state[1],
       pageIndices: startEndPageIndices,
-      venue: "Example Venue",
+      venue: session?.company,
       name
       // record_id: record_id
     }

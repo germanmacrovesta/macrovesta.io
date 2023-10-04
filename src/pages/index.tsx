@@ -1439,8 +1439,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const [selectedCostType, setSelectedCostType] = React.useState("FOB")
 
-  const [clientAIndexData, setClientAIndexData] = React.useState([])
   const [clientCottonContractsData, setClientCottonContractsData] = React.useState({ ctz23: [], cth24: [], ctk24: [], ctn24: [], ctz24: [] })
+  const [clientAIndexData, setClientAIndexData] = React.useState([])
   const [clientUSExportSalesData, setClientUSExportSalesData] = React.useState([])
   const [clientCottonOnCallData, setClientCottonOnCallData] = React.useState([])
 
@@ -1571,7 +1571,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div> */}
 
               <div className="text-center font-semibold text-xl">
-                The Macrovesta Index {session?.user.id}
+                The Macrovesta Index
               </div>
               <div className="flex justify-around gap-8">
                 {/* <IndexDial probability={0} /> */}
@@ -1696,7 +1696,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="relative grid grid-cols-2">
                 <InfoButton text={`In this section, you can use the multi-select dropdown menu to pick which markets you would like to compare. At the moment, the markets available are MCX (Indian), CEPEA (Brazilian), CC-Index (China), and ICE (American). The A-INDEX is intended to be representative of the level of offering prices on the international raw cotton market. It is an average of the cheapest five quotations from a selection of the principal upland cottons traded internationally.`} />
                 <div className="col-span-2 text-center text-xl font-semibold mb-4">
-                  A-Index
+                  Domestic Prices
                 </div>
                 <div className="col-span-2 grid grid-cols-2 w-full gap-x-4 px-8">
                   <div className="mb-4 w-full">
@@ -1773,7 +1773,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
 
                 <div className="col-span-2 flex flex-col items-center w-full">
-                  <div className="mt-6 -mb-2 font-semibold">A-Index by Week</div>
+                  <div className="mt-6 -mb-2 font-semibold">Domestic Prices by Week</div>
                   <div className="mb-4 w-full">
 
                     {/* <LineGraph verticalTooltip={true} data={getAIndexData(JSON.parse(aIndexData).filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" /> */}
@@ -1998,7 +1998,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   {currentStage > 0 && (
                     <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={goPrevious}>Previous</button>
                   )}
-                  {currentStage < (stages.length - 1) && submitted && session?.submittedSurvey == false && (
+                  {currentStage < (stages.length - 1) && sentimentSubmitted && session?.submittedSurvey == false && (
                     <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={goNext}>Next</button>
                   )}
                 </div>
@@ -2227,6 +2227,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 </div>
               )}
             </div>
+
             <div className="grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  ">
               <div className="col-span-2 flex pl-12 items-center justify-left gap-2 w-full">
                 <div className="mr-2">
@@ -2253,12 +2254,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     </div>
                   </div>
                 </div> */}
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <InfoButton text={`Find the most update FOB & CNF costs for different origins. For CNF we are always considering the same origin and same destination (main far east ports). `} />
                 <div className="text-center font-semibold text-xl">Current Basis Cost</div>
                 <GroupedBarChart data={basisBarChartData(JSON.parse(basisData).filter((basis) => basis.cost_type == selectedCostType))} />
               </div>
               <div className="relative flex flex-col items-center">
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <InfoButton text={`Find the historical basis cost for both FOB and CNF. `} />
                 <div className="-mb-2 text-center font-semibold text-xl">Historical Basis Cost</div>
                 <LineGraph decimalPlaces={0} verticalTooltip={true} data={transformData(JSON.parse(basisData).filter((basis) => (basis.country == basisCountry) && (basis.cost_type == selectedCostType)))} xValue="time" yValue="value" monthsTicks={6} />
               </div>
@@ -2660,7 +2661,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
 
               <div className="grid grid-cols-2 gap-y-8 -mb-8">
                 <div className="relative col-span-2 text-center text-xl font-semibold mb-4">
-                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  <InfoButton text={`The Cotton On-Call Report shows the quantity of call cotton bought or sold on which the price has not been fixed, together with the respective futures on which the purchase or sale is based. Call cotton refers to physical cotton bought or sold, or contracted for purchase or sale at a price to be fixed later based upon a specified delivery month future’s price. This report is released every Thursday at 3:30 pm, Eastern time and reflects position as of the previous week.  `} />
                   Cotton on Call
                 </div>
 
@@ -3057,7 +3058,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
 
               <div className="grid grid-cols-2 -mb-8">
                 <div className="relative col-span-2 text-center text-xl font-semibold mb-4">
-                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  <InfoButton text={`The COT reports provide a breakdown of each Tuesday's open interest for markets in which 20 or more traders hold positions equal to or above the reporting levels established by the CFTC. The weekly reports are released every Friday at 3:30 p.m. Eastern time.`} />
                   Commitment of Traders
                 </div>
                 <div className="col-span-3 grid grid-cols-3 w-full gap-x-4 px-8">
@@ -3163,7 +3164,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
 
               <div className="grid grid-cols-2 -mb-8">
                 <div className="relative col-span-2 text-center text-xl font-semibold mb-4">
-                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
                   Supply and Demand
                 </div>
                 <div className="col-span-3 grid grid-cols-3 w-full gap-x-4 px-8">
@@ -3229,7 +3230,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                   {/* {commitmentWeekOrYear == "Week" && (
                     <> */}
                   <div className="relative w-full text-center mt-6 -mb-2 font-semibold">
-                    <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                    <InfoButton text={`The World Agricultural Supply and Demand Estimates (WASDE) is released monthly and provides annual forecasts for supply and use of U.S. and world cotton. `} />
                     Historical WASDE
                   </div>
                   <div className="mb-16 w-full">
@@ -3273,7 +3274,9 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                     </div>
                   </div>
                   <div className="relative w-full text-center mt-6 -mb-2 font-semibold">
-                    <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                    <InfoButton text={`Here you will find a graph showing historical data of many different variables included on the report such as production and consumption. 
+Here is the difference between USDA and Macrovesta. 
+`} />
                     Supply and Demand by Season
                   </div>
                   <div className="mb-16 w-full">
@@ -3289,7 +3292,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
             </div>
             <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="relative w-full text-center text-xl font-semibold mt-4">
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <InfoButton text={`A historical look into the December futures contract. `} />
                 Future Contracts Study
               </div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
@@ -3399,7 +3402,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
             </div>
             <div className="flex flex-col items-center bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="relative w-full text-center text-xl font-semibold mt-4">
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <InfoButton text={`A historical look into different seasons where you can analyse them side-to-side. `} />
                 V4
               </div>
               {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
