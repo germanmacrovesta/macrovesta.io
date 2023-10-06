@@ -140,11 +140,12 @@ const MultipleSelectDropdown = ({
     includeLabel = true,
     addLabel = `Add ${label}`,
     colour = 'bg-green',
-    defaultValue = "Default Value", // Add the defaultValue prop
+    // defaultValue = "Default Value", // Add the defaultValue prop
     textCenter = true,
     textColour = "text-white",
     border = false,
-    borderStyle = "border border-grey"
+    borderStyle = "border border-grey",
+    defaultValues = ["Default Value"]
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isTooltipVisible, setIsTooltipVisible] = useState(false);
@@ -152,6 +153,8 @@ const MultipleSelectDropdown = ({
     const [searchText, setSearchText] = useState('');
     const [filteredOptions, setFilteredOptions] = useState(options);
     const wrapperRef = useRef(null);
+
+    console.log("Re-rendered")
 
     useEffect(() => {
         setFilteredOptions(
@@ -196,16 +199,57 @@ const MultipleSelectDropdown = ({
         return displayText.length > 20 ? `${displayText.slice(0, 20)}...` : displayText;
     };
 
-    const prevSelectedOptionsRef = useRef();
+    const prevSelectedOptionsRef = useRef([]);
 
     useEffect(() => {
-        // onSelectionChange(selectedOptions);
-        if (selectedOptions && prevSelectedOptionsRef.current !== selectedOptions) {
-            onSelectionChange(selectedOptions);
+        const sortedSelectedOptions = selectedOptions.sort()
+        const sortedPrevSelectedOptions = Array.from(prevSelectedOptionsRef.current).sort()
+
+        let rerender = false;
+        if (sortedSelectedOptions.length != sortedPrevSelectedOptions?.length) {
+            rerender = true;
+        } else {
+            let i = 0;
+            while (i < selectedOptions.length - 1) {
+                if (sortedSelectedOptions[i]?.[`${variable}`] != sortedPrevSelectedOptions[i]?.[`${variable}`]) {
+                    rerender = true;
+                }
+                i++;
+            }
         }
+
+        // onSelectionChange(selectedOptions);
+        if (selectedOptions && rerender == true) {
+            onSelectionChange(selectedOptions);
+            console.log("onSelectionChange")
+        }
+        // if (selectedOptions && prevSelectedOptionsRef.current !== selectedOptions) {
+        //     onSelectionChange(selectedOptions);
+        //     console.log("onSelectionChange")
+        // }
         prevSelectedOptionsRef.current = selectedOptions;
         console.log("C")
     }, [selectedOptions, onSelectionChange]);
+
+    useEffect(() => {
+        // console.log("Dropdown", "Running Single Dropdown defaultValue, variable")
+        if ((defaultValues !== undefined) && defaultValues[0] !== "Default Value") {
+            const defaultOptions = options.filter(option => defaultValues.includes(option[`${variable}`]));
+            // console.log("defaultOption", defaultOption);
+            // console.log("selectedOption", selectedOption)
+            if ((defaultOptions !== selectedOptions) && defaultOptions[0] !== undefined && (defaultOptions !== null && selectedOptions !== null)) {
+                // console.log("Running")
+                if (defaultOptions != undefined) {
+                    setSelectedOptions(defaultOptions);
+                } else {
+                    setSelectedOptions([]);
+                }
+            }
+        } else {
+            // setSelectedOption(null);
+        }
+        // console.log(`${label} defaultValue`, defaultValue)
+    }, [defaultValues, variable]);
 
     return (
         <>

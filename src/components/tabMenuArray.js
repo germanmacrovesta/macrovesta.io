@@ -15,6 +15,7 @@ export const TabMenuArray = [
         title: "My Dashboard",
         page: "/my-dashboard",
         imgB: "/MyDashboard_B_SQ.png",
-        imgW: "/MyDashboard_W_SQ.png"
+        imgW: "/MyDashboard_W_SQ.png",
+        restricted_access: true
     }
 ]

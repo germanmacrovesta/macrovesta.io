@@ -1768,6 +1768,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                       placeholder="Select Variables"
                       searchPlaceholder="Search Variables"
                       includeLabel={false}
+                    // defaultValues={["A-Index", "Ice Highest", "CC Index"]}
                     />
                   </div>
                 </div>

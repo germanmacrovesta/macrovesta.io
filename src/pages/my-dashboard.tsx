@@ -162,7 +162,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
   }
   splitUrl(urlArray, 1)
 
-
+  const [templateArray, setTemplateArray] = React.useState(JSON.parse(JSON.parse(templateData))?.templateArray)
 
   React.useEffect(() => {
     const script = document.createElement('script');
@@ -332,8 +332,8 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
   const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo));
   const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today));
 
-  // const [contractParameter, setContractParameter] = React.useState("close")
-  // const [contractParameterName, setContractParameterName] = React.useState("Close")
+  const [contractParameter, setContractParameter] = React.useState("close")
+  const [contractParameterName, setContractParameterName] = React.useState("Close")
 
   const locale = useLocale();
 
@@ -678,6 +678,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
   const [selectedFormCostType, setSelectedFormCostType] = React.useState(undefined)
 
   const [selectedNewsType, setSelectedNewsType] = React.useState("")
+  const [selectedNewsTypeName, setSelectedNewsTypeName] = React.useState("")
 
   const [snapshotError_Message, setSnapshotError_Message] = React.useState("");
   const [snapshotSubmitted, setSnapshotSubmitted] = React.useState(false);
@@ -957,8 +958,8 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
   const [selectedStartDate, setSelectedStartDate] = React.useState(parseDate(dateSixMonthsAgo));
   const [selectedEndDate, setSelectedEndDate] = React.useState(parseDate(today));
 
-  const [exportPropertiesArray, setExportPropertiesArray] = React.useState(["net_sales", "next_marketing_year_net_sales"])
-  const [exportNamesArray, setExportNamesArray] = React.useState(["Net Sales", "Next Marketing Year Net Sales"])
+  // const [exportPropertiesArray, setExportPropertiesArray] = React.useState(["net_sales", "next_marketing_year_net_sales"])
+  // const [exportNamesArray, setExportNamesArray] = React.useState(["Net Sales", "Next Marketing Year Net Sales"])
 
   const getUSExportSalesData = (data, propertyArray, datasetNameArray) => {
     let datasetArray = [];
@@ -1086,9 +1087,9 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
     return options.sort((a, b) => a.value - b.value);
   }
 
-  const [cottonSalesPropertiesArray, setCottonSalesPropertiesArray] = React.useState(["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"])
-  const [cottonPurchasesPropertiesArray, setCottonPurchasesPropertiesArray] = React.useState(["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"])
-  const [cottonNamesArray, setCottonNamesArray] = React.useState(["October", "December", "March", "May", "July"])
+  // const [cottonSalesPropertiesArray, setCottonSalesPropertiesArray] = React.useState(["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"])
+  // const [cottonPurchasesPropertiesArray, setCottonPurchasesPropertiesArray] = React.useState(["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"])
+  // const [cottonNamesArray, setCottonNamesArray] = React.useState(["October", "December", "March", "May", "July"])
 
   const getCottonOnCallWeekData = (data, propertyArray, datasetNameArray) => {
     let datasetArray = [];
@@ -1128,8 +1129,8 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
   const [commitmentYear, setCommitmentYear] = React.useState(2023)
   const [commitmentWeek, setCommitmentWeek] = React.useState(1)
 
-  const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["specs_net"])
-  const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Specs Net"])
+  // const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["specs_net"])
+  // const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Specs Net"])
 
   const getCommitmentOfTradersWeekData = (data, propertyArray, datasetNameArray) => {
     let datasetArray = [];
@@ -1165,13 +1166,15 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
   }
 
   const [selectedSupplyAndDemandStartDate, setSelectedSupplyAndDemandStartDate] = React.useState(new Date('2000-01-01').toISOString());
+  const [selectedSupplyAndDemandStartDateYear, setSelectedSupplyAndDemandStartDateYear] = React.useState("2000");
   const [selectedSupplyAndDemandEndDate, setSelectedSupplyAndDemandEndDate] = React.useState(new Date("2023-12-31").toISOString());
+  const [selectedSupplyAndDemandEndDateYear, setSelectedSupplyAndDemandEndDateYear] = React.useState("2023");
   const [selectedSupplyAndDemandSeason, setSelectedSupplyAndDemandSeason] = React.useState("20/21");
 
-  const [supplyAndDemandPropertiesArray, setSupplyAndDemandPropertiesArray] = React.useState(["production_usda"])
-  const [supplyAndDemandNamesArray, setSupplyAndDemandNamesArray] = React.useState(["Production USDA"])
-  const [supplyAndDemandProjectedPropertiesArray, setSupplyAndDemandProjectedPropertiesArray] = React.useState(["production_usda", "production_eap"])
-  const [supplyAndDemandProjectedNamesArray, setSupplyAndDemandProjectedNamesArray] = React.useState(["Production USDA", "Production EAP"])
+  // const [supplyAndDemandPropertiesArray, setSupplyAndDemandPropertiesArray] = React.useState(["production_usda"])
+  // const [supplyAndDemandNamesArray, setSupplyAndDemandNamesArray] = React.useState(["Production USDA"])
+  // const [supplyAndDemandProjectedPropertiesArray, setSupplyAndDemandProjectedPropertiesArray] = React.useState(["production_usda", "production_eap"])
+  // const [supplyAndDemandProjectedNamesArray, setSupplyAndDemandProjectedNamesArray] = React.useState(["Production USDA", "Production EAP"])
 
   const getSupplyAndDemandData = (data, propertyArray, datasetNameArray) => {
     let datasetArray = [];
@@ -1260,12 +1263,18 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
     return array
   }
 
+  // const [staticMonthlyIndexData, setStaticMonthlyIndexData] = React.useState(JSON.parse(monthlyIndexData))
+  // const [staticSeasonalIndexData, setStaticSeasonalIndexData] = React.useState(JSON.parse(seasonalIndexData))
+  // const [staticCTZ23Data, setStaticCTZ23Data] = React.useState(JSON.parse(CTZ23Data))
+
   const TemplateModule = ({ module, moduleIndex }) => {
 
+    const { data: session } = useSession()
+
     let hasSibling = false
-    if (moduleIndex < JSON.parse(JSON.parse(templateData))?.templateArray?.length - 2) {
-      hasSibling = JSON.parse(JSON.parse(templateData))?.templateArray[moduleIndex + 1]?.width != 4
-    }
+    // if (moduleIndex < templateArray?.length - 2) {
+    //   hasSibling = templateArray[moduleIndex + 1]?.width != 4
+    // }
 
     switch (module.title) {
 
@@ -1284,6 +1293,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
                     Monthly Index
                   </div>
                   <div className="justify-self-end">
+                    {/* <SemiCircleDial value={parseFloat(staticMonthlyIndexData.probability_rate) * (staticMonthlyIndexData.inverse_month == "Y" ? -1 : 1)} /> */}
                     <SemiCircleDial value={parseFloat(JSON.parse(monthlyIndexData).probability_rate) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? -1 : 1)} />
                   </div>
 
@@ -1295,6 +1305,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
                     Seasonal Index
                   </div>
                   <div className="justify-self-end">
+                    {/* <SemiCircleDial value={parseFloat(staticSeasonalIndexData.probability_rate) * (staticSeasonalIndexData.inverse_year == "Y" ? -1 : 1)} /> */}
                     <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? -1 : 1)} />
                   </div>
                 </div>
@@ -1321,8 +1332,8 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
         )
 
       case "Cotton Contracts":
-        const [contractParameter, setContractParameter] = React.useState("close")
-        const [contractParameterName, setContractParameterName] = React.useState("Close")
+        // const [contractParameter, setContractParameter] = React.useState("close")
+        // const [contractParameterName, setContractParameterName] = React.useState("Close")
 
         return (
           <>
@@ -1340,6 +1351,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
                   <InfoButton text={`This section analyses technically what has happened to the front month of cotton as well as relevant futures spreads over the past week.`} />
                   <div className="mt-6 -mb-2 font-semibold">CTZ23</div>
                   <LineGraph verticalTooltip={true} data={contractParameter != null ? [{ name: "CTZ23", data: JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
+                  {/* <LineGraph verticalTooltip={true} data={contractParameter != null ? [{ name: "CTZ23", data: staticCTZ23Data.filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} /> */}
                   <div className="flex justify-center mt-8">
                     <div className="w-[200px]">
                       <SingleSelectDropdown
@@ -1351,32 +1363,28 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
                         placeholder="Select Parameter"
                         searchPlaceholder="Search Parameter"
                         includeLabel={false}
-                        defaultValue={"Close"}
+                        defaultValue={contractParameterName ?? "Close"}
                       />
                     </div>
                   </div>
                   <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Current Contract")} session={session} section="Current Contract" commentLength={800} />
                 </div>
                 <div className="relative flex flex-col items-center">
-                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTH24 Spread</div>
                   <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTH24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTH24 Spread")} monthsTicks={6} />
                   <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Nearby Spread")} session={session} section="Nearby Spread" />
                 </div>
                 <div className="relative flex flex-col items-center">
-                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTK24 Spread</div>
                   <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTK24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTK24 Spread")} monthsTicks={6} />
                   <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Second Spread")} session={session} section="Second Spread" />
                 </div>
                 <div className="relative flex flex-col items-center">
-                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTN24 Spread</div>
                   <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTN24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTN24 Spread")} />
                   <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Third Spread")} session={session} section="Third Spread" />
                 </div>
                 <div className="relative flex flex-col items-center">
-                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
                   <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTZ24 Spread</div>
                   <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTZ24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), "CTZ23 / CTZ24 Spread")} />
                   <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == "Fourth Spread")} session={session} section="Fourth Spread" />
@@ -1778,10 +1786,11 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
                                 label="snapshot_type"
                                 variable="name"
                                 colour="bg-deep_blue"
-                                onSelectionChange={(e) => setSelectedNewsType(e.value)}
+                                onSelectionChange={(e) => { setSelectedNewsType(e.value); setSelectedNewsTypeName(e.name) }}
                                 placeholder="Select Snapshot Type"
                                 searchPlaceholder="Search Types"
                                 includeLabel={false}
+                                defaultValue={selectedNewsTypeName ?? ""}
                               />
                             </div>
                             <label
@@ -1900,10 +1909,11 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
                                 label="Country"
                                 variable="country"
                                 colour="bg-deep_blue"
-                                onSelectionChange={(e) => setSelectedCountry(e.country)}
+                                onSelectionChange={(e) => { setSelectedCountry(e.country); }}
                                 placeholder="Select Country"
                                 searchPlaceholder="Search Countries"
                                 includeLabel={false}
+                                defaultValue={selectedCountry ?? ""}
                               />
                               <SingleSelectDropdown
                                 options={[{ value: "FOB" }, { value: "CNF" }]}
@@ -1914,6 +1924,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
                                 placeholder="Select cost type"
                                 searchPlaceholder="Search cost types"
                                 includeLabel={false}
+                                defaultValue={selectedFormCostType ?? ""}
                               />
                             </div>
                             <form className="mt-4 mb-4  grid grid-cols-2 gap-x-4 w-full" onSubmit={handleBasisFormSubmit}>
@@ -1974,7 +1985,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
                       placeholder="Select Country"
                       searchPlaceholder="Search Countries"
                       includeLabel={false}
-                      defaultValue="Brazil"
+                      defaultValue={basisCountry ?? "Brazil"}
                     />
                   </div>
                 </div>
@@ -1990,6 +2001,9 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
         )
 
       case "US Export Sales":
+
+        const [exportPropertiesArray, setExportPropertiesArray] = React.useState(["net_sales", "next_marketing_year_net_sales"])
+        const [exportNamesArray, setExportNamesArray] = React.useState(["Net Sales", "Next Marketing Year Net Sales"])
 
         return (
           <>
@@ -2056,7 +2070,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                   placeholder="Select Country"
                   searchPlaceholder="Search Countries"
                   includeLabel={false}
-                  defaultValue="All Countries"
+                  defaultValue={countryNewsFilter ?? "All Countries"}
                 />
               </div>
               <div className="flex flex-col justify-around items-start gap-4 mt-4">
@@ -2141,6 +2155,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                               placeholder="Select Country"
                               searchPlaceholder="Search Countries"
                               includeLabel={false}
+                              defaultValue={countryNewsFormCountry ?? ""}
                             />
                           </div>
                           <div className="mb-4">
@@ -2197,6 +2212,11 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
         )
 
       case "Cotton On Call":
+
+        const [cottonSalesPropertiesArray, setCottonSalesPropertiesArray] = React.useState(["october_sales", "december_sales", "march_sales", "may_sales", "july_sales"])
+        const [cottonPurchasesPropertiesArray, setCottonPurchasesPropertiesArray] = React.useState(["october_purchases", "december_purchases", "march_purchases", "may_purchases", "july_purchases"])
+        const [cottonNamesArray, setCottonNamesArray] = React.useState(["October", "December", "March", "May", "July"])
+
         return (
           <>
             <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg">
@@ -2222,7 +2242,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                         placeholder="Select Week or Year"
                         searchPlaceholder="Search Options"
                         includeLabel={false}
-                        defaultValue="Year"
+                        defaultValue={WeekOrYear ?? "Year"}
                       />
                     </div>
                     {WeekOrYear == "Year" && (
@@ -2238,7 +2258,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                             placeholder="Select a specific season"
                             searchPlaceholder="Search Options"
                             includeLabel={false}
-                            defaultValue="2324"
+                            defaultValue={String(Year) ?? "2324"}
                           />
                         </div>
                       </>
@@ -2256,7 +2276,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                             placeholder="Select a specific week"
                             searchPlaceholder="Search Options"
                             includeLabel={false}
-                            defaultValue="32"
+                            defaultValue={String(Week) ?? "32"}
                           />
                         </div>
                       </>
@@ -2368,6 +2388,10 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
         )
 
       case "Commitment Of Traders":
+
+        const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["specs_net"])
+        const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Specs Net"])
+
         return (
           <>
             <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg">
@@ -2390,7 +2414,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                       placeholder="Select Week or Year"
                       searchPlaceholder="Search Options"
                       includeLabel={false}
-                      defaultValue="Year"
+                      defaultValue={commitmentWeekOrYear ?? "Year"}
                     />
                   </div>
                   {commitmentWeekOrYear == "Year" && (
@@ -2406,7 +2430,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                           placeholder="Select a specific year"
                           searchPlaceholder="Search Options"
                           includeLabel={false}
-                          defaultValue="2023"
+                          defaultValue={String(commitmentYear) ?? "2023"}
                         />
                       </div>
                     </>
@@ -2424,7 +2448,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                           placeholder="Select a specific week"
                           searchPlaceholder="Search Options"
                           includeLabel={false}
-                          defaultValue="1"
+                          defaultValue={String(commitmentWeek) ?? "1"}
                         />
                       </div>
                     </>
@@ -2479,6 +2503,12 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
         )
 
       case "Supply And Demand":
+
+        const [supplyAndDemandPropertiesArray, setSupplyAndDemandPropertiesArray] = React.useState(["production_usda"])
+        const [supplyAndDemandNamesArray, setSupplyAndDemandNamesArray] = React.useState(["Production USDA"])
+        const [supplyAndDemandProjectedPropertiesArray, setSupplyAndDemandProjectedPropertiesArray] = React.useState(["production_usda", "production_eap"])
+        const [supplyAndDemandProjectedNamesArray, setSupplyAndDemandProjectedNamesArray] = React.useState(["Production USDA", "Production EAP"])
+
         return (
           <>
             <div className="flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg">
@@ -2497,11 +2527,11 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                       label="Week"
                       variable="year"
                       colour="bg-deep_blue"
-                      onSelectionChange={(e) => setSelectedSupplyAndDemandStartDate(e.value)}
+                      onSelectionChange={(e) => { setSelectedSupplyAndDemandStartDate(e.value); setSelectedSupplyAndDemandStartDateYear(e.year) }}
                       placeholder="Select year"
                       searchPlaceholder="Search Options"
                       includeLabel={false}
-                      defaultValue="2000"
+                      defaultValue={selectedSupplyAndDemandStartDateYear ?? "2000"}
                     />
                   </div>
                   <div className="mb-4 w-full">
@@ -2510,11 +2540,11 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                       label="Week"
                       variable="year"
                       colour="bg-deep_blue"
-                      onSelectionChange={(e) => setSelectedSupplyAndDemandEndDate(e.value)}
+                      onSelectionChange={(e) => { setSelectedSupplyAndDemandEndDate(e.value); setSelectedSupplyAndDemandEndDateYear(e.year) }}
                       placeholder="Select year"
                       searchPlaceholder="Search Options"
                       includeLabel={false}
-                      defaultValue="2023"
+                      defaultValue={selectedSupplyAndDemandEndDateYear ?? "2023"}
                     />
                   </div>
                   <div className="mb-4 w-full">
@@ -2559,7 +2589,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                         placeholder="Select specific season"
                         searchPlaceholder="Search Options"
                         includeLabel={false}
-                        defaultValue="22/23"
+                        defaultValue={selectedSupplyAndDemandSeason ?? "22/23"}
                       />
                     </div>
                     <div className="mb-4 w-full">
@@ -2615,7 +2645,7 @@ Here is the difference between USDA and Macrovesta.
                   placeholder="Select Contract"
                   searchPlaceholder="Search Contracts"
                   includeLabel={false}
-                  defaultValue={contract1}
+                  defaultValue={contract1 ?? "Z21"}
                 />
 
               </div>
@@ -2629,7 +2659,7 @@ Here is the difference between USDA and Macrovesta.
                   placeholder="Select Season"
                   searchPlaceholder="Search Contracts"
                   includeLabel={false}
-                  defaultValue={contract2}
+                  defaultValue={contract2 ?? "Z22"}
                 />
 
               </div>
@@ -2643,7 +2673,7 @@ Here is the difference between USDA and Macrovesta.
                   placeholder="Select Contract"
                   searchPlaceholder="Search Contracts"
                   includeLabel={false}
-                  defaultValue={contract3}
+                  defaultValue={contract3 ?? "Z23"}
                 />
               </div>
             </div>
@@ -2682,7 +2712,7 @@ Here is the difference between USDA and Macrovesta.
                   placeholder="Select Season"
                   searchPlaceholder="Search Seasons"
                   includeLabel={false}
-                  defaultValue={season1}
+                  defaultValue={season1 ?? "2020/2021"}
                 />
                 {/* <div className="text-center mt-4 mb-2 font-semibold">Season 1</div> */}
                 <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
@@ -2712,7 +2742,7 @@ Here is the difference between USDA and Macrovesta.
                   placeholder="Select Season"
                   searchPlaceholder="Search Seasons"
                   includeLabel={false}
-                  defaultValue={season2}
+                  defaultValue={season2 ?? "2021/2022"}
                 />
                 {/* <div className="text-center mt-4 mb-2 font-semibold">Season 2</div> */}
                 <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
@@ -2742,7 +2772,7 @@ Here is the difference between USDA and Macrovesta.
                   placeholder="Select Season"
                   searchPlaceholder="Search Seasons"
                   includeLabel={false}
-                  defaultValue={season3}
+                  defaultValue={season3 ?? "2022/2023"}
                 />
                 {/* <div className="text-center mt-4 mb-2 font-semibold">Season 3</div> */}
                 <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
@@ -2773,6 +2803,8 @@ Here is the difference between USDA and Macrovesta.
         break;
     }
   }
+
+  const MemoizedTemplateModule = React.memo(TemplateModule);
 
   return (
     <>
@@ -2811,7 +2843,8 @@ Here is the difference between USDA and Macrovesta.
             </div>
 
             <div className="z-50 grid grid-cols-2 gap-8 mx-8">
-              {JSON.parse(JSON.parse(templateData))?.templateArray?.map((templateModule, moduleIndex) => (
+              {templateArray?.map((templateModule, moduleIndex) => (
+                // <MemoizedTemplateModule module={templateModule} moduleIndex={moduleIndex} />
                 <TemplateModule module={templateModule} moduleIndex={moduleIndex} />
               ))}
               {/* <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
