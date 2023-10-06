@@ -567,7 +567,7 @@ model Report_Templates {
 model Dashboard_Templates {
     record_id  String   @id @default(cuid())
     data       String   @db.Text
-    company    String
+    company    String   @unique
     created_at DateTime @default(now())
 }
 

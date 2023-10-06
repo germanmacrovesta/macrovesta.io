@@ -10,5 +10,11 @@ export const TabMenuArray = [
         page: "/overview",
         imgB: "/Tracker_B_SQ.png",
         imgW: "/Tracker_W_SQ.png"
+    },
+    {
+        title: "My Dashboard",
+        page: "/my-dashboard",
+        imgB: "/MyDashboard_B_SQ.png",
+        imgW: "/MyDashboard_W_SQ.png"
     }
 ]

@@ -212,7 +212,7 @@ const Sidebar = (props) => {
                             </div>
                         </Link>
                     </div>
-                    <div className="flex flex-col gap-3 justify-center text-white -mx-4 px-4 pb-4">
+                    <div className="flex flex-col gap-3 justify-center text-white -ml-2  pb-4">
 
                         <div className={`${(urlPath == "/" || urlPath == "/overview") ? 'bg-[#ffffff20]' : ''} rounded-full px-2 py-1 relative flex items-center w-fit`}>
                             {/* <img height="20px" className="h-[20px] z-20" src={"Dash_W_SQ.png"} /> */}
@@ -250,6 +250,13 @@ const Sidebar = (props) => {
                                 </div>
                             </>
                         )}
+                        <div className={`${(urlPath == "/system-preferences") ? 'bg-[#ffffff20]' : ''} rounded-full px-2 py-1 relative flex items-center w-fit`}>
+                            {/* <img height="20px" className="h-[20px] z-20" src={"Dash_W_SQ.png"} /> */}
+                            {/* <img className={'absolute h-[35px] z-10 -left-[7px]'} src="/Active_Underlay.png" /> */}
+                            <Link href={{ pathname: `/system-preferences` }} >
+                                <p className={'pl-2 rounded-lg pr-2'}  >{"Preferences"}</p>
+                            </Link>
+                        </div>
                         {/* <div className={`${urlPath == "/suggestions" ? 'bg-[#ffffff20]' : ''} rounded-full px-2 py-1 relative flex items-center w-fit`}>
                             <img height="20px" className="h-[20px] z-20" src={"Dash_W_SQ.png"} />
                             <img className={'absolute h-[35px] z-10 -left-[7px]'} src="/Active_Underlay.png" />

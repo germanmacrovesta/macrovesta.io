@@ -33,6 +33,7 @@ import { WeglotLanguageSwitcher } from "~/components/weglotLanguageSwitcher";
 import useWeglotLang from '../components/useWeglotLang';
 import InfoButton from '../components/infoButton';
 import DragDrop from '../components/dragDrop'
+import DashboardDragDrop from '../components/dashboardDragDrop'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: "AAPL",
@@ -126,7 +127,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ templatesData }) => {
+const Home: NextPage = ({ templateData }) => {
   const router = useRouter();
   const url = router.pathname;
 
@@ -316,7 +317,7 @@ const Home: NextPage = ({ templatesData }) => {
             domain="macrovesta.ai"
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
           <div className=" bg-slate-200">
-            <DragDrop templatesData={templatesData} />
+            <DashboardDragDrop templateData={JSON.parse(templateData)} />
           </div>
 
         </div>
@@ -337,14 +338,22 @@ export const getServerSideProps = async (context: any) => {
     }
   }
 
-  const template = await prisma?.report_Templates.findMany({})
+  // const template = await prisma?.report_Templates.findMany({})
 
-  const templatesData = JSON.stringify(template)
+  // const templatesData = JSON.stringify(template)
+
+  const template = await prisma?.dashboard_Templates.findFirst({
+    where: {
+      company: session?.company
+    }
+  })
+
+  const templateData = JSON.stringify(template?.data)
 
 
   // console.log(monthlyIndexData)
   return {
-    props: { templatesData },
+    props: { templateData },
   };
 };
 
