@@ -1,88 +1,84 @@
-import { type NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
-import { prisma } from '../server/db';
-import Sidebar from '../components/sidebar';
-import Breadcrumbs from '../components/breadcrumbs';
-import TabMenu from '../components/tabmenu';
-import { useRouter } from "next/router";
-import { TabMenuArray } from '../components/tabMenuArray';
-import React from "react";
-import SingleSelectDropdown from '../components/singleSelectDropdown';
-import { TVChartContainer } from "../components/TVChartContainer";
-import {
+import { type NextPage } from 'next'
+import Head from 'next/head'
+import Link from 'next/link'
+import { prisma } from '../server/db'
+import Sidebar from '../components/sidebar'
+import Breadcrumbs from '../components/breadcrumbs'
+import TabMenu from '../components/tabmenu'
+import { useRouter } from 'next/router'
+import { TabMenuArray } from '../components/tabMenuArray'
+import React from 'react'
+import SingleSelectDropdown from '../components/singleSelectDropdown'
+import { TVChartContainer } from '../components/TVChartContainer'
+import type {
   ChartingLibraryWidgetOptions,
-  ResolutionString,
-} from "../../public/static/charting_library/charting_library";
-import GroupedBarChart from '../components/groupedBarChart';
-import LineGraph from '../components/lineGraph';
-import LineGraphNotTime from '../components/lineGraphNotTime';
-import FormSubmit from '../components/formSubmit';
-import ReactMarkdown from 'react-markdown';
-import { render } from "react-dom";
-import BullishBearishDonut from '../components/bullishBearishDonut';
-import { useSession, getSession } from "next-auth/react";
-import Comments from '../components/comments';
-import IndexDial from '../components/indexDial';
-import SemiCircleDial from '../components/semiCircleDial';
-import MultipleSelectDropdown from '../components/multipleSelectDropdown';
-import DateField from '../components/dateField';
-import { useDateFormatter, useLocale } from 'react-aria';
-import { parseDate } from '@internationalized/date';
-import { WeglotLanguageSwitcher } from "~/components/weglotLanguageSwitcher";
-import useWeglotLang from '../components/useWeglotLang';
-import InfoButton from '../components/infoButton';
+  ResolutionString
+} from '../../public/static/charting_library/charting_library'
+import GroupedBarChart from '../components/groupedBarChart'
+import LineGraph from '../components/lineGraph'
+import LineGraphNotTime from '../components/lineGraphNotTime'
+import FormSubmit from '../components/formSubmit'
+import ReactMarkdown from 'react-markdown'
+import { render } from 'react-dom'
+import BullishBearishDonut from '../components/bullishBearishDonut'
+import { useSession, getSession } from 'next-auth/react'
+import Comments from '../components/comments'
+import IndexDial from '../components/indexDial'
+import SemiCircleDial from '../components/semiCircleDial'
+import MultipleSelectDropdown from '../components/multipleSelectDropdown'
+import DateField from '../components/dateField'
+import { useDateFormatter, useLocale } from 'react-aria'
+import { parseDate } from '@internationalized/date'
+import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
+import useWeglotLang from '../components/useWeglotLang'
+import InfoButton from '../components/infoButton'
 import DragDrop from '../components/dragDrop'
 import DashboardDragDrop from '../components/dashboardDragDrop'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
-  symbol: "AAPL",
-  interval: "1D" as ResolutionString,
-  library_path: "/static/charting_library/",
-  locale: "en",
-  charts_storage_url: "https://saveload.tradingview.com",
-  charts_storage_api_version: "1.1",
-  client_id: "tradingview.com",
-  user_id: "public_user_id",
+  symbol: 'AAPL',
+  interval: '1D' as ResolutionString,
+  library_path: '/static/charting_library/',
+  locale: 'en',
+  charts_storage_url: 'https://saveload.tradingview.com',
+  charts_storage_api_version: '1.1',
+  client_id: 'tradingview.com',
+  user_id: 'public_user_id',
   fullscreen: false,
-  autosize: true,
-};
+  autosize: true
+}
 
-function getCurrentMonth() {
+function getCurrentMonth () {
   // Create a new Date object
-  let date = new Date();
+  const date = new Date()
 
   // Create an array of month names
-  let monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December']
 
   // Get the month number from the Date object and use it to get the month name
-  let monthName = monthNames[date.getMonth()];
+  const monthName = monthNames[date.getMonth()]
 
-  return monthName;
+  return monthName
 }
 
 const selectAppropriateImage = (inv, value) => {
-  let imagesrc = "";
-  if (inv == "Y") {
+  let imagesrc = ''
+  if (inv == 'Y') {
     if (value < 15) {
-
-      imagesrc = "/Index_Neutral.jpg"
-
+      imagesrc = '/Index_Neutral.jpg'
     } else if (value < 50) {
-      imagesrc = "/Index_Inverse_Likely.jpg"
+      imagesrc = '/Index_Inverse_Likely.jpg'
     } else {
-      imagesrc = "/Index_Inverse_High.jpg"
+      imagesrc = '/Index_Inverse_High.jpg'
     }
   } else {
     if (value < 15) {
-
-      imagesrc = "/Index_Neutral.jpg"
-
+      imagesrc = '/Index_Neutral.jpg'
     } else if (value < 50) {
-      imagesrc = "/Index_Non_Likely.jpg"
+      imagesrc = '/Index_Non_Likely.jpg'
     } else {
-      imagesrc = "/Index_Non_High.jpg"
+      imagesrc = '/Index_Non_High.jpg'
     }
   }
   return (
@@ -91,31 +87,30 @@ const selectAppropriateImage = (inv, value) => {
 }
 
 const parseDateString = (dateString) => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear()).slice(-2);
+  const date = new Date(dateString)
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = String(date.getFullYear()).slice(-2)
 
   if (isNaN(date)) {
     return undefined
   } else {
-    return `${day}-${month}-${year}`;
+    return `${day}-${month}-${year}`
   }
+}
 
-};
-
-function getWeekNumber(d) {
+function getWeekNumber (d) {
   // Copy date so don't modify original
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
   // Set to nearest Thursday: current date + 4 - current day number
   // Make Sunday's day number 7
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
   // Get first day of year
-  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
   // Calculate full weeks to nearest Thursday
-  var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
   // Return array of year and week number
-  return [d.getUTCFullYear(), weekNo];
+  return [d.getUTCFullYear(), weekNo]
 }
 
 const renderers = {
@@ -128,19 +123,19 @@ const renderers = {
 }
 
 const Home: NextPage = ({ templateData }) => {
-  const router = useRouter();
-  const url = router.pathname;
+  const router = useRouter()
+  const url = router.pathname
 
-  const currentLang = useWeglotLang();
+  const currentLang = useWeglotLang()
 
-  const { data: session } = useSession();
-  console.log("session", session)
-  console.log("session.submittedSurvey", session?.submittedSurvey)
+  const { data: session } = useSession()
+  console.log('session', session)
+  console.log('session.submittedSurvey', session?.submittedSurvey)
 
   const todaysDate = new Date()
 
-  const baseUrlArray = url.split('/');
-  let urlArray: any = [];
+  const baseUrlArray = url.split('/')
+  const urlArray: any = []
   baseUrlArray.forEach((urlCrumb) => {
     if (urlCrumb.startsWith('[')) {
       urlArray.push(router.query[`${urlCrumb.slice(1, -1)}`])
@@ -148,75 +143,73 @@ const Home: NextPage = ({ templateData }) => {
       urlArray.push(urlCrumb)
     }
   })
-  let root = '';
-  let urlPath = '';
+  let root = ''
+  let urlPath = ''
   const splitUrl = (urlcrumbs: any, number: any) => {
     for (let i = 1; i < urlcrumbs.length; i++) {
       if (i < number) {
-        root += '/';
-        root += urlcrumbs[i];
+        root += '/'
+        root += urlcrumbs[i]
       } else {
-        urlPath += '/';
-        urlPath += urlcrumbs[i];
+        urlPath += '/'
+        urlPath += urlcrumbs[i]
       }
     }
   }
   splitUrl(urlArray, 1)
 
-
-
   React.useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.weglot.com/weglot.min.js';
-    script.async = true;
+    const script = document.createElement('script')
+    script.src = 'https://cdn.weglot.com/weglot.min.js'
+    script.async = true
 
     script.onload = () => {
       Weglot.initialize({
-        api_key: 'wg_60b49229f516dee77edb3109e6a46c379',
-      });
-    };
+        api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
+      })
+    }
 
-    document.body.appendChild(script);
+    document.body.appendChild(script)
 
     return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+      document.body.removeChild(script)
+    }
+  }, [])
 
   const [openSuggestionForm, setOpenSuggestionForm] = React.useState(false)
 
-  const [selectedSuggestionType, setSelectedSuggestionType] = React.useState("")
+  const [selectedSuggestionType, setSelectedSuggestionType] = React.useState('')
 
-  const [suggestionError_Message, setSuggestionError_Message] = React.useState("");
-  const [suggestionSubmitted, setSuggestionSubmitted] = React.useState(false);
-  const [suggestionSubmitting, setSuggestionSubmitting] = React.useState(false);
-  const [suggestionWarning_Message, setSuggestionWarning_Message] = React.useState("");
-  const [suggestionWarningSubmit, setSuggestionWarningSubmit] = React.useState(false);
+  const [suggestionError_Message, setSuggestionError_Message] = React.useState('')
+  const [suggestionSubmitted, setSuggestionSubmitted] = React.useState(false)
+  const [suggestionSubmitting, setSuggestionSubmitting] = React.useState(false)
+  const [suggestionWarning_Message, setSuggestionWarning_Message] = React.useState('')
+  const [suggestionWarningSubmit, setSuggestionWarningSubmit] = React.useState(false)
 
   const handleSuggestionFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setSuggestionSubmitting(true);
+    e.preventDefault()
+    setSuggestionSubmitting(true)
 
-    let suggestion_type = "";
+    let suggestion_type = ''
     // let title = e.target["title"].value;
-    let text = e.target["text"].value;
+    const text = e.target.text.value
     // let image = e.target["image"].value;
-    let errorMessage = "";
-    let warningMessage = "";
+    let errorMessage = ''
+    const warningMessage = ''
 
     // console.log("textarea", text == "")
 
-    if (selectedSuggestionType != null && selectedSuggestionType != "" && selectedSuggestionType != "Select Suggestion Type") {
+    if (selectedSuggestionType != null && selectedSuggestionType != '' && selectedSuggestionType != 'Select Suggestion Type') {
       suggestion_type = selectedSuggestionType
     } else {
-      errorMessage += "Please select a suggestion type. ";
+      errorMessage += 'Please select a suggestion type. '
     }
     // if (title == null || title == "") {
     //   errorMessage += "Please enter a title. ";
     // }
-    if (text == null || text == "") {
-      errorMessage += "Please enter a text. ";
+    if (text == null || text == '') {
+      errorMessage += 'Please enter a text. '
     }
     // if (image == null || image == "") {
     //   warningMessage += "You can add an image as well. If you don't want to just click confirm. ";
@@ -231,58 +224,56 @@ const Home: NextPage = ({ templateData }) => {
     //   }
     // }
 
-    if (errorMessage != "") {
-      setSuggestionError_Message(errorMessage);
-      setSuggestionWarningSubmit(false);
-      setSuggestionSubmitting(false);
+    if (errorMessage != '') {
+      setSuggestionError_Message(errorMessage)
+      setSuggestionWarningSubmit(false)
+      setSuggestionSubmitting(false)
     } else {
-
-      if (suggestionError_Message != "") {
-        setSuggestionError_Message("")
+      if (suggestionError_Message != '') {
+        setSuggestionError_Message('')
       }
 
-      if (suggestionWarningSubmit == false && warningMessage != "") {
-        setSuggestionWarningSubmit(true);
-        setSuggestionSubmitting(false);
+      if (suggestionWarningSubmit == false && warningMessage != '') {
+        setSuggestionWarningSubmit(true)
+        setSuggestionSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
           text,
           user: session?.user?.name,
           suggestion_type
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-suggestion";
+        const endpoint = '/api/add-suggestion'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setSuggestionSubmitted(true); setSuggestionSubmitting(false) });
+        const result = await response.json().then(() => { setSuggestionSubmitted(true); setSuggestionSubmitting(false) })
         // setSnapshotSubmitted(true); setSnapshotSubmitting(false)
       }
     }
-
-  };
+  }
 
   const [marketplacePopup, setMarketplacePopup] = React.useState(null)
 
@@ -310,7 +301,7 @@ const Home: NextPage = ({ templateData }) => {
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
           <header className="z-50 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={"Preferences"} urlPath={urlPath} user={session?.user.name} />
+            <Breadcrumbs title={'Preferences'} urlPath={urlPath} user={session?.user.name} />
             {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
           </header>
           {/* <WeglotLanguageSwitcher
@@ -323,9 +314,9 @@ const Home: NextPage = ({ templateData }) => {
         </div>
       </main >
     </>
-  );
-};
-//some random shit added by Vic
+  )
+}
+// some random shit added by Vic
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
 
@@ -333,7 +324,7 @@ export const getServerSideProps = async (context: any) => {
     return {
       redirect: {
         permanent: false,
-        destination: `/`,
+        destination: '/'
       }
     }
   }
@@ -350,11 +341,10 @@ export const getServerSideProps = async (context: any) => {
 
   const templateData = JSON.stringify(template?.data)
 
-
   // console.log(monthlyIndexData)
   return {
-    props: { templateData },
-  };
-};
+    props: { templateData }
+  }
+}
 
-export default Home;
+export default Home

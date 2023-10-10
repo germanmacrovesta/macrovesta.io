@@ -53,24 +53,14 @@
 
 // export default App;
 
-
-
-
-
-
-
-
-
-
 // import React from 'react';
-import React, { useState, useRef, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import SingleSelectDropdown from './singleSelectDropdown';
-import DateField from './dateField';
-import { parseDate } from '@internationalized/date';
-import { useDateFormatter, useLocale } from 'react-aria';
-import { useSession } from 'next-auth/react';
-
+import React, { useState, useRef, useEffect } from 'react'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import SingleSelectDropdown from './singleSelectDropdown'
+import DateField from './dateField'
+import { parseDate } from '@internationalized/date'
+import { useDateFormatter, useLocale } from 'react-aria'
+import { useSession } from 'next-auth/react'
 
 const defaultFunction = (e) => {
 
@@ -81,7 +71,7 @@ const CustomSingleSelectDropdown = ({
   variable,
   label,
   colour,
-  defaultValue = "Default Value", // Add the defaultValue prop
+  defaultValue = 'Default Value', // Add the defaultValue prop
   onSelectionChange = defaultFunction,
   placeholder = `Select ${label}`,
   searchPlaceholder = `Search ${label}s`,
@@ -94,70 +84,68 @@ const CustomSingleSelectDropdown = ({
   textColour = 'text-white',
   textCenter = false,
   textPadding = true,
-  widthStyles = "min-w-[300px]",
-  shadow = ""
+  widthStyles = 'min-w-[300px]',
+  shadow = ''
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [searchText, setSearchText] = useState('');
-  const [filteredOptions, setFilteredOptions] = useState(options);
-  const wrapperRef = useRef(null);
-
-
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedOption, setSelectedOption] = useState(null)
+  const [searchText, setSearchText] = useState('')
+  const [filteredOptions, setFilteredOptions] = useState(options)
+  const wrapperRef = useRef(null)
 
   // Set the default value in the component state
   useEffect(() => {
     // console.log("Dropdown", "Running Single Dropdown defaultValue, variable")
-    if ((defaultValue !== undefined) && defaultValue !== "Default Value") {
-      const defaultOption = options.find(option => option[`${variable}`] === defaultValue);
+    if ((defaultValue !== undefined) && defaultValue !== 'Default Value') {
+      const defaultOption = options.find(option => option[`${variable}`] === defaultValue)
       // console.log("defaultOption", defaultOption);
       // console.log("selectedOption", selectedOption)
       if ((defaultOption !== selectedOption) && !(defaultOption === null && selectedOption === null)) {
         // console.log("Running")
         if (defaultOption != undefined) {
-          setSelectedOption(defaultOption);
+          setSelectedOption(defaultOption)
         } else {
-          setSelectedOption(null);
+          setSelectedOption(null)
         }
       }
     } else {
       // setSelectedOption(null);
     }
     // console.log(`${label} defaultValue`, defaultValue)
-  }, [defaultValue, variable]);
+  }, [defaultValue, variable])
 
   useEffect(() => {
     // console.log("Dropdown", "Running Single Dropdown options, searchText")
     setFilteredOptions(
       options.filter((option) =>
-        option[`${variable}`]?.toLowerCase().includes(searchText.toLowerCase()),
-      ),
-    );
-  }, [options, searchText]);
+        option[`${variable}`]?.toLowerCase().includes(searchText.toLowerCase())
+      )
+    )
+  }, [options, searchText])
 
   useEffect(() => {
     // console.log("Dropdown", "Running Single Dropdown wrapperRef")
-    function handleClickOutside(event) {
+    function handleClickOutside (event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setIsOpen(false);
-        setSearchText('');
+        setIsOpen(false)
+        setSearchText('')
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [wrapperRef]);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [wrapperRef])
 
   const handleOptionClick = (option) => {
-    setSelectedOption(option);
-    setIsOpen(false);
-  };
+    setSelectedOption(option)
+    setIsOpen(false)
+  }
 
   const handleSearchChange = (event) => {
-    setSearchText(event.target.value);
-  };
+    setSearchText(event.target.value)
+  }
 
   // useEffect(() => {
   //     if (selectedOption) {
@@ -165,37 +153,37 @@ const CustomSingleSelectDropdown = ({
   //     }
   // }, [selectedOption, onSelectionChange]);
 
-  const prevSelectedOptionRef = useRef();
+  const prevSelectedOptionRef = useRef()
 
   useEffect(() => {
     // console.log("Dropdown", "Running Single Dropdown selectedOption, onSelectionChange")
     if (selectedOption && prevSelectedOptionRef.current !== selectedOption) {
-      onSelectionChange(selectedOption);
+      onSelectionChange(selectedOption)
     }
-    prevSelectedOptionRef.current = selectedOption;
-  }, [selectedOption, onSelectionChange]);
+    prevSelectedOptionRef.current = selectedOption
+  }, [selectedOption, onSelectionChange])
 
-  const prevOptionsRef = useRef();
+  const prevOptionsRef = useRef()
 
   useEffect(() => {
     // console.log("Dropdown", "Running Single Dropdown selectedOption, onSelectionChange")
-    if ((defaultValue != null) && defaultValue != "Default Value") {
+    if ((defaultValue != null) && defaultValue != 'Default Value') {
       // console.log(`${label} defaultValue is still ${defaultValue} even after checking it isn't null`)
       if (options && prevOptionsRef.current !== options) {
-        const defaultOption = options.find(option => option[`${variable}`] === defaultValue);
+        const defaultOption = options.find(option => option[`${variable}`] === defaultValue)
         if (defaultOption == undefined) {
           setSelectedOption(null)
         }
       }
     }
-    prevOptionsRef.current = selectedOption;
-  }, [options]);
+    prevOptionsRef.current = selectedOption
+  }, [options])
 
   useEffect(() => {
     // console.log("Dropdown", "Running Single Dropdown options")
     if (selectedOption != null) {
-      const optionExists = options.find((option) => option[`${variable}`] == selectedOption[`${variable}`]) !== undefined;
-      const defaultOption = options.find(option => option[`${variable}`] === defaultValue);
+      const optionExists = options.find((option) => option[`${variable}`] == selectedOption[`${variable}`]) !== undefined
+      const defaultOption = options.find(option => option[`${variable}`] === defaultValue)
 
       // if (!optionExists) {
       //     setSelectedOption(null);
@@ -203,7 +191,7 @@ const CustomSingleSelectDropdown = ({
       //     setSelectedOption(defaultOption);
       // }
     }
-  }, [options]);
+  }, [options])
 
   // useEffect(() => {
   //     if (selectedOption != null) {
@@ -219,9 +207,9 @@ const CustomSingleSelectDropdown = ({
   // }, [options, selectedOption])
 
   const deleteTemplate = async (option) => {
-    console.log("option", option)
-    let newDeleting = deleting;
-    let newDeleted = deleted;
+    console.log('option', option)
+    const newDeleting = deleting
+    const newDeleted = deleted
     newDeleting.push(option?.record_id)
     newDeleted.push(option?.record_id)
     setDeleting((prevDeleting) => [...prevDeleting, option?.record_id])
@@ -230,7 +218,7 @@ const CustomSingleSelectDropdown = ({
       record_id: option.record_id
     }
 
-    console.log(data);
+    console.log(data)
 
     // Send the data to the server in JSON format.
     const JSONdata = JSON.stringify(data)
@@ -244,10 +232,10 @@ const CustomSingleSelectDropdown = ({
       method: 'POST',
       // Tell the server we're sending JSON.
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       // Body of the request is the JSON data we created above.
-      body: JSONdata,
+      body: JSONdata
     }
 
     // Send the form data to our forms API on Vercel and get a response.
@@ -268,16 +256,16 @@ const CustomSingleSelectDropdown = ({
       {addButton && includeLabel && router != undefined && urlPath != undefined && (
         <button type='button' onClick={() => router.push(urlPath)} className=" bg-white px-4 my-3 py-2 text-black rounded-lg text-xs mr-4">{addLabel}</button>
       )}
-      <div className={`flex my-3 justify-between rounded-lg ${shadow} ${colour ? colour : "shadow-[inset_0_0px_8px_0px_#f6f6f6]"} ${includeLabel ? '' : 'flex-col'}`}>
+      <div className={`flex my-3 justify-between rounded-lg ${shadow} ${colour || 'shadow-[inset_0_0px_8px_0px_#f6f6f6]'} ${includeLabel ? '' : 'flex-col'}`}>
         {includeLabel && (
           <div className='px-8 py-2'>
             <label htmlFor={label}>{label}</label>
           </div>
         )}
-        <div className={`relative grid place-content-center ${widthStyles} rounded-lg ${colour ? colour : "shadow-[inset_0_0px_8px_0px_#f6f6f6]"} ${includeLabel ? '' : shadow != "" ? '' : 'shadow-[inset_0_0px_4px_0px_#B2B2B2]'}`}>
+        <div className={`relative grid place-content-center ${widthStyles} rounded-lg ${colour || 'shadow-[inset_0_0px_8px_0px_#f6f6f6]'} ${includeLabel ? '' : shadow != '' ? '' : 'shadow-[inset_0_0px_4px_0px_#B2B2B2]'}`}>
           <button type='button'
             onClick={() => setIsOpen(!isOpen)}
-            className={`capitalize flex items-center ${widthStyles} ${includeLabel ? '' : `bg-transparent h-full ${textCenter ? "text-center" : "text-left"} ${textPadding ? "px-4 py-4" : "px-2 py-2"} appearance-none`}`}
+            className={`capitalize flex items-center ${widthStyles} ${includeLabel ? '' : `bg-transparent h-full ${textCenter ? 'text-center' : 'text-left'} ${textPadding ? 'px-4 py-4' : 'px-2 py-2'} appearance-none`}`}
           >
             <div className='grow'>
               {selectedOption ? selectedOption[`${variable}`] : placeholder}
@@ -286,10 +274,10 @@ const CustomSingleSelectDropdown = ({
               <img className={`w-[15px] duration-300 ${isOpen ? "-scale-y-100" : ""}`} src="/ArrowDown_B_SQ.png" />
             </div> */}
             <div className='group-hover:hidden'>
-              <img className={`w-[15px] duration-300 ${isOpen ? "-scale-y-100" : ""}`} src="/ArrowDown_B_SQ.png" />
+              <img className={`w-[15px] duration-300 ${isOpen ? '-scale-y-100' : ''}`} src="/ArrowDown_B_SQ.png" />
             </div>
             <div className='hidden group-hover:block'>
-              <img className={`w-[15px] duration-300 ${isOpen ? "-scale-y-100" : ""}`} src="/ArrowDown_W_SQ.png" />
+              <img className={`w-[15px] duration-300 ${isOpen ? '-scale-y-100' : ''}`} src="/ArrowDown_W_SQ.png" />
             </div>
           </button>
           {isOpen && (
@@ -303,9 +291,9 @@ const CustomSingleSelectDropdown = ({
               />
               <ul className="max-h-60 overflow-y-auto">
                 <li
-                  key={"placeholder"}
+                  key={'placeholder'}
                   onClick={() => handleOptionClick({ [variable]: `${placeholder}` })}
-                  className={`text-center capitalize px-3 cursor-pointer`}
+                  className={'text-center capitalize px-3 cursor-pointer'}
                 >
                   {placeholder}
                 </li>
@@ -346,14 +334,13 @@ const CustomSingleSelectDropdown = ({
         </div>
       </div>
     </div>
-  );
-};
-
+  )
+}
 
 const DragDrop = (props) => {
-  const { data: session } = useSession();
+  const { data: session } = useSession()
 
-  const snapPoints = [{ x: 50, y: 100 }, { x: 250, y: 200 } /* Define more snap points as needed */];
+  const snapPoints = [{ x: 50, y: 100 }, { x: 250, y: 200 }]
 
   const initialLibraryItems = [
     // { library: ["Products", "All"], subLibrary: ["All", "Full"], id: 'item1', title: 'Products Text', imageUrl: '/full_width_products_text.png', width: 4, height: 95, printHeight: 40 },
@@ -363,20 +350,20 @@ const DragDrop = (props) => {
     // { library: ["All"], subLibrary: ["All", "Half"], id: 'item5', title: 'Recycling Recovery Donut', imageUrl: '/half_width_recycling_recovery_donut.png', width: 1, height: 195, printHeight: 95 },
     // { library: ["All"], subLibrary: ["All", "Half"], id: 'item6', title: 'Streams Donut', imageUrl: '/half_width_streams_donut.png', width: 1, height: 195, printHeight: 95 },
     // { library: ["All"], subLibrary: ["All", "Full"], id: 'item7', title: 'Table', imageUrl: '/full_width_table.png', width: 2, height: undefined, printHeight: undefined, length: 46, start: 0, end: undefined, type: "table" },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item1', title: 'Macrovesta Index', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item2', title: 'Conclusion Of Market Report', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item3', title: 'Cotton Contracts', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item4', title: 'Domestic Prices', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item5', title: 'Market Sentiment', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item6', title: 'News Snapshot', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item7', title: 'Basis Cost', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item8', title: 'US Export Sales', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item9', title: 'In Country News', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item10', title: 'Cotton On Call', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item11', title: 'Commitment Of Traders', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item12', title: 'Supply And Demand', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item13', title: 'Future Contracts', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
-    { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item14', title: 'V4', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item1', title: 'Macrovesta Index', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item2', title: 'Conclusion Of Market Report', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item3', title: 'Cotton Contracts', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item4', title: 'Domestic Prices', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item5', title: 'Market Sentiment', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item6', title: 'News Snapshot', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item7', title: 'Basis Cost', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item8', title: 'US Export Sales', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item9', title: 'In Country News', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item10', title: 'Cotton On Call', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item11', title: 'Commitment Of Traders', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item12', title: 'Supply And Demand', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item13', title: 'Future Contracts', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 },
+    { library: ['Products', 'Full'], subLibrary: ['All Sizes', 'Full'], id: 'item14', title: 'V4', imageUrl: '/Report_Modules_Products-18.jpg', width: 4, height: 33, printHeight: 50 }
     // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item2', title: 'Delivery Text', imageUrl: '/Report_Modules_Products-21.jpg', width: 4, height: 33, printHeight: 50, timePeriod: { start: undefined, end: undefined } },
     // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Full"], id: 'item3', title: 'Stock Check Text', imageUrl: '/Report_Modules_Products-22.jpg', width: 4, height: 33, printHeight: 50 },
     // { library: ["Products", "Full"], subLibrary: ["All Sizes", "Quarter"], id: 'item14', title: 'Products Used', imageUrl: '/Report_Modules_Products-08.jpg', width: 2, height: 33, printHeight: 50 },
@@ -400,182 +387,182 @@ const DragDrop = (props) => {
     // { library: ["Streams", "Full"], subLibrary: ["All Sizes", "Half"], id: 'item22', title: 'Stream Capture Rate', imageUrl: '/Report_Modules_Streams-30.jpg', width: 4, height: 66, printHeight: 100 },
 
     // Add more draggable items
-  ];
+  ]
   const initialTemplateItems = [
     // Add more draggable items
-  ];
+  ]
   const [libraryItems, setLibraryItems] = React.useState(initialLibraryItems)
   const [templateItems, setTemplateItems] = React.useState(initialTemplateItems)
 
-  const [selectedLibrary, setSelectedLibrary] = React.useState("Full")
-  const [selectedSubLibrary, setSelectedSubLibrary] = React.useState("All Sizes")
+  const [selectedLibrary, setSelectedLibrary] = React.useState('Full')
+  const [selectedSubLibrary, setSelectedSubLibrary] = React.useState('All Sizes')
 
-  const [state, setState] = React.useState([initialLibraryItems, initialTemplateItems]);
+  const [state, setState] = React.useState([initialLibraryItems, initialTemplateItems])
   const [startEndPageIndices, setStartEndPageIndices] = React.useState([{ start: 0, end: undefined }])
 
   const reorderSame = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
+    const result = Array.from(list)
+    const [removed] = result.splice(startIndex, 1)
+    result.splice(endIndex, 0, removed)
 
-    return result;
-  };
+    return result
+  }
 
   const reorderDifferent = (oldList, newList, startIndex, endIndex) => {
-    const oldArray = Array.from(oldList);
-    const newArray = Array.from(newList);
-    const [removed] = oldArray.splice(startIndex, 1);
-    newArray.splice(endIndex, 0, removed);
+    const oldArray = Array.from(oldList)
+    const newArray = Array.from(newList)
+    const [removed] = oldArray.splice(startIndex, 1)
+    newArray.splice(endIndex, 0, removed)
 
-    return [oldArray, newArray];
-  };
+    return [oldArray, newArray]
+  }
 
   const handleDragEnd = (result) => {
     // Handle drag end as needed
-    const { destination, source, draggableId } = result;
-    console.log("destination", destination)
-    console.log("source", source)
+    const { destination, source, draggableId } = result
+    console.log('destination', destination)
+    console.log('source', source)
     // if (source?.droppableId == destination?.droppableId) return;
-    if (source?.index == destination?.index && source?.droppableId == destination?.droppableId) return;
+    if (source?.index == destination?.index && source?.droppableId == destination?.droppableId) return
     if (source?.droppableId == destination?.droppableId) {
-      if (destination?.droppableId == "library-row") {
+      if (destination?.droppableId == 'library-row') {
         const items = reorderSame(libraryItems, source?.index, destination?.index)
-        console.log("items", items)
+        console.log('items', items)
         setLibraryItems(items)
       }
-      if (destination?.droppableId == "template-row") {
+      if (destination?.droppableId == 'template-row') {
         const items = reorderSame(templateItems, source?.index, destination?.index)
-        console.log("items", items)
+        console.log('items', items)
         setTemplateItems(items)
       }
     } else {
-      if (destination?.droppableId == "library-row") {
+      if (destination?.droppableId == 'library-row') {
         const items = reorderSame(templateItems, libraryItems, source?.index, destination?.index)
-        console.log("items", items)
+        console.log('items', items)
         setTemplateItems(items[0])
         setLibraryItems(items[1])
       }
-      if (destination?.droppableId == "template-row") {
+      if (destination?.droppableId == 'template-row') {
         const items = reorderSame(libraryItems, templateItems, source?.index, destination?.index)
-        console.log("items", items)
+        console.log('items', items)
         setLibraryItems(items[0])
         setTemplateItems(items[1])
       }
     }
-  };
+  }
 
   const reorder = (list, startIndex, endIndex) => {
-    console.log("list", list)
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
+    console.log('list', list)
+    const result = Array.from(list)
+    const [removed] = result.splice(startIndex, 1)
+    result.splice(endIndex, 0, removed)
 
-    return result;
-  };
+    return result
+  }
 
   const newReorder = (templateArray, startIndex, endIndex) => {
-    const result = Array.from(templateArray);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
+    const result = Array.from(templateArray)
+    const [removed] = result.splice(startIndex, 1)
+    result.splice(endIndex, 0, removed)
 
-    return result;
-  };
+    return result
+  }
 
   /**
    * Moves an item from one list to another list.
    */
   const move = (source, destination, droppableSource, droppableDestination) => {
     if (source != undefined && destination != undefined) {
-      const sourceClone = Array.from(source);
-      const destClone = Array.from(destination);
-      const [removed] = sourceClone.splice(droppableSource.index, 1);
+      const sourceClone = Array.from(source)
+      const destClone = Array.from(destination)
+      const [removed] = sourceClone.splice(droppableSource.index, 1)
 
-      destClone.splice(droppableDestination.index, 0, removed);
+      destClone.splice(droppableDestination.index, 0, removed)
 
-      const result = {};
-      result[droppableSource.droppableId] = sourceClone;
-      result[droppableDestination.droppableId] = destClone;
+      const result = {}
+      result[droppableSource.droppableId] = sourceClone
+      result[droppableDestination.droppableId] = destClone
 
-      return result;
+      return result
     }
-  };
+  }
 
   const deleteMove = (templateArray, droppableSource) => {
     if (templateArray != undefined) {
-      const clone = Array.from(templateArray);
-      clone.splice(droppableSource.index, 1);
+      const clone = Array.from(templateArray)
+      clone.splice(droppableSource.index, 1)
 
-      const result = clone;
+      const result = clone
 
-      return result;
+      return result
     }
-  };
+  }
 
   const addMove = (sourceArray, destinationArray, droppableSource, droppableDestination) => {
     if (sourceArray != undefined && destinationArray != undefined) {
-      const sourceClone = Array.from(sourceArray);
-      const destinationClone = Array.from(destinationArray);
-      const [removed] = sourceClone.splice(droppableSource.index, 1);
+      const sourceClone = Array.from(sourceArray)
+      const destinationClone = Array.from(destinationArray)
+      const [removed] = sourceClone.splice(droppableSource.index, 1)
 
       // if (removed.type == "table") {
 
       // }
 
-      destinationClone.splice(droppableDestination.index, 0, removed);
+      destinationClone.splice(droppableDestination.index, 0, removed)
 
-      const result = [sourceClone, destinationClone];
+      const result = [sourceClone, destinationClone]
 
-      return result;
+      return result
     }
-  };
+  }
 
   const newMove = (templateArray, droppableSource, droppableDestination) => {
     if (templateArray != undefined) {
-      const clone = Array.from(templateArray);
-      const [removed] = clone.splice(droppableSource.index, 1);
+      const clone = Array.from(templateArray)
+      const [removed] = clone.splice(droppableSource.index, 1)
 
-      clone.splice(droppableDestination.index, 0, removed);
+      clone.splice(droppableDestination.index, 0, removed)
 
-      const result = clone;
+      const result = clone
 
-      return result;
+      return result
     }
-  };
+  }
 
-  function onDragEnd(result) {
-    const { source, destination } = result;
-    console.log("source", source)
-    console.log("destination", destination)
+  function onDragEnd (result) {
+    const { source, destination } = result
+    console.log('source', source)
+    console.log('destination', destination)
 
     // dropped outside the list
     if (!destination) {
-      return;
+      return
     }
-    const sInd = +source.droppableId;
-    const dInd = +destination.droppableId;
+    const sInd = +source.droppableId
+    const dInd = +destination.droppableId
 
-    let newState = [...state];
+    const newState = [...state]
 
     if (sInd != 0) {
       if (dInd != 0) {
         if (sInd == dInd) { // moving within a template page
-          const items = newReorder(state[1], source.index, destination.index);
+          const items = newReorder(state[1], source.index, destination.index)
           // const newState = [...state];
-          newState[1] = items;
-          setState(newState);
+          newState[1] = items
+          setState(newState)
         } else { // moving between template pages
-          const result = newMove(state[1], source, destination);
-          console.log("result", result)
+          const result = newMove(state[1], source, destination)
+          console.log('result', result)
           // const newState = [...state];
-          newState[1] = result;
+          newState[1] = result
 
-          setState(newState);
+          setState(newState)
         }
       } else { // moving from template to library
         const result = addMove(state[1], state[0], source, destination)
         // const newState = [...state];
-        newState[0] = result[1];
-        newState[1] = result[0];
+        newState[0] = result[1]
+        newState[1] = result[0]
 
         setState(newState)
         // const result = deleteMove(state[1], source)
@@ -588,158 +575,155 @@ const DragDrop = (props) => {
       if (dInd != 0) { // moving from library to template
         const result = addMove(state[0], state[1], source, destination)
         // const newState = [...state];
-        newState[0] = result[0];
-        newState[1] = result[1];
+        newState[0] = result[0]
+        newState[1] = result[1]
 
         setState(newState)
       } else { // moving within library
-        const items = reorder(state[sInd], source.index, destination.index);
+        const items = reorder(state[sInd], source.index, destination.index)
         // const newState = [...state];
-        newState[sInd] = items;
-        setState(newState);
+        newState[sInd] = items
+        setState(newState)
       }
     }
 
-    let i = 0;
-    let currentHeightTotal = 0;
-    let currentPage = 0;
-    let newStartEndPageIndices = [{ start: 0, end: undefined }]
-    let offset = 1;
-    let needNewPage = false;
+    let i = 0
+    let currentHeightTotal = 0
+    let currentPage = 0
+    const newStartEndPageIndices = [{ start: 0, end: undefined }]
+    let offset = 1
+    let needNewPage = false
     while (i < newState[1].length) {
-      needNewPage = false;
-      offset = 1;
+      needNewPage = false
+      offset = 1
       if (newState[1][i]?.printHeight == undefined) {
         if (currentHeightTotal > 400) {
-          currentHeightTotal += 66;
+          currentHeightTotal += 66
           needNewPage = true
           // currentHeightTotal = undefined;
         } else {
           // const remainingHeight = 500 - currentHeightTotal;
           // work out size of first part and save start and end indices for data and also save currentPage so you can use slice to add all extra table pages inbetween current page and next page
-          currentHeightTotal = undefined;
+          currentHeightTotal = undefined
         }
-        i += 1;
+        i += 1
       } else if (newState[1][i]?.width == 4) {
-        currentHeightTotal += newState[1][i]?.printHeight;
-        i += 1;
+        currentHeightTotal += newState[1][i]?.printHeight
+        i += 1
       } else if (newState[1][i]?.width == 2) {
         if (i < newState[1].length - 2) {
           if (newState[1][i + 1]?.width == 2) {
-            currentHeightTotal += newState[1][i]?.printHeight;
-            i += 2;
+            currentHeightTotal += newState[1][i]?.printHeight
+            i += 2
             offset = 2
           } else if (newState[1][i + 1]?.width == 1) {
             if (newState[1][i + 2]?.width == 1) {
-              currentHeightTotal += newState[1][i]?.printHeight;
-              i += 3;
+              currentHeightTotal += newState[1][i]?.printHeight
+              i += 3
               offset = 3
             } else {
-              currentHeightTotal += newState[1][i]?.printHeight;
-              i += 2;
+              currentHeightTotal += newState[1][i]?.printHeight
+              i += 2
               offset = 2
             }
           } else {
-            currentHeightTotal += newState[1][i]?.printHeight;
-            i += 1;
+            currentHeightTotal += newState[1][i]?.printHeight
+            i += 1
             offset = 1
           }
-
         } else if (i < newState[1].length - 1) {
           if (newState[1][i + 1]?.width == 2 || newState[1][i + 1]?.width == 1) {
-            currentHeightTotal += newState[1][i]?.printHeight;
-            i += 2;
+            currentHeightTotal += newState[1][i]?.printHeight
+            i += 2
             offset = 2
           } else {
-            currentHeightTotal += newState[1][i]?.printHeight;
-            i += 1;
+            currentHeightTotal += newState[1][i]?.printHeight
+            i += 1
           }
         } else {
-          currentHeightTotal += newState[1][i]?.printHeight;
-          i += 1;
+          currentHeightTotal += newState[1][i]?.printHeight
+          i += 1
         }
       } else if (newState[1][i]?.width == 1) {
         if (i < newState[1].length - 3) {
           if (newState[1][i + 1]?.width == 2) {
             if (newState[1][i + 2]?.width == 1) {
-              currentHeightTotal += newState[1][i + 1]?.printHeight;
-              i += 3;
+              currentHeightTotal += newState[1][i + 1]?.printHeight
+              i += 3
               offset = 3
             } else {
-              currentHeightTotal += newState[1][i + 1]?.printHeight;
-              i += 2;
+              currentHeightTotal += newState[1][i + 1]?.printHeight
+              i += 2
               offset = 2
             }
           } else if (newState[1][i + 1]?.width == 1) {
             if (newState[1][i + 2]?.width == 2) {
-              currentHeightTotal += newState[1][i + 2]?.printHeight;
-              i += 3;
+              currentHeightTotal += newState[1][i + 2]?.printHeight
+              i += 3
               offset = 3
             } else if (newState[1][i + 2]?.width == 1) {
               if (newState[1][i + 3]?.width == 1) {
-                currentHeightTotal += newState[1][i]?.printHeight;
-                i += 4;
+                currentHeightTotal += newState[1][i]?.printHeight
+                i += 4
                 offset = 4
               } else {
-                currentHeightTotal += newState[1][i]?.printHeight;
-                i += 3;
+                currentHeightTotal += newState[1][i]?.printHeight
+                i += 3
                 offset = 3
               }
-
             } else {
-              currentHeightTotal += newState[1][i]?.printHeight;
-              i += 2;
-              offset = 2;
+              currentHeightTotal += newState[1][i]?.printHeight
+              i += 2
+              offset = 2
             }
           } else {
-            currentHeightTotal += newState[1][i]?.printHeight;
-            i += 1;
+            currentHeightTotal += newState[1][i]?.printHeight
+            i += 1
             offset = 1
           }
         } else if (i < newState[1].length - 2) {
           if (newState[1][i + 1]?.width == 2) {
             if (newState[1][i + 2]?.width == 1) {
-              currentHeightTotal += newState[1][i + 1]?.printHeight;
-              i += 3;
+              currentHeightTotal += newState[1][i + 1]?.printHeight
+              i += 3
               offset = 3
             } else {
-              currentHeightTotal += newState[1][i + 1]?.printHeight;
-              i += 2;
+              currentHeightTotal += newState[1][i + 1]?.printHeight
+              i += 2
               offset = 2
             }
           } else if (newState[1][i + 1]?.width == 1) {
             if (newState[1][i + 2]?.width == 2) {
-              currentHeightTotal += newState[1][i + 2]?.printHeight;
-              i += 3;
+              currentHeightTotal += newState[1][i + 2]?.printHeight
+              i += 3
               offset = 3
             } else if (newState[1][i + 2]?.width == 1) {
-              currentHeightTotal += newState[1][i]?.printHeight;
-              i += 3;
+              currentHeightTotal += newState[1][i]?.printHeight
+              i += 3
               offset = 3
-
             } else {
-              currentHeightTotal += newState[1][i]?.printHeight;
-              i += 2;
-              offset = 2;
+              currentHeightTotal += newState[1][i]?.printHeight
+              i += 2
+              offset = 2
             }
           } else {
-            currentHeightTotal += newState[1][i]?.printHeight;
-            i += 1;
+            currentHeightTotal += newState[1][i]?.printHeight
+            i += 1
             offset = 1
           }
         } else if (i < newState[1].length - 1) {
           if (newState[1][i + 1]?.width == 1) {
-            currentHeightTotal += newState[1][i]?.printHeight;
-            i += 2;
+            currentHeightTotal += newState[1][i]?.printHeight
+            i += 2
             offset = 2
           } else {
-            currentHeightTotal += newState[1][i]?.printHeight;
-            i += 1;
+            currentHeightTotal += newState[1][i]?.printHeight
+            i += 1
             offset = 1
           }
         } else {
-          currentHeightTotal += newState[1][i]?.printHeight;
-          i += 1;
+          currentHeightTotal += newState[1][i]?.printHeight
+          i += 1
           offset = 1
         }
       }
@@ -752,44 +736,44 @@ const DragDrop = (props) => {
       //     currentHeightTotal += newState[1][i]?.printHeight;
       //     i += 1;
       //   }
-      // } 
+      // }
       else {
-        currentHeightTotal += newState[1][i]?.printHeight;
-        i += 1;
+        currentHeightTotal += newState[1][i]?.printHeight
+        i += 1
       }
 
-      console.log("currentHeightTotal", currentHeightTotal)
+      console.log('currentHeightTotal', currentHeightTotal)
 
       if (currentHeightTotal == undefined) {
         if (i < newState[1].length - 1 + offset) {
-          newStartEndPageIndices[currentPage].end = i;
-          currentPage += 1;
-          currentHeightTotal = 0;
+          newStartEndPageIndices[currentPage].end = i
+          currentPage += 1
+          currentHeightTotal = 0
           newStartEndPageIndices[currentPage] = { start: i, end: undefined }
         } else {
-          newStartEndPageIndices[currentPage].end = i;
-          currentPage += 1;
-          currentHeightTotal = 0;
+          newStartEndPageIndices[currentPage].end = i
+          currentPage += 1
+          currentHeightTotal = 0
           // newStartEndPageIndices[currentPage] = { start: i, end: undefined }
         }
       } else if (currentHeightTotal > 213) {
         if (!needNewPage) {
-          newStartEndPageIndices[currentPage].end = i - offset;
-          currentPage += 1;
-          currentHeightTotal = newState[1][i - offset]?.printHeight;
+          newStartEndPageIndices[currentPage].end = i - offset
+          currentPage += 1
+          currentHeightTotal = newState[1][i - offset]?.printHeight
           newStartEndPageIndices[currentPage] = { start: i - offset, end: undefined }
         } else {
           if (i < newState[1].length - 1 + offset) {
-            newStartEndPageIndices[currentPage].end = i - offset;
-            currentPage += 1;
-            currentHeightTotal = newState[1][i - offset]?.printHeight;
+            newStartEndPageIndices[currentPage].end = i - offset
+            currentPage += 1
+            currentHeightTotal = newState[1][i - offset]?.printHeight
             newStartEndPageIndices[currentPage] = { start: i - offset, end: i - offset + 1 }
-            currentPage += 1;
+            currentPage += 1
             newStartEndPageIndices[currentPage] = { start: i - offset + 1, end: undefined }
           } else {
-            newStartEndPageIndices[currentPage].end = i - offset;
-            currentPage += 1;
-            currentHeightTotal = newState[1][i - offset]?.printHeight;
+            newStartEndPageIndices[currentPage].end = i - offset
+            currentPage += 1
+            currentHeightTotal = newState[1][i - offset]?.printHeight
             // newStartEndPageIndices[currentPage] = { start: i, end: undefined }
           }
         }
@@ -827,7 +811,7 @@ const DragDrop = (props) => {
       // record_id: record_id
     }
 
-    console.log(data);
+    console.log(data)
 
     // Send the data to the server in JSON format.
     const JSONdata = JSON.stringify(data)
@@ -841,10 +825,10 @@ const DragDrop = (props) => {
       method: 'POST',
       // Tell the server we're sending JSON.
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       // Body of the request is the JSON data we created above.
-      body: JSONdata,
+      body: JSONdata
     }
 
     // Send the form data to our forms API on Vercel and get a response.
@@ -855,7 +839,7 @@ const DragDrop = (props) => {
     const result = await response.json().then((res) => { setReportURL(res.reportURL); setGeneratingReport(false); setGeneratedReport(true) })
   }
 
-  const [reportURL, setReportURL] = React.useState("")
+  const [reportURL, setReportURL] = React.useState('')
   const [generatingReport, setGeneratingReport] = React.useState(false)
   const [generatedReport, setGeneratedReport] = React.useState(false)
   const [selectedTemplate, setSelectedTemplate] = React.useState(undefined)
@@ -865,14 +849,14 @@ const DragDrop = (props) => {
   const [addingNewTemplate, setAddingNewTemplate] = React.useState(false)
 
   const changeTemplate = (e) => {
-    if (e?.name != "Select Template") {
+    if (e?.name != 'Select Template') {
       const newState = [...state]
 
       const templateData = JSON.parse(e?.data)
 
       newState[1] = templateData?.templateArray
 
-      newState[0] = [];
+      newState[0] = []
 
       initialLibraryItems.forEach((templateModule) => {
         if (newState[1].find((object) => object.id == templateModule.id) == undefined) {
@@ -887,10 +871,10 @@ const DragDrop = (props) => {
   }
 
   const handleCreateNewTemplate = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     setGeneratingReport(true)
 
-    let name = e.target['name'].value;
+    const name = e.target.name.value
 
     const data = {
       templateArray: state[1],
@@ -900,7 +884,7 @@ const DragDrop = (props) => {
       // record_id: record_id
     }
 
-    console.log(data);
+    console.log(data)
 
     // Send the data to the server in JSON format.
     const JSONdata = JSON.stringify(data)
@@ -914,10 +898,10 @@ const DragDrop = (props) => {
       method: 'POST',
       // Tell the server we're sending JSON.
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       // Body of the request is the JSON data we created above.
-      body: JSONdata,
+      body: JSONdata
     }
 
     // Send the form data to our forms API on Vercel and get a response.
@@ -928,7 +912,7 @@ const DragDrop = (props) => {
     const result = await response.json().then((res) => { setGeneratingTemplate(false); setGeneratedTemplate(true); setAddingNewTemplate(false) })
   }
 
-  const locale = useLocale();
+  const locale = useLocale()
 
   // const options = {
   //   weekday: 'long',
@@ -940,36 +924,34 @@ const DragDrop = (props) => {
     year: '2-digit',
     month: '2-digit',
     day: '2-digit'
-  };
-  const formatter = new Intl.DateTimeFormat(locale, options);
+  }
+  const formatter = new Intl.DateTimeFormat(locale, options)
 
-  var temp = new Date();
-  temp.setSeconds(0);
-  var dd = String(temp.getDate()).padStart(2, '0');
-  var mm = String(temp.getMonth() + 1).padStart(2, '0'); //January is 0!
-  var yyyy = temp.getFullYear();
+  const temp = new Date()
+  temp.setSeconds(0)
+  const dd = String(temp.getDate()).padStart(2, '0')
+  const mm = String(temp.getMonth() + 1).padStart(2, '0') // January is 0!
+  const yyyy = temp.getFullYear()
 
-  let todaysDate = `${yyyy}-${mm}-${dd}`;
+  const todaysDate = `${yyyy}-${mm}-${dd}`
 
-  const [selectedStartDate, setSelectedStartDate] = useState(parseDate(todaysDate));
-  const [selectedEndDate, setSelectedEndDate] = useState(parseDate(todaysDate));
+  const [selectedStartDate, setSelectedStartDate] = useState(parseDate(todaysDate))
+  const [selectedEndDate, setSelectedEndDate] = useState(parseDate(todaysDate))
 
   const [isUsingDateFilter, setIsUsingDateFilter] = useState(false)
 
   const parseDateString = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-2);
+    const date = new Date(dateString)
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = String(date.getFullYear()).slice(-2)
 
     if (isNaN(date)) {
       return undefined
     } else {
-      return `${day}-${month}-${year}`;
+      return `${day}-${month}-${year}`
     }
-
-  };
-
+  }
 
   return (
     <div className="w-full ">
@@ -1009,10 +991,10 @@ const DragDrop = (props) => {
                     Save As New Template
                   </div>
                   <div className='group-hover:hidden'>
-                    <img className={`w-[15px]`} src="/Save_B_SQ.png" />
+                    <img className={'w-[15px]'} src="/Save_B_SQ.png" />
                   </div>
                   <div className='hidden group-hover:block'>
-                    <img className={`w-[15px]`} src="/Save_W_SQ.png" />
+                    <img className={'w-[15px]'} src="/Save_W_SQ.png" />
                   </div>
                 </div>
               </div>
@@ -1050,20 +1032,20 @@ const DragDrop = (props) => {
             {startEndPageIndices.length > 0 && startEndPageIndices.map((pageIndices, pageNumber) => (
               <>
                 <div className="col-span-2 pb-2 pt-6 font-semibold text-black text-left w-[140mm]">Page {pageNumber + 1}</div>
-                <div  >
+                <div >
                   <Droppable droppableId={`${pageNumber + 1}`} direction="vertical">
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`bg-white box-content relative border-[3px] border-deep_blue rounded-md shadow-lg border-dashed grid grid-cols-4 auto-rows-min place-items-center w-[140mm] h-[198mm]`}
+                        className={'bg-white box-content relative border-[3px] border-deep_blue rounded-md shadow-lg border-dashed grid grid-cols-4 auto-rows-min place-items-center w-[140mm] h-[198mm]'}
                       >
                         <div className='w-full h-[35mm] col-span-4'></div>
                         <img className='absolute inset-0' src='/Template.jpg' />
                         <div className='absolute left-0 top-0 pl-[6mm] h-[66px] w-[400px] text-white text-base font-semibold grid place-content-center'>
                           <div>
                             {/* {`${JSON.parse(props.venueData)[0]?.name} Waste Impact Report`} */}
-                            {`Example Venue Waste Impact Report`}
+                            {'Example Venue Waste Impact Report'}
                             <span className="whitespace-nowrap text-xs font-normal">&nbsp;&nbsp;{parseDateString(new Date().toISOString())}</span>
                           </div>
                         </div>
@@ -1078,7 +1060,7 @@ const DragDrop = (props) => {
                                 className={`${`col-span-${item.width}`} w-full h-fit border-b-2 border-black rounded-lg cursor-move relative select-none box-border`}
                               >
                                 <div className='grid place-content-center w-full'>
-                                  <img src={item.imageUrl} alt={item.title} style={{ height: `${item?.height}mm` }} className={`h-[${item?.height ?? "66"}mm] w-full`} />
+                                  <img src={item.imageUrl} alt={item.title} style={{ height: `${item?.height}mm` }} className={`h-[${item?.height ?? '66'}mm] w-full`} />
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                                   <div className="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded-md">{item.title}</div>
@@ -1086,7 +1068,6 @@ const DragDrop = (props) => {
                               </div>
                             )}
                           </Draggable>
-
 
                         ))}
                         {/* <div className='w-full mt-4 z-50 border-2 border-black h-[18mm] col-span-4'></div> */}
@@ -1122,7 +1103,7 @@ const DragDrop = (props) => {
                 <div className="col-span-2 mt-8 text-black px-2 py-1 text-center mx-24">The report can be viewed by clicking the button below. This link expires in 10 minutes for your data security. If expired you can view the report here [url to tracker/reports]</div>
               </>
             )}
-            {reportURL != "" && (
+            {reportURL != '' && (
               <>
                 <div className="bg-deep_blue px-4 py-1 mt-4 mb-4 w-fit text-center rounded-lg cursor-pointer text-white" onClick={() => window.open(reportURL, '_blank')}>
                   View Report
@@ -1162,23 +1143,23 @@ const DragDrop = (props) => {
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className={` sticky z-10 top-0 right-0 w-96`}
+                  className={' sticky z-10 top-0 right-0 w-96'}
 
                 >
                   <div className="absolute left-0 bottom-1/4 -z-10 overflow-visible">
-                    <div onClick={() => setSelectedLibrary("Full")} className={`flex cursor-pointer group ${selectedLibrary == "Full" ? "bg-gradient-to-tr from-deep_blue to-navy" : "bg-gradient-to-tr from-gray-200 to-gray-200"} p-6 rounded-l-xl w-80 -translate-x-20 hover:-translate-x-72 shadow-center-xl  hover:bg-gradient-to-tr hover:from-deep_blue hover:to-navy duration-1000`}>
+                    <div onClick={() => setSelectedLibrary('Full')} className={`flex cursor-pointer group ${selectedLibrary == 'Full' ? 'bg-gradient-to-tr from-deep_blue to-navy' : 'bg-gradient-to-tr from-gray-200 to-gray-200'} p-6 rounded-l-xl w-80 -translate-x-20 hover:-translate-x-72 shadow-center-xl  hover:bg-gradient-to-tr hover:from-deep_blue hover:to-navy duration-1000`}>
                       <img className='h-12 w-12 group-hover:scale-125 duration-1000' src='/Waste_Iso.png'></img>
                       <div className='flex-1 flex flex-col items-center justify-center text-sm leading-tight text-white-100 font-bold px-6'>
                         All Report Components
                       </div>
                     </div>
-                    <div onClick={() => setSelectedLibrary("Streams")} className={`flex cursor-pointer group ${selectedLibrary == "Streams" ? "bg-gradient-to-tr from-deep_blue to-navy" : "bg-gradient-to-tr from-gray-200 to-gray-200"}  p-6 -mt-6 rounded-l-xl w-80 -translate-x-20 hover:-translate-x-72 shadow-center-xl hover:bg-gradient-to-tr hover:from-deep_blue hover:to-navy duration-1000`}>
+                    <div onClick={() => setSelectedLibrary('Streams')} className={`flex cursor-pointer group ${selectedLibrary == 'Streams' ? 'bg-gradient-to-tr from-deep_blue to-navy' : 'bg-gradient-to-tr from-gray-200 to-gray-200'}  p-6 -mt-6 rounded-l-xl w-80 -translate-x-20 hover:-translate-x-72 shadow-center-xl hover:bg-gradient-to-tr hover:from-deep_blue hover:to-navy duration-1000`}>
                       <img className='h-12 w-12 group-hover:scale-125 duration-1000' src='/Streams_Iso.png'></img>
                       <div className='flex-1 flex flex-col items-center justify-center text-sm leading-tight text-white-100 font-bold px-6'>
                         Stream Components
                       </div>
                     </div>
-                    <div onClick={() => setSelectedLibrary("Products")} className={`flex cursor-pointer group ${selectedLibrary == "Products" ? "bg-gradient-to-tr from-deep_blue to-navy" : "bg-gradient-to-tr from-gray-200 to-gray-200"}  p-6 -mt-6 rounded-l-xl w-80 -translate-x-20 hover:-translate-x-72 shadow-center-xl  hover:bg-gradient-to-tr hover:from-deep_blue hover:to-navy duration-1000`}>
+                    <div onClick={() => setSelectedLibrary('Products')} className={`flex cursor-pointer group ${selectedLibrary == 'Products' ? 'bg-gradient-to-tr from-deep_blue to-navy' : 'bg-gradient-to-tr from-gray-200 to-gray-200'}  p-6 -mt-6 rounded-l-xl w-80 -translate-x-20 hover:-translate-x-72 shadow-center-xl  hover:bg-gradient-to-tr hover:from-deep_blue hover:to-navy duration-1000`}>
                       <img className='h-12 w-12 group-hover:scale-125 duration-1000' src='/Products_Iso.png'></img>
                       <div className='flex-1 flex flex-col items-center justify-center text-sm leading-tight font-bold text-white-100 px-6'>
                         Product Components
@@ -1208,17 +1189,17 @@ const DragDrop = (props) => {
                     </div> */}
                       <div className=' grid place-content-center h-fit font-normal'>
                         <SingleSelectDropdown
-                          options={[{ name: "All Sizes" }, { name: "Full" }, { name: "Half" }, { name: "Quarter" }]}
+                          options={[{ name: 'All Sizes' }, { name: 'Full' }, { name: 'Half' }, { name: 'Quarter' }]}
                           label="Sub-Library"
                           variable="name"
                           onSelectionChange={(e) => setSelectedSubLibrary(e.name)}
                           placeholder="Select Sub-Library"
                           searchPlaceholder="Search Sub-Libraries"
                           includeLabel={false}
-                          defaultValue={"All Sizes"}
+                          defaultValue={'All Sizes'}
                           textCenter={true}
                           textPadding={false}
-                          colour={"bg-white text-black text-sm"}
+                          colour={'bg-white text-black text-sm'}
                           includePlaceholder={false}
                           includeSearch={false}
                           arrowURL='/ArrowDown_B_SQ.png'
@@ -1260,7 +1241,7 @@ const DragDrop = (props) => {
       </DragDropContext>
 
     </div>
-  );
-};
+  )
+}
 
-export default DragDrop;
+export default DragDrop

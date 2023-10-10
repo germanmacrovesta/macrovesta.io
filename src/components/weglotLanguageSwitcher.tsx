@@ -20,7 +20,7 @@ export type WeglotLanguageSwitcherProps = {
  */
 export const WeglotLanguageSwitcher = ({
   domain,
-  langs,
+  langs
 }: WeglotLanguageSwitcherProps) => {
   const [hostname, setHostname] = useState('')
   const [pathAndQuery, setPathAndQuery] = useState('')

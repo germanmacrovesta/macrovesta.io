@@ -1,154 +1,146 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 const DemoForm = ({ onSubmit }) => {
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        companyName: '',
-        preferredDate: '',
-        preferredTime: '', // New field for preferred time
-        companyType: 'festival',
-    });
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    companyName: '',
+    preferredDate: '',
+    preferredTime: '', // New field for preferred time
+    companyType: 'festival'
+  })
 
-    const [error_Message, setError_Message] = React.useState("");
-    const [submitted, setSubmitted] = React.useState(false);
-    const [submitting, setSubmitting] = React.useState(false);
-    const [warning_Message, setWarning_Message] = React.useState("");
-    const [warningSubmit, setWarningSubmit] = React.useState(false);
+  const [error_Message, setError_Message] = React.useState('')
+  const [submitted, setSubmitted] = React.useState(false)
+  const [submitting, setSubmitting] = React.useState(false)
+  const [warning_Message, setWarning_Message] = React.useState('')
+  const [warningSubmit, setWarningSubmit] = React.useState(false)
 
-    const [formStage, setFormStage] = React.useState(1)
+  const [formStage, setFormStage] = React.useState(1)
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
-    };
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }))
+  }
 
+  //   const handleSubmit = (event) => {
+  //     event.preventDefault();
+  //     onSubmit(formData);
+  //   };
 
-    //   const handleSubmit = (event) => {
-    //     event.preventDefault();
-    //     onSubmit(formData);
-    //   };
+  const handleSubmit = async (event) => {
+    // Stop the form from submitting and refreshing the page.
+    event.preventDefault()
+    setSubmitting(true)
 
+    const firstName = formData.firstName
+    const lastName = formData.lastName
+    const email = formData.email
+    const companyName = formData.companyName
+    const preferredDate = formData.preferredDate
+    const preferredTime = formData.preferredTime
+    const companyType = formData.companyType
 
-    const handleSubmit = async (event) => {
-        // Stop the form from submitting and refreshing the page.
-        event.preventDefault()
-        setSubmitting(true)
+    console.log(preferredDate, preferredTime)
 
-        const firstName = formData.firstName
-        const lastName = formData.lastName
-        const email = formData.email
-        const companyName = formData.companyName
-        const preferredDate = formData.preferredDate
-        const preferredTime = formData.preferredTime
-        const companyType = formData.companyType
+    let errorMessage = ''
+    const warningMessage = ''
 
-        console.log(preferredDate, preferredTime)
-
-        let errorMessage = "";
-        let warningMessage = "";
-
-        if (firstName == "") {
-            errorMessage += "Please enter your name. "
-        }
-
-        if (lastName == "") {
-            errorMessage += "Please enter your lastname. "
-        }
-
-        if (email == "") {
-            errorMessage += "Please enter your email. "
-        }
-
-        if (companyName == "") {
-            errorMessage += "Please enter your company name. "
-        }
-
-        if (preferredDate == "") {
-            errorMessage += "Please enter your preferred date. "
-        }
-
-        if (preferredTime == "") {
-            errorMessage += "Please enter your preferred time. "
-        }
-
-        if (companyType == "") {
-            errorMessage += "Please enter your company type. "
-        }
-
-        if (errorMessage !== "") {
-            // setError_Message(errorMessage);
-            setSubmitting(false);
-            // throw new Error(errorMessage)
-        } else {
-            if (error_Message != "") { setError_Message("") }
-
-            // Get data from the form.
-            const data = {
-                firstName,
-                lastName,
-                companyName,
-                preferredDate,
-                companyType,
-                email,
-                preferredTime
-            }
-
-            console.log(data);
-
-            // Send the data to the server in JSON format.
-            const JSONdata = JSON.stringify(data)
-
-            // API endpoint where we send form data.
-            const endpoint = '/api/add-demo-request'
-
-            // Form the request for sending data to the server.
-            const options = {
-                // The method is POST because we are sending data.
-                method: 'POST',
-                // Tell the server we're sending JSON.
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // Body of the request is the JSON data we created above.
-                body: JSONdata,
-            }
-
-            // Send the form data to our forms API on Vercel and get a response.
-            const response = await fetch(endpoint, options)
-
-            // Get the response data from server as JSON.
-            // If server returns the name submitted, that means the form works.
-            const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) });
-            // setSubmitted(true); setSubmitting(false)
-
-        }
-
-
+    if (firstName == '') {
+      errorMessage += 'Please enter your name. '
     }
 
+    if (lastName == '') {
+      errorMessage += 'Please enter your lastname. '
+    }
 
-    const isCurrentStageFormFilled = () => {
-        switch (formStage) {
-            case 1:
-                return formData.firstName !== "" && formData.lastName !== "" && formData.email !== "";
-            case 2:
-                return (
-                    formData.companyType !== "festival" && formData.companyType !== "select industry type" && formData.companyName !== ""
-                );
-            case 3:
-                return (
-                    formData.preferredDate !== null && formData.preferredTime !== null
-                );
-            default:
-                return true; // For other stages, no specific validation required.
-        }
-    };
+    if (email == '') {
+      errorMessage += 'Please enter your email. '
+    }
 
+    if (companyName == '') {
+      errorMessage += 'Please enter your company name. '
+    }
 
+    if (preferredDate == '') {
+      errorMessage += 'Please enter your preferred date. '
+    }
 
-    return (
+    if (preferredTime == '') {
+      errorMessage += 'Please enter your preferred time. '
+    }
+
+    if (companyType == '') {
+      errorMessage += 'Please enter your company type. '
+    }
+
+    if (errorMessage !== '') {
+      // setError_Message(errorMessage);
+      setSubmitting(false)
+      // throw new Error(errorMessage)
+    } else {
+      if (error_Message != '') { setError_Message('') }
+
+      // Get data from the form.
+      const data = {
+        firstName,
+        lastName,
+        companyName,
+        preferredDate,
+        companyType,
+        email,
+        preferredTime
+      }
+
+      console.log(data)
+
+      // Send the data to the server in JSON format.
+      const JSONdata = JSON.stringify(data)
+
+      // API endpoint where we send form data.
+      const endpoint = '/api/add-demo-request'
+
+      // Form the request for sending data to the server.
+      const options = {
+        // The method is POST because we are sending data.
+        method: 'POST',
+        // Tell the server we're sending JSON.
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // Body of the request is the JSON data we created above.
+        body: JSONdata
+      }
+
+      // Send the form data to our forms API on Vercel and get a response.
+      const response = await fetch(endpoint, options)
+
+      // Get the response data from server as JSON.
+      // If server returns the name submitted, that means the form works.
+      const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) })
+      // setSubmitted(true); setSubmitting(false)
+    }
+  }
+
+  const isCurrentStageFormFilled = () => {
+    switch (formStage) {
+      case 1:
+        return formData.firstName !== '' && formData.lastName !== '' && formData.email !== ''
+      case 2:
+        return (
+          formData.companyType !== 'festival' && formData.companyType !== 'select industry type' && formData.companyName !== ''
+        )
+      case 3:
+        return (
+          formData.preferredDate !== null && formData.preferredTime !== null
+        )
+      default:
+        return true // For other stages, no specific validation required.
+    }
+  }
+
+  return (
         <form className='text-xs sm:text-base' onSubmit={handleSubmit}>
             {!submitted && (
                 <>
@@ -277,14 +269,12 @@ const DemoForm = ({ onSubmit }) => {
                         </>
                     )}
 
-
-
                 </>
             )}
             {formStage > 1 && !submitted && (
                 <button
                     className="mx-4 rounded bg-deep_blue px-4 py-2 text-white shadow-lg duration-200 hover:scale-105"
-                    onClick={() => { setError_Message(""); setFormStage(formStage - 1); }}
+                    onClick={() => { setError_Message(''); setFormStage(formStage - 1) }}
                 >
                     Prev
                 </button>
@@ -295,14 +285,14 @@ const DemoForm = ({ onSubmit }) => {
                     type='button'
                     className="mx-4 rounded bg-deep_blue px-4 py-2 text-white shadow-lg duration-200 hover:scale-105"
                     onClick={() => {
-                        if (isCurrentStageFormFilled()) {
-                            setError_Message("");
-                            setFormStage(formStage + 1);
-                        } else {
-                            setError_Message(
-                                "Please fill out all the fields before you continue"
-                            );
-                        }
+                      if (isCurrentStageFormFilled()) {
+                        setError_Message('')
+                        setFormStage(formStage + 1)
+                      } else {
+                        setError_Message(
+                          'Please fill out all the fields before you continue'
+                        )
+                      }
                     }}
                 >
                     Next
@@ -325,11 +315,11 @@ const DemoForm = ({ onSubmit }) => {
                 <div className="text-center"> Thanks! We will get back to you soon.</div>
             )}
 
-            {error_Message != "" && (
+            {error_Message != '' && (
                 <>{error_Message}</>
             )}
         </form>
-    );
-};
+  )
+}
 
-export default DemoForm;
+export default DemoForm

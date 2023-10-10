@@ -1,35 +1,34 @@
-import { useEffect, useState } from "react";
-import Calendar from '../components/calendar';
-import { parseDate, getLocalTimeZone, today, isWeekend } from '@internationalized/date';
-import { useDateFormatter, useLocale } from 'react-aria';
+import { useEffect, useState } from 'react'
+import Calendar from '../components/calendar'
+import { parseDate, getLocalTimeZone, today, isWeekend } from '@internationalized/date'
+import { useDateFormatter, useLocale } from 'react-aria'
 
-export default function DateField({ setDate, date, label, formatter, yearOptions = [-43, 1] }) {
+export default function DateField ({ setDate, date, label, formatter, yearOptions = [-43, 1] }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [selected, setSelected] = useState(null)
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState(null);
+  const temp = new Date()
+  const dd = String(temp.getDate()).padStart(2, '0')
+  const mm = String(temp.getMonth() + 1).padStart(2, '0') // January is 0!
+  const yyyy = temp.getFullYear()
 
-    var temp = new Date();
-    var dd = String(temp.getDate()).padStart(2, '0');
-    var mm = String(temp.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = temp.getFullYear();
+  const todaysDate = `${yyyy}-${mm}-${dd}`
 
-    let todaysDate = `${yyyy}-${mm}-${dd}`;
+  // let [date, setDate] = useState(parseDate(todaysDate));
+  // let formatter = useDateFormatter({ dateStyle: 'full' });
 
-    // let [date, setDate] = useState(parseDate(todaysDate));
-    // let formatter = useDateFormatter({ dateStyle: 'full' });
+  const toggleMenu = () => {
+    setIsOpen(!isOpen)
+  }
 
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    }
+  const handleChange = (element) => {
+    setDate(element)
+    toggleMenu()
+  }
 
-    const handleChange = (element) => {
-        setDate(element)
-        toggleMenu();
-    }
+  console.log(new Date())
 
-    console.log(new Date())
-
-    return (
+  return (
         <>
             {/* { }
             {date && (
@@ -84,5 +83,5 @@ export default function DateField({ setDate, date, label, formatter, yearOptions
                 )}
             </div> */}
         </>
-    )
+  )
 }

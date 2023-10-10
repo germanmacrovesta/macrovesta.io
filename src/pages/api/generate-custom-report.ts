@@ -1,21 +1,20 @@
-import { type NextApiRequest, type NextApiResponse } from "next";
-import puppeteer from 'puppeteer-core';
-import browserless from 'browserless';
-import { prisma } from "../../server/db";
-import S3 from "aws-sdk/clients/s3";
-
+import { type NextApiRequest, type NextApiResponse } from 'next'
+import puppeteer from 'puppeteer-core'
+import browserless from 'browserless'
+import { prisma } from '../../server/db'
+import S3 from 'aws-sdk/clients/s3'
 
 const s3 = new S3({
-  apiVersion: "2006-03-01",
+  apiVersion: '2006-03-01',
   accessKeyId: process.env.ACCESS_KEY,
   secretAccessKey: process.env.SECRET_KEY,
   region: process.env.REGION,
-  signatureVersion: "v4",
-});
+  signatureVersion: 'v4'
+})
 
 const GenerateCustomReport = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const name = "Nick"
+    const name = 'Nick'
 
     const now = new Date()
 
@@ -59,23 +58,23 @@ const GenerateCustomReport = async (req: NextApiRequest, res: NextApiResponse) =
       }
     })
 
-    console.log("Starting Custom Report Generator API")
+    console.log('Starting Custom Report Generator API')
 
     const browser = await puppeteer.connect({
       browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS_API_KEY}`
-    });
-    const page = await browser.newPage();
+    })
+    const page = await browser.newPage()
 
-    const url = `https://macrovesta.ai/puppeteer-custom-report-generator?venue=${encodeURIComponent(req.body.venue)}&temp_id=${encodeURIComponent(temp_id.record_id)}`;
-    console.log("url", url)
-    await page.goto(url, { waitUntil: 'networkidle0' }); // ensure everything's loaded
+    const url = `https://macrovesta.ai/puppeteer-custom-report-generator?venue=${encodeURIComponent(req.body.venue)}&temp_id=${encodeURIComponent(temp_id.record_id)}`
+    console.log('url', url)
+    await page.goto(url, { waitUntil: 'networkidle0' }) // ensure everything's loaded
 
     const sleep = (milliseconds) => {
-      console.log("sleeping")
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
-    };
+      console.log('sleeping')
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
 
-    await sleep(2000);
+    await sleep(2000)
 
     // const renderedTemplate = CustomReport(req.body.state, req.body.pageIndices, venue, streams, products, deliveries, collections, stocks);
 
@@ -95,9 +94,9 @@ const GenerateCustomReport = async (req: NextApiRequest, res: NextApiResponse) =
         left: '0px'
       },
       printBackground: true
-    });
+    })
 
-    await browser.close();
+    await browser.close()
 
     // Set the response headers
     // res.setHeader('Content-Type', 'application/pdf');
@@ -106,30 +105,28 @@ const GenerateCustomReport = async (req: NextApiRequest, res: NextApiResponse) =
     // // Send the PDF
     // res.send(pdf);
 
-    const company = req.body.venue as string;
+    const company = req.body.venue as string
     const document = await prisma?.document.create({
       data: {
-        company: company,
+        company,
         filetype: 'pdf',
         linkedType: 'Custom Report',
         fileName: `custom_report_${now.toISOString()}`
       }
     })
 
-    const bucketName = process.env.BUCKET_NAME;
-    if (typeof bucketName == 'string') {
+    const bucketName = process.env.BUCKET_NAME
+    if (typeof bucketName === 'string') {
       const params = {
         Bucket: bucketName,
         Key: `${company}/${document.id}/custom_report_${now.toISOString()}.pdf`, // File name you want to save as in S3
-        Body: pdf,
-      };
-
-
+        Body: pdf
+      }
 
       s3.upload(params, async function (err, data) {
         if (err) {
           console.log(err)
-          res.status(500).send(err);
+          res.status(500).send(err)
         } else {
           // const usersToNotify = users.filter(user => (user.company == company) || (user.company == req.body.data.organiser));
           // for (const user of usersToNotify) {
@@ -159,23 +156,22 @@ const GenerateCustomReport = async (req: NextApiRequest, res: NextApiResponse) =
             Key: `${company}/${document.id}/custom_report_${now.toISOString()}.pdf`,
             Expires: 60 * 5,
             ResponseContentType: 'application/pdf',
-            ResponseContentDisposition: 'inline',
-          }; // URL expires in 5 minutes
+            ResponseContentDisposition: 'inline'
+          } // URL expires in 5 minutes
           s3.getSignedUrl('getObject', urlParams, function (err, url) {
             if (err) {
               console.log(err)
-              res.status(500).send(err);
+              res.status(500).send(err)
             } else {
-              res.status(200).json({ reportURL: url, documentID: document.id });
+              res.status(200).json({ reportURL: url, documentID: document.id })
             }
-          });
+          })
         }
-      });
+      })
     }
-
   } else {
-    res.status(405).json({ message: 'Method not allowed' }); // If the request is not a POST request
+    res.status(405).json({ message: 'Method not allowed' }) // If the request is not a POST request
   }
-};
+}
 
-export default GenerateCustomReport;
+export default GenerateCustomReport

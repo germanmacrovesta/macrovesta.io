@@ -1,9 +1,9 @@
-import Head from "next/head";
-import { TVChartContainer } from "../components/TVChartContainer";
+import Head from 'next/head'
+import { TVChartContainer } from '../components/TVChartContainer'
 import {
-    ChartingLibraryWidgetOptions,
-    ResolutionString,
-} from "../../public/static/charting_library/charting_library";
+  ChartingLibraryWidgetOptions,
+  ResolutionString
+} from '../../public/static/charting_library/charting_library'
 import ImportCsvForm from '../components/importCSVForm'
 
 // const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
@@ -19,8 +19,8 @@ import ImportCsvForm from '../components/importCSVForm'
 //     autosize: true,
 // };
 
-export default function GraphPage() {
-    return (
+export default function GraphPage () {
+  return (
         <>
             <Head>
                 <title>TradingView Charting Library and Next.js</title>
@@ -31,6 +31,5 @@ export default function GraphPage() {
                 <ImportCsvForm />
             </main>
         </>
-    );
+  )
 }
-

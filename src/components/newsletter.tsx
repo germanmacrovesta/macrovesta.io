@@ -1,75 +1,70 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 
-export default function Newsletter() {
+export default function Newsletter () {
+  const [error_Message, setError_Message] = React.useState('')
+  const [submitted, setSubmitted] = React.useState(false)
+  const [submitting, setSubmitting] = React.useState(false)
+  const [warning_Message, setWarning_Message] = React.useState('')
+  const [warningSubmit, setWarningSubmit] = React.useState(false)
 
-    const [error_Message, setError_Message] = React.useState("");
-    const [submitted, setSubmitted] = React.useState(false);
-    const [submitting, setSubmitting] = React.useState(false);
-    const [warning_Message, setWarning_Message] = React.useState("");
-    const [warningSubmit, setWarningSubmit] = React.useState(false);
+  const handleSubmit = async (event) => {
+    // Stop the form from submitting and refreshing the page.
+    event.preventDefault()
+    setSubmitting(true)
 
-    const handleSubmit = async (event) => {
-        // Stop the form from submitting and refreshing the page.
-        event.preventDefault()
-        setSubmitting(true)
+    const email = event.target.email.value
 
-        let email = event.target['email'].value;
+    let errorMessage = ''
+    const warningMessage = ''
 
-
-        let errorMessage = "";
-        let warningMessage = "";
-
-        if (email == "" || email == undefined) {
-            errorMessage += "Please enter your email. "
-        }
-
-        if (errorMessage !== "") {
-            setError_Message(errorMessage);
-            setSubmitting(false);
-            // throw new Error(errorMessage)
-        } else {
-            if (error_Message != "") { setError_Message("") }
-
-            // Get data from the form.
-            const data = {
-                email,
-                newsletter: true
-            }
-
-            console.log(data);
-
-            // Send the data to the server in JSON format.
-            const JSONdata = JSON.stringify(data)
-
-            // API endpoint where we send form data.
-            const endpoint = '/api/add-mailing-list'
-
-            // Form the request for sending data to the server.
-            const options = {
-                // The method is POST because we are sending data.
-                method: 'POST',
-                // Tell the server we're sending JSON.
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // Body of the request is the JSON data we created above.
-                body: JSONdata,
-            }
-
-            // Send the form data to our forms API on Vercel and get a response.
-            const response = await fetch(endpoint, options)
-
-            // Get the response data from server as JSON.
-            // If server returns the name submitted, that means the form works.
-            const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) });
-            // setSubmitted(true); setSubmitting(false)
-
-        }
-
-
+    if (email == '' || email == undefined) {
+      errorMessage += 'Please enter your email. '
     }
 
-    return (
+    if (errorMessage !== '') {
+      setError_Message(errorMessage)
+      setSubmitting(false)
+      // throw new Error(errorMessage)
+    } else {
+      if (error_Message != '') { setError_Message('') }
+
+      // Get data from the form.
+      const data = {
+        email,
+        newsletter: true
+      }
+
+      console.log(data)
+
+      // Send the data to the server in JSON format.
+      const JSONdata = JSON.stringify(data)
+
+      // API endpoint where we send form data.
+      const endpoint = '/api/add-mailing-list'
+
+      // Form the request for sending data to the server.
+      const options = {
+        // The method is POST because we are sending data.
+        method: 'POST',
+        // Tell the server we're sending JSON.
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // Body of the request is the JSON data we created above.
+        body: JSONdata
+      }
+
+      // Send the form data to our forms API on Vercel and get a response.
+      const response = await fetch(endpoint, options)
+
+      // Get the response data from server as JSON.
+      // If server returns the name submitted, that means the form works.
+      const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) })
+      // setSubmitted(true); setSubmitting(false)
+    }
+  }
+
+  return (
         <section className=''>
             <div id="subscribe" className="max-w-6xl mx-auto px-4 sm:px-6">
                 <div className="pb-12 md:pb-20">
@@ -109,7 +104,7 @@ export default function Newsletter() {
                                     )}
 
                                 </div>
-                                {error_Message != "" && (
+                                {error_Message != '' && (
                                     <div className='text-gray-200'>{error_Message}</div>
                                 )}
                                 <p className="text-sm text-gray-200 mt-3">No spam. You can unsubscribe at any time.</p>
@@ -133,5 +128,5 @@ export default function Newsletter() {
         }
       `}</style>
         </section>
-    );
+  )
 }

@@ -120,138 +120,138 @@
 
 // // // export default MultipleSelectDropdown;
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react'
 
 const defaultFunction = (e) => {
 
 }
 
 const MultipleSelectDropdown = ({
-    options,
-    variable,
-    label,
-    onSelectionChange = defaultFunction,
-    placeholder = 'Select Products',
-    searchPlaceholder = 'Search Products',
-    router = undefined,
-    urlPath = undefined,
-    addButton = false,
-    theme = 'default',
-    includeLabel = true,
-    addLabel = `Add ${label}`,
-    colour = 'bg-green',
-    // defaultValue = "Default Value", // Add the defaultValue prop
-    textCenter = true,
-    textColour = "text-white",
-    border = false,
-    borderStyle = "border border-grey",
-    defaultValues = ["Default Value"]
+  options,
+  variable,
+  label,
+  onSelectionChange = defaultFunction,
+  placeholder = 'Select Products',
+  searchPlaceholder = 'Search Products',
+  router = undefined,
+  urlPath = undefined,
+  addButton = false,
+  theme = 'default',
+  includeLabel = true,
+  addLabel = `Add ${label}`,
+  colour = 'bg-green',
+  // defaultValue = "Default Value", // Add the defaultValue prop
+  textCenter = true,
+  textColour = 'text-white',
+  border = false,
+  borderStyle = 'border border-grey',
+  defaultValues = ['Default Value']
 }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [isTooltipVisible, setIsTooltipVisible] = useState(false);
-    const [selectedOptions, setSelectedOptions] = useState([]);
-    const [searchText, setSearchText] = useState('');
-    const [filteredOptions, setFilteredOptions] = useState(options);
-    const wrapperRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false)
+  const [selectedOptions, setSelectedOptions] = useState([])
+  const [searchText, setSearchText] = useState('')
+  const [filteredOptions, setFilteredOptions] = useState(options)
+  const wrapperRef = useRef(null)
 
-    console.log("Re-rendered")
+  console.log('Re-rendered')
 
-    useEffect(() => {
-        setFilteredOptions(
-            options.filter((option) =>
-                option[`${variable}`]?.toLowerCase().includes(searchText.toLowerCase()),
-            ),
-        );
-        console.log("A")
-    }, [options, searchText]);
+  useEffect(() => {
+    setFilteredOptions(
+      options.filter((option) =>
+        option[`${variable}`]?.toLowerCase().includes(searchText.toLowerCase())
+      )
+    )
+    console.log('A')
+  }, [options, searchText])
 
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-                setIsOpen(false);
-                setSearchText('');
-            }
+  useEffect(() => {
+    function handleClickOutside (event) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setIsOpen(false)
+        setSearchText('')
+      }
+    }
+    console.log('B')
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [wrapperRef])
+
+  const handleOptionClick = (option) => {
+    if (selectedOptions.some((selected) => selected[`${variable}`] === option[`${variable}`])) {
+      setSelectedOptions((prevSelected) =>
+        prevSelected.filter((selected) => selected[`${variable}`] !== option[`${variable}`])
+      )
+    } else {
+      setSelectedOptions((prevSelected) => [...prevSelected, option])
+    }
+  }
+
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value)
+  }
+
+  const getDisplayText = () => {
+    const displayText = selectedOptions.map((option) => option[`${variable}`]).join(', ')
+
+    return displayText.length > 20 ? `${displayText.slice(0, 20)}...` : displayText
+  }
+
+  const prevSelectedOptionsRef = useRef([])
+
+  useEffect(() => {
+    const sortedSelectedOptions = selectedOptions.sort()
+    const sortedPrevSelectedOptions = Array.from(prevSelectedOptionsRef.current).sort()
+
+    let rerender = false
+    if (sortedSelectedOptions.length != sortedPrevSelectedOptions?.length) {
+      rerender = true
+    } else {
+      let i = 0
+      while (i < selectedOptions.length - 1) {
+        if (sortedSelectedOptions[i]?.[`${variable}`] != sortedPrevSelectedOptions[i]?.[`${variable}`]) {
+          rerender = true
         }
-        console.log("B")
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [wrapperRef]);
+        i++
+      }
+    }
 
-    const handleOptionClick = (option) => {
-        if (selectedOptions.some((selected) => selected[`${variable}`] === option[`${variable}`])) {
-            setSelectedOptions((prevSelected) =>
-                prevSelected.filter((selected) => selected[`${variable}`] !== option[`${variable}`]),
-            );
+    // onSelectionChange(selectedOptions);
+    if (selectedOptions && rerender == true) {
+      onSelectionChange(selectedOptions)
+      console.log('onSelectionChange')
+    }
+    // if (selectedOptions && prevSelectedOptionsRef.current !== selectedOptions) {
+    //     onSelectionChange(selectedOptions);
+    //     console.log("onSelectionChange")
+    // }
+    prevSelectedOptionsRef.current = selectedOptions
+    console.log('C')
+  }, [selectedOptions, onSelectionChange])
+
+  useEffect(() => {
+    // console.log("Dropdown", "Running Single Dropdown defaultValue, variable")
+    if ((defaultValues !== undefined) && defaultValues[0] !== 'Default Value') {
+      const defaultOptions = options.filter(option => defaultValues.includes(option[`${variable}`]))
+      // console.log("defaultOption", defaultOption);
+      // console.log("selectedOption", selectedOption)
+      if ((defaultOptions !== selectedOptions) && defaultOptions[0] !== undefined && (defaultOptions !== null && selectedOptions !== null)) {
+        // console.log("Running")
+        if (defaultOptions != undefined) {
+          setSelectedOptions(defaultOptions)
         } else {
-            setSelectedOptions((prevSelected) => [...prevSelected, option]);
+          setSelectedOptions([])
         }
-    };
+      }
+    } else {
+      // setSelectedOption(null);
+    }
+    // console.log(`${label} defaultValue`, defaultValue)
+  }, [defaultValues, variable])
 
-    const handleSearchChange = (event) => {
-        setSearchText(event.target.value);
-    };
-
-    const getDisplayText = () => {
-        const displayText = selectedOptions.map((option) => option[`${variable}`]).join(', ');
-
-        return displayText.length > 20 ? `${displayText.slice(0, 20)}...` : displayText;
-    };
-
-    const prevSelectedOptionsRef = useRef([]);
-
-    useEffect(() => {
-        const sortedSelectedOptions = selectedOptions.sort()
-        const sortedPrevSelectedOptions = Array.from(prevSelectedOptionsRef.current).sort()
-
-        let rerender = false;
-        if (sortedSelectedOptions.length != sortedPrevSelectedOptions?.length) {
-            rerender = true;
-        } else {
-            let i = 0;
-            while (i < selectedOptions.length - 1) {
-                if (sortedSelectedOptions[i]?.[`${variable}`] != sortedPrevSelectedOptions[i]?.[`${variable}`]) {
-                    rerender = true;
-                }
-                i++;
-            }
-        }
-
-        // onSelectionChange(selectedOptions);
-        if (selectedOptions && rerender == true) {
-            onSelectionChange(selectedOptions);
-            console.log("onSelectionChange")
-        }
-        // if (selectedOptions && prevSelectedOptionsRef.current !== selectedOptions) {
-        //     onSelectionChange(selectedOptions);
-        //     console.log("onSelectionChange")
-        // }
-        prevSelectedOptionsRef.current = selectedOptions;
-        console.log("C")
-    }, [selectedOptions, onSelectionChange]);
-
-    useEffect(() => {
-        // console.log("Dropdown", "Running Single Dropdown defaultValue, variable")
-        if ((defaultValues !== undefined) && defaultValues[0] !== "Default Value") {
-            const defaultOptions = options.filter(option => defaultValues.includes(option[`${variable}`]));
-            // console.log("defaultOption", defaultOption);
-            // console.log("selectedOption", selectedOption)
-            if ((defaultOptions !== selectedOptions) && defaultOptions[0] !== undefined && (defaultOptions !== null && selectedOptions !== null)) {
-                // console.log("Running")
-                if (defaultOptions != undefined) {
-                    setSelectedOptions(defaultOptions);
-                } else {
-                    setSelectedOptions([]);
-                }
-            }
-        } else {
-            // setSelectedOption(null);
-        }
-        // console.log(`${label} defaultValue`, defaultValue)
-    }, [defaultValues, variable]);
-
-    return (
+  return (
         <>
             <div className={`relative flex w-full ${includeLabel ? 'mr-16' : ''}`} ref={wrapperRef}>
                 {addButton && includeLabel && router != undefined && urlPath != undefined && (
@@ -263,12 +263,12 @@ const MultipleSelectDropdown = ({
                             <label htmlFor={label}>{label}</label>
                         </div>
                     )}
-                    <div className={`relative w-full rounded-lg `}>
+                    <div className={'relative w-full rounded-lg '}>
                         <button type='button'
                             onClick={() => setIsOpen(!isOpen)}
                             onMouseEnter={() => setIsTooltipVisible(true)}
                             onMouseLeave={() => setIsTooltipVisible(false)}
-                            className={`w-full h-full capitalize truncate ${textColour} font-semibold ${border ? `${borderStyle}` : ``} ${includeLabel ? '' : ` py-2 ${textCenter ? 'text-center px-4' : 'text-left px-3'} appearance-none`}`}
+                            className={`w-full h-full capitalize truncate ${textColour} font-semibold ${border ? `${borderStyle}` : ''} ${includeLabel ? '' : ` py-2 ${textCenter ? 'text-center px-4' : 'text-left px-3'} appearance-none`}`}
                         >
                             {selectedOptions.length === 0 ? placeholder : selectedOptions.map((option) => option[`${variable}`]).join(', ')}
                         </button>
@@ -306,10 +306,10 @@ const MultipleSelectDropdown = ({
                 </div>
             </div>
         </>
-    );
-};
+  )
+}
 
-export default MultipleSelectDropdown;
+export default MultipleSelectDropdown
 
 // import React, { useState, useRef, useEffect } from 'react';
 

@@ -1,119 +1,116 @@
-import React from 'react';
-import FormSubmit from './formSubmit';
+import React from 'react'
+import FormSubmit from './formSubmit'
 
 const parseDateString = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-2);
+  const date = new Date(dateString)
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = String(date.getFullYear()).slice(-2)
 
-    if (isNaN(date)) {
-        return undefined
-    } else {
-        return `${day}-${month}-${year}`;
-    }
-
-};
+  if (isNaN(date)) {
+    return undefined
+  } else {
+    return `${day}-${month}-${year}`
+  }
+}
 
 const Comments = ({
-    styling,
-    comments,
-    session,
-    section,
-    commentLength = 512
+  styling,
+  comments,
+  session,
+  section,
+  commentLength = 512
 
 }) => {
-    const [componentComments, setComments] = React.useState(comments)
-    const [commentNumber, setCommentNumber] = React.useState(0)
+  const [componentComments, setComments] = React.useState(comments)
+  const [commentNumber, setCommentNumber] = React.useState(0)
 
-    const [openForm, setOpenForm] = React.useState(false)
+  const [openForm, setOpenForm] = React.useState(false)
 
-    const [error_Message, setError_Message] = React.useState("");
-    const [submitted, setSubmitted] = React.useState(false);
-    const [submitting, setSubmitting] = React.useState(false);
-    const [warning_Message, setWarning_Message] = React.useState("");
-    const [warningSubmit, setWarningSubmit] = React.useState(false);
+  const [error_Message, setError_Message] = React.useState('')
+  const [submitted, setSubmitted] = React.useState(false)
+  const [submitting, setSubmitting] = React.useState(false)
+  const [warning_Message, setWarning_Message] = React.useState('')
+  const [warningSubmit, setWarningSubmit] = React.useState(false)
 
-    const handleFormSubmit = async (e) => {
-        // Stop the form from submitting and refreshing the page.
-        e.preventDefault();
-        setSubmitting(true);
+  const handleFormSubmit = async (e) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault()
+    setSubmitting(true)
 
-        let comment = e.target["comment"].value;
-        let errorMessage = "";
-        let warningMessage = "";
+    const comment = e.target.comment.value
+    let errorMessage = ''
+    const warningMessage = ''
 
-        if (comment == null || comment == "") {
-            errorMessage += "Please enter a comment. ";
-        }
-        if (comment.length > commentLength) {
-            errorMessage += `Please use less than ${commentLength} characters. `
-        }
+    if (comment == null || comment == '') {
+      errorMessage += 'Please enter a comment. '
+    }
+    if (comment.length > commentLength) {
+      errorMessage += `Please use less than ${commentLength} characters. `
+    }
 
-        if (warningMessage !== "") {
-            setWarning_Message(warningMessage);
-            // throw new Error(errorMessage)
-        } else {
-            if (warning_Message != "") {
-                setWarning_Message("")
-            }
-        }
+    if (warningMessage !== '') {
+      setWarning_Message(warningMessage)
+      // throw new Error(errorMessage)
+    } else {
+      if (warning_Message != '') {
+        setWarning_Message('')
+      }
+    }
 
-        if (errorMessage != "") {
-            setError_Message(errorMessage);
-            setWarningSubmit(false);
-            setSubmitting(false);
-        } else {
+    if (errorMessage != '') {
+      setError_Message(errorMessage)
+      setWarningSubmit(false)
+      setSubmitting(false)
+    } else {
+      if (error_Message != '') {
+        setError_Message('')
+      }
 
-            if (error_Message != "") {
-                setError_Message("")
-            }
-
-            if (warningSubmit == false && warningMessage != "") {
-                setWarningSubmit(true);
-                setSubmitting(false);
-            } else {
-                // Get data from the form.
-                const data = {
-                    comment,
-                    section: section,
-                    user: session?.user?.name
-                };
-
-                console.log(data);
-
-                // Send the data to the server in JSON format.
-                const JSONdata = JSON.stringify(data);
-
-                // API endpoint where we send form data.
-                const endpoint = "/api/add-comment";
-
-                // Form the request for sending data to the server.
-                const options = {
-                    // The method is POST because we are sending data.
-                    method: "POST",
-                    // Tell the server we're sending JSON.
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    // Body of the request is the JSON data we created above.
-                    body: JSONdata
-                };
-
-                // Send the form data to our forms API on Vercel and get a response.
-                const response = await fetch(endpoint, options);
-
-                // Get the response data from server as JSON.
-                // If server returns the name submitted, that means the form works.
-                const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) });
-                // setSubmitted(true); setSubmitting(false)
-                // console.log(result);
-            }
+      if (warningSubmit == false && warningMessage != '') {
+        setWarningSubmit(true)
+        setSubmitting(false)
+      } else {
+        // Get data from the form.
+        const data = {
+          comment,
+          section,
+          user: session?.user?.name
         }
 
-    };
+        console.log(data)
 
-    return (
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data)
+
+        // API endpoint where we send form data.
+        const endpoint = '/api/add-comment'
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: 'POST',
+          // Tell the server we're sending JSON.
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        }
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options)
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) })
+        // setSubmitted(true); setSubmitting(false)
+        // console.log(result);
+      }
+    }
+  }
+
+  return (
         <>
             {componentComments.length > 0 && (
 
@@ -147,14 +144,14 @@ const Comments = ({
                     </div>
                 </div>
             )}
-            {session?.role == "admin" && componentComments.length > 0 && (
-                <div className={`flex justify-center`}>
+            {session?.role == 'admin' && componentComments.length > 0 && (
+                <div className={'flex justify-center'}>
                     <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenForm(true)}>
                         Add Comment
                     </div>
                 </div>
             )}
-            {session?.role == "admin" && componentComments.length <= 0 && (
+            {session?.role == 'admin' && componentComments.length <= 0 && (
                 <div className={`flex justify-center ${styling}`}>
                     <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenForm(true)}>
                         Add Comment
@@ -196,7 +193,7 @@ const Comments = ({
                 </div>
             )}
         </>
-    )
+  )
 }
 
-export default Comments;
+export default Comments

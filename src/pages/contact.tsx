@@ -2,108 +2,105 @@ import Header from '../components/header'
 import Footer from '../components/footer'
 import React from 'react'
 import CookieConsent from '../components/cookieConsent'
-import Head from "next/head";
+import Head from 'next/head'
 import { getSession } from 'next-auth/react'
 
-export default function ContactPage() {
-    const [error_Message, setError_Message] = React.useState("");
-    const [submitted, setSubmitted] = React.useState(false);
-    const [submitting, setSubmitting] = React.useState(false);
-    const [warning_Message, setWarning_Message] = React.useState("");
-    const [warningSubmit, setWarningSubmit] = React.useState(false);
+export default function ContactPage () {
+  const [error_Message, setError_Message] = React.useState('')
+  const [submitted, setSubmitted] = React.useState(false)
+  const [submitting, setSubmitting] = React.useState(false)
+  const [warning_Message, setWarning_Message] = React.useState('')
+  const [warningSubmit, setWarningSubmit] = React.useState(false)
 
-    const handleSubmit = async (event: any) => {
-        // Stop the form from submitting and refreshing the page.
-        event.preventDefault();
-        setSubmitting(true);
+  const handleSubmit = async (event: any) => {
+    // Stop the form from submitting and refreshing the page.
+    event.preventDefault()
+    setSubmitting(true)
 
-        let name = event.target['name'].value;
-        let company = event.target['company'].value;
-        let email = event.target['email'].value;
-        let message = event.target['message'].value;
+    const name = event.target.name.value
+    const company = event.target.company.value
+    const email = event.target.email.value
+    const message = event.target.message.value
 
-        let errorMessage = "";
-        let warningMessage = "";
+    let errorMessage = ''
+    const warningMessage = ''
 
-        if (name === undefined || name === null || name === "") {
-            errorMessage += "Please enter your name. "
-        }
-        if (company === undefined || company === null || company === "") {
-            errorMessage += "Please enter your company. "
-        }
-        if (email === undefined || email === null || email === "") {
-            errorMessage += "Please enter an email. "
-        }
-        if (message === undefined || message === null || message === "") {
-            errorMessage += "Please add a message. "
-        }
-
-        if (warningMessage !== "") {
-            setWarning_Message(warningMessage);
-            // throw new Error(errorMessage)
-        } else {
-            if (warning_Message != "") {
-                setWarning_Message("")
-            }
-        }
-
-        if (errorMessage != "") {
-            setError_Message(errorMessage);
-            setWarningSubmit(false);
-            setSubmitting(false);
-            // throw new Error(errorMessage);
-        } else {
-            if (error_Message != "") {
-                setError_Message("")
-            }
-
-            if (warningSubmit == false && warningMessage != "") {
-                setWarningSubmit(true);
-                setSubmitting(false);
-            } else {
-
-                // Get data from the form.
-                const data = {
-                    name,
-                    company,
-                    email,
-                    message
-                }
-
-                console.log(data);
-
-                // Send the data to the server in JSON format.
-                const JSONdata = JSON.stringify(data)
-
-                // API endpoint where we send form data.
-                const endpoint = '/api/add-general-inquiry'
-
-                // Form the request for sending data to the server.
-                const options = {
-                    // The method is POST because we are sending data.
-                    method: 'POST',
-                    // Tell the server we're sending JSON.
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    // Body of the request is the JSON data we created above.
-                    body: JSONdata,
-                }
-
-                // Send the form data to our forms API on Vercel and get a response.
-                const response = await fetch(endpoint, options)
-
-                // Get the response data from server as JSON.
-                // If server returns the name submitted, that means the form works.
-                const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) });
-                // setSubmitted(true); setSubmitting(false)
-            }
-
-        }
-
+    if (name === undefined || name === null || name === '') {
+      errorMessage += 'Please enter your name. '
+    }
+    if (company === undefined || company === null || company === '') {
+      errorMessage += 'Please enter your company. '
+    }
+    if (email === undefined || email === null || email === '') {
+      errorMessage += 'Please enter an email. '
+    }
+    if (message === undefined || message === null || message === '') {
+      errorMessage += 'Please add a message. '
     }
 
-    return (
+    if (warningMessage !== '') {
+      setWarning_Message(warningMessage)
+      // throw new Error(errorMessage)
+    } else {
+      if (warning_Message != '') {
+        setWarning_Message('')
+      }
+    }
+
+    if (errorMessage != '') {
+      setError_Message(errorMessage)
+      setWarningSubmit(false)
+      setSubmitting(false)
+      // throw new Error(errorMessage);
+    } else {
+      if (error_Message != '') {
+        setError_Message('')
+      }
+
+      if (warningSubmit == false && warningMessage != '') {
+        setWarningSubmit(true)
+        setSubmitting(false)
+      } else {
+        // Get data from the form.
+        const data = {
+          name,
+          company,
+          email,
+          message
+        }
+
+        console.log(data)
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data)
+
+        // API endpoint where we send form data.
+        const endpoint = '/api/add-general-inquiry'
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: 'POST',
+          // Tell the server we're sending JSON.
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        }
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options)
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) })
+        // setSubmitted(true); setSubmitting(false)
+      }
+    }
+  }
+
+  return (
         <>
             <Head>
                 <title>Macrovesta</title>
@@ -213,9 +210,6 @@ export default function ContactPage() {
                                 </form>
                             </div>
 
-
-
-
                             <div className="w-full md:w-7/12">
                                 <div className="flex flex-wrap">
                                     <div className="basis-full xl:basis-1/2 mb-12 w-full md:w-6/12 md:px-3">
@@ -316,22 +310,22 @@ export default function ContactPage() {
 
             <Footer />
         </>
-    );
+  )
 }
 
 export const getServerSideProps = async (context: any) => {
-    const session = await getSession({ req: context.req })
+  const session = await getSession({ req: context.req })
 
-    if (session && session?.company_id != null) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: `/`,
-            }
-        }
-    }
-
+  if (session && session?.company_id != null) {
     return {
-        props: {},
-    };
-};
+      redirect: {
+        permanent: false,
+        destination: '/'
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
+}

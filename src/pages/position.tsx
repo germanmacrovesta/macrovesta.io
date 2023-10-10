@@ -1,86 +1,82 @@
-import { type NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
-import { prisma } from '../server/db';
-import Sidebar from '../components/sidebar';
-import Breadcrumbs from '../components/breadcrumbs';
-import TabMenu from '../components/tabmenu';
-import { useRouter } from "next/router";
-import { TabMenuArray } from '../components/tabMenuArray';
-import React from "react";
-import SingleSelectDropdown from '../components/singleSelectDropdown';
-import { TVChartContainer } from "../components/TVChartContainer";
-import {
+import { type NextPage } from 'next'
+import Head from 'next/head'
+import Link from 'next/link'
+import { prisma } from '../server/db'
+import Sidebar from '../components/sidebar'
+import Breadcrumbs from '../components/breadcrumbs'
+import TabMenu from '../components/tabmenu'
+import { useRouter } from 'next/router'
+import { TabMenuArray } from '../components/tabMenuArray'
+import React from 'react'
+import SingleSelectDropdown from '../components/singleSelectDropdown'
+import { TVChartContainer } from '../components/TVChartContainer'
+import type {
   ChartingLibraryWidgetOptions,
-  ResolutionString,
-} from "../../public/static/charting_library/charting_library";
-import GroupedBarChart from '../components/groupedBarChart';
-import LineGraph from '../components/lineGraph';
-import LineGraphNotTime from '../components/lineGraphNotTime';
-import FormSubmit from '../components/formSubmit';
-import ReactMarkdown from 'react-markdown';
-import { render } from "react-dom";
-import BullishBearishDonut from '../components/bullishBearishDonut';
-import { useSession, getSession } from "next-auth/react";
-import Comments from '../components/comments';
-import IndexDial from '../components/indexDial';
-import SemiCircleDial from '../components/semiCircleDial';
-import MultipleSelectDropdown from '../components/multipleSelectDropdown';
-import DateField from '../components/dateField';
-import { useDateFormatter, useLocale } from 'react-aria';
-import { parseDate } from '@internationalized/date';
-import { WeglotLanguageSwitcher } from "~/components/weglotLanguageSwitcher";
-import useWeglotLang from '../components/useWeglotLang';
-import InfoButton from '../components/infoButton';
+  ResolutionString
+} from '../../public/static/charting_library/charting_library'
+import GroupedBarChart from '../components/groupedBarChart'
+import LineGraph from '../components/lineGraph'
+import LineGraphNotTime from '../components/lineGraphNotTime'
+import FormSubmit from '../components/formSubmit'
+import ReactMarkdown from 'react-markdown'
+import { render } from 'react-dom'
+import BullishBearishDonut from '../components/bullishBearishDonut'
+import { useSession, getSession } from 'next-auth/react'
+import Comments from '../components/comments'
+import IndexDial from '../components/indexDial'
+import SemiCircleDial from '../components/semiCircleDial'
+import MultipleSelectDropdown from '../components/multipleSelectDropdown'
+import DateField from '../components/dateField'
+import { useDateFormatter, useLocale } from 'react-aria'
+import { parseDate } from '@internationalized/date'
+import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
+import useWeglotLang from '../components/useWeglotLang'
+import InfoButton from '../components/infoButton'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
-  symbol: "AAPL",
-  interval: "1D" as ResolutionString,
-  library_path: "/static/charting_library/",
-  locale: "en",
-  charts_storage_url: "https://saveload.tradingview.com",
-  charts_storage_api_version: "1.1",
-  client_id: "tradingview.com",
-  user_id: "public_user_id",
+  symbol: 'AAPL',
+  interval: '1D' as ResolutionString,
+  library_path: '/static/charting_library/',
+  locale: 'en',
+  charts_storage_url: 'https://saveload.tradingview.com',
+  charts_storage_api_version: '1.1',
+  client_id: 'tradingview.com',
+  user_id: 'public_user_id',
   fullscreen: false,
-  autosize: true,
-};
+  autosize: true
+}
 
-function getCurrentMonth() {
+function getCurrentMonth () {
   // Create a new Date object
-  let date = new Date();
+  const date = new Date()
 
   // Create an array of month names
-  let monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December']
 
   // Get the month number from the Date object and use it to get the month name
-  let monthName = monthNames[date.getMonth()];
+  const monthName = monthNames[date.getMonth()]
 
-  return monthName;
+  return monthName
 }
 
 const selectAppropriateImage = (inv, value) => {
-  let imagesrc = "";
-  if (inv == "Y") {
+  let imagesrc = ''
+  if (inv == 'Y') {
     if (value < 15) {
-
-      imagesrc = "/Index_Neutral.jpg"
-
+      imagesrc = '/Index_Neutral.jpg'
     } else if (value < 50) {
-      imagesrc = "/Index_Inverse_Likely.jpg"
+      imagesrc = '/Index_Inverse_Likely.jpg'
     } else {
-      imagesrc = "/Index_Inverse_High.jpg"
+      imagesrc = '/Index_Inverse_High.jpg'
     }
   } else {
     if (value < 15) {
-
-      imagesrc = "/Index_Neutral.jpg"
-
+      imagesrc = '/Index_Neutral.jpg'
     } else if (value < 50) {
-      imagesrc = "/Index_Non_Likely.jpg"
+      imagesrc = '/Index_Non_Likely.jpg'
     } else {
-      imagesrc = "/Index_Non_High.jpg"
+      imagesrc = '/Index_Non_High.jpg'
     }
   }
   return (
@@ -89,31 +85,30 @@ const selectAppropriateImage = (inv, value) => {
 }
 
 const parseDateString = (dateString) => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear()).slice(-2);
+  const date = new Date(dateString)
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = String(date.getFullYear()).slice(-2)
 
   if (isNaN(date)) {
     return undefined
   } else {
-    return `${day}-${month}-${year}`;
+    return `${day}-${month}-${year}`
   }
+}
 
-};
-
-function getWeekNumber(d) {
+function getWeekNumber (d) {
   // Copy date so don't modify original
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
   // Set to nearest Thursday: current date + 4 - current day number
   // Make Sunday's day number 7
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
   // Get first day of year
-  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
   // Calculate full weeks to nearest Thursday
-  var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
   // Return array of year and week number
-  return [d.getUTCFullYear(), weekNo];
+  return [d.getUTCFullYear(), weekNo]
 }
 
 const renderers = {
@@ -126,19 +121,19 @@ const renderers = {
 }
 
 const Home: NextPage = ({ companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData, premiumCompaniesData }) => {
-  const router = useRouter();
-  const url = router.pathname;
+  const router = useRouter()
+  const url = router.pathname
 
-  const currentLang = useWeglotLang();
+  const currentLang = useWeglotLang()
 
-  const { data: session } = useSession();
-  console.log("session", session)
-  console.log("session.submittedSurvey", session?.submittedSurvey)
+  const { data: session } = useSession()
+  console.log('session', session)
+  console.log('session.submittedSurvey', session?.submittedSurvey)
 
   const todaysDate = new Date()
 
-  const baseUrlArray = url.split('/');
-  let urlArray: any = [];
+  const baseUrlArray = url.split('/')
+  const urlArray: any = []
   baseUrlArray.forEach((urlCrumb) => {
     if (urlCrumb.startsWith('[')) {
       urlArray.push(router.query[`${urlCrumb.slice(1, -1)}`])
@@ -146,123 +141,120 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
       urlArray.push(urlCrumb)
     }
   })
-  let root = '';
-  let urlPath = '';
+  let root = ''
+  let urlPath = ''
   const splitUrl = (urlcrumbs: any, number: any) => {
     for (let i = 1; i < urlcrumbs.length; i++) {
       if (i < number) {
-        root += '/';
-        root += urlcrumbs[i];
+        root += '/'
+        root += urlcrumbs[i]
       } else {
-        urlPath += '/';
-        urlPath += urlcrumbs[i];
+        urlPath += '/'
+        urlPath += urlcrumbs[i]
       }
     }
   }
   splitUrl(urlArray, 1)
 
-
-
   React.useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.weglot.com/weglot.min.js';
-    script.async = true;
+    const script = document.createElement('script')
+    script.src = 'https://cdn.weglot.com/weglot.min.js'
+    script.async = true
 
     script.onload = () => {
       Weglot.initialize({
-        api_key: 'wg_60b49229f516dee77edb3109e6a46c379',
-      });
-    };
+        api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
+      })
+    }
 
-    document.body.appendChild(script);
+    document.body.appendChild(script)
 
     return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+      document.body.removeChild(script)
+    }
+  }, [])
 
   const [strategyPopup, setStrategyPopup] = React.useState(null)
 
   const [openProductionForm, setOpenProductionForm] = React.useState(false)
 
-  const [productionError_Message, setProductionError_Message] = React.useState("");
-  const [productionSubmitted, setProductionSubmitted] = React.useState(false);
-  const [productionSubmitting, setProductionSubmitting] = React.useState(false);
-  const [productionWarning_Message, setProductionWarning_Message] = React.useState("");
-  const [productionWarningSubmit, setProductionWarningSubmit] = React.useState(false);
+  const [productionError_Message, setProductionError_Message] = React.useState('')
+  const [productionSubmitted, setProductionSubmitted] = React.useState(false)
+  const [productionSubmitting, setProductionSubmitting] = React.useState(false)
+  const [productionWarning_Message, setProductionWarning_Message] = React.useState('')
+  const [productionWarningSubmit, setProductionWarningSubmit] = React.useState(false)
 
   const [openCostForm, setOpenCostForm] = React.useState(false)
 
-  const [costError_Message, setCostError_Message] = React.useState("");
-  const [costSubmitted, setCostSubmitted] = React.useState(false);
-  const [costSubmitting, setCostSubmitting] = React.useState(false);
-  const [costWarning_Message, setCostWarning_Message] = React.useState("");
-  const [costWarningSubmit, setCostWarningSubmit] = React.useState(false);
+  const [costError_Message, setCostError_Message] = React.useState('')
+  const [costSubmitted, setCostSubmitted] = React.useState(false)
+  const [costSubmitting, setCostSubmitting] = React.useState(false)
+  const [costWarning_Message, setCostWarning_Message] = React.useState('')
+  const [costWarningSubmit, setCostWarningSubmit] = React.useState(false)
 
   const [openCommercialisationForm, setOpenCommercialisationForm] = React.useState(false)
 
-  const [commercialisationError_Message, setCommercialisationError_Message] = React.useState("");
-  const [commercialisationSubmitted, setCommercialisationSubmitted] = React.useState(false);
-  const [commercialisationSubmitting, setCommercialisationSubmitting] = React.useState(false);
-  const [commercialisationWarning_Message, setCommercialisationWarning_Message] = React.useState("");
-  const [commercialisationWarningSubmit, setCommercialisationWarningSubmit] = React.useState(false);
+  const [commercialisationError_Message, setCommercialisationError_Message] = React.useState('')
+  const [commercialisationSubmitted, setCommercialisationSubmitted] = React.useState(false)
+  const [commercialisationSubmitting, setCommercialisationSubmitting] = React.useState(false)
+  const [commercialisationWarning_Message, setCommercialisationWarning_Message] = React.useState('')
+  const [commercialisationWarningSubmit, setCommercialisationWarningSubmit] = React.useState(false)
 
   const [openUnfixedForm, setOpenUnfixedForm] = React.useState(false)
 
-  const [unfixedError_Message, setUnfixedError_Message] = React.useState("");
-  const [unfixedSubmitted, setUnfixedSubmitted] = React.useState(false);
-  const [unfixedSubmitting, setUnfixedSubmitting] = React.useState(false);
-  const [unfixedWarning_Message, setUnfixedWarning_Message] = React.useState("");
-  const [unfixedWarningSubmit, setUnfixedWarningSubmit] = React.useState(false);
+  const [unfixedError_Message, setUnfixedError_Message] = React.useState('')
+  const [unfixedSubmitted, setUnfixedSubmitted] = React.useState(false)
+  const [unfixedSubmitting, setUnfixedSubmitting] = React.useState(false)
+  const [unfixedWarning_Message, setUnfixedWarning_Message] = React.useState('')
+  const [unfixedWarningSubmit, setUnfixedWarningSubmit] = React.useState(false)
 
   const [openFixedForm, setOpenFixedForm] = React.useState(false)
 
-  const [fixedError_Message, setFixedError_Message] = React.useState("");
-  const [fixedSubmitted, setFixedSubmitted] = React.useState(false);
-  const [fixedSubmitting, setFixedSubmitting] = React.useState(false);
-  const [fixedWarning_Message, setFixedWarning_Message] = React.useState("");
-  const [fixedWarningSubmit, setFixedWarningSubmit] = React.useState(false);
+  const [fixedError_Message, setFixedError_Message] = React.useState('')
+  const [fixedSubmitted, setFixedSubmitted] = React.useState(false)
+  const [fixedSubmitting, setFixedSubmitting] = React.useState(false)
+  const [fixedWarning_Message, setFixedWarning_Message] = React.useState('')
+  const [fixedWarningSubmit, setFixedWarningSubmit] = React.useState(false)
 
   const handleProductionFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setProductionSubmitting(true);
+    e.preventDefault()
+    setProductionSubmitting(true)
 
-    let production1 = e.target["production1"].value;
-    let yield1 = e.target["yield1"].value;
-    let production2 = e.target["production2"].value;
-    let yield2 = e.target["yield2"].value;
-    let production3 = e.target["production3"].value;
-    let yield3 = e.target["yield3"].value;
-    let errorMessage = "";
-    let warningMessage = "";
+    const production1 = e.target.production1.value
+    const yield1 = e.target.yield1.value
+    const production2 = e.target.production2.value
+    const yield2 = e.target.yield2.value
+    const production3 = e.target.production3.value
+    const yield3 = e.target.yield3.value
+    let errorMessage = ''
+    const warningMessage = ''
 
-    if (production1 == null || production1 == "") {
-      errorMessage += "Please enter an estimate. ";
+    if (production1 == null || production1 == '') {
+      errorMessage += 'Please enter an estimate. '
     }
 
-    if (warningMessage !== "") {
-      setProductionWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setProductionWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (productionWarning_Message != "") {
-        setProductionWarning_Message("")
+      if (productionWarning_Message != '') {
+        setProductionWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setProductionError_Message(errorMessage);
-      setProductionWarningSubmit(false);
-      setProductionSubmitting(false);
+    if (errorMessage != '') {
+      setProductionError_Message(errorMessage)
+      setProductionWarningSubmit(false)
+      setProductionSubmitting(false)
     } else {
-
-      if (productionError_Message != "") {
-        setProductionError_Message("")
+      if (productionError_Message != '') {
+        setProductionError_Message('')
       }
 
-      if (productionWarningSubmit == false && warningMessage != "") {
-        setProductionWarningSubmit(true);
-        setProductionSubmitting(false);
+      if (productionWarningSubmit == false && warningMessage != '') {
+        setProductionWarningSubmit(true)
+        setProductionSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
@@ -274,81 +266,79 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
           yield3,
           company_id: JSON.parse(companyData)?.record_id,
           user: session?.user?.name
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-producer-production-position";
+        const endpoint = '/api/add-producer-production-position'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setProductionSubmitted(true); setProductionSubmitting(false) });
+        const result = await response.json().then(() => { setProductionSubmitted(true); setProductionSubmitting(false) })
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
       }
     }
-
-  };
+  }
 
   const handleCostFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setCostSubmitting(true);
+    e.preventDefault()
+    setCostSubmitting(true)
 
-    let dollars_per_hectare1 = e.target["dollars_per_hectare1"].value;
-    let cents_per_pound1 = e.target["cents_per_pound1"].value;
-    let dollars_per_hectare2 = e.target["dollars_per_hectare2"].value;
-    let cents_per_pound2 = e.target["cents_per_pound2"].value;
-    let dollars_per_hectare3 = e.target["dollars_per_hectare3"].value;
-    let cents_per_pound3 = e.target["cents_per_pound3"].value;
-    let errorMessage = "";
-    let warningMessage = "";
+    const dollars_per_hectare1 = e.target.dollars_per_hectare1.value
+    const cents_per_pound1 = e.target.cents_per_pound1.value
+    const dollars_per_hectare2 = e.target.dollars_per_hectare2.value
+    const cents_per_pound2 = e.target.cents_per_pound2.value
+    const dollars_per_hectare3 = e.target.dollars_per_hectare3.value
+    const cents_per_pound3 = e.target.cents_per_pound3.value
+    const errorMessage = ''
+    const warningMessage = ''
 
     // if (comment == null || comment == "") {
     //   errorMessage += "Please enter a comment. ";
     // }
 
-    if (warningMessage !== "") {
-      setCostWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setCostWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (costWarning_Message != "") {
-        setCostWarning_Message("")
+      if (costWarning_Message != '') {
+        setCostWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setCostError_Message(errorMessage);
-      setCostWarningSubmit(false);
-      setCostSubmitting(false);
+    if (errorMessage != '') {
+      setCostError_Message(errorMessage)
+      setCostWarningSubmit(false)
+      setCostSubmitting(false)
     } else {
-
-      if (costError_Message != "") {
-        setCostError_Message("")
+      if (costError_Message != '') {
+        setCostError_Message('')
       }
 
-      if (costWarningSubmit == false && warningMessage != "") {
-        setCostWarningSubmit(true);
-        setCostSubmitting(false);
+      if (costWarningSubmit == false && warningMessage != '') {
+        setCostWarningSubmit(true)
+        setCostSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
@@ -360,75 +350,72 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
           cents_per_pound3,
           company_id: JSON.parse(companyData)?.record_id,
           user: session?.user?.name
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-producer-cost-position";
+        const endpoint = '/api/add-producer-cost-position'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setCostSubmitted(true); setCostSubmitting(false) });
+        const result = await response.json().then(() => { setCostSubmitted(true); setCostSubmitting(false) })
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
       }
     }
-
-  };
+  }
 
   const handleCommercialisationFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setCommercialisationSubmitting(true);
+    e.preventDefault()
+    setCommercialisationSubmitting(true)
 
-    let percentage1 = e.target["percentage1"].value;
-    let percentage2 = e.target["percentage2"].value;
-    let percentage3 = e.target["percentage3"].value;
-    let errorMessage = "";
-    let warningMessage = "";
+    const percentage1 = e.target.percentage1.value
+    const percentage2 = e.target.percentage2.value
+    const percentage3 = e.target.percentage3.value
+    const errorMessage = ''
+    const warningMessage = ''
 
-
-    if (warningMessage !== "") {
-      setCommercialisationWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setCommercialisationWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (commercialisationWarning_Message != "") {
-        setCommercialisationWarning_Message("")
+      if (commercialisationWarning_Message != '') {
+        setCommercialisationWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setCommercialisationError_Message(errorMessage);
-      setCommercialisationWarningSubmit(false);
-      setCommercialisationSubmitting(false);
+    if (errorMessage != '') {
+      setCommercialisationError_Message(errorMessage)
+      setCommercialisationWarningSubmit(false)
+      setCommercialisationSubmitting(false)
     } else {
-
-      if (commercialisationError_Message != "") {
-        setCommercialisationError_Message("")
+      if (commercialisationError_Message != '') {
+        setCommercialisationError_Message('')
       }
 
-      if (commercialisationWarningSubmit == false && warningMessage != "") {
-        setCommercialisationWarningSubmit(true);
-        setCommercialisationSubmitting(false);
+      if (commercialisationWarningSubmit == false && warningMessage != '') {
+        setCommercialisationWarningSubmit(true)
+        setCommercialisationSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
@@ -437,79 +424,76 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
           percentage3,
           company_id: JSON.parse(companyData)?.record_id,
           user: session?.user?.name
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-producer-commercialisation-position";
+        const endpoint = '/api/add-producer-commercialisation-position'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setCommercialisationSubmitted(true); setCommercialisationSubmitting(false) });
+        const result = await response.json().then(() => { setCommercialisationSubmitted(true); setCommercialisationSubmitting(false) })
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
       }
     }
-
-  };
+  }
 
   const handleUnfixedFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setUnfixedSubmitting(true);
+    e.preventDefault()
+    setUnfixedSubmitting(true)
 
-    let contract = e.target["contract"]?.value;
-    let futures_month = e.target["futures_month"]?.value;
-    let fix_by = e.target["fix_by"]?.value;
-    let basis = e.target["basis"]?.value;
-    let percentage = e.target["percentage"]?.value;
-    let remaining = e.target["remaining"]?.value;
-    let fixed_price = e.target["fixed_price"]?.value;
-    let errorMessage = "";
-    let warningMessage = "";
+    const contract = e.target.contract?.value
+    const futures_month = e.target.futures_month?.value
+    const fix_by = e.target.fix_by?.value
+    const basis = e.target.basis?.value
+    const percentage = e.target.percentage?.value
+    const remaining = e.target.remaining?.value
+    const fixed_price = e.target.fixed_price?.value
+    const errorMessage = ''
+    const warningMessage = ''
 
-
-    if (warningMessage !== "") {
-      setUnfixedWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setUnfixedWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (unfixedWarning_Message != "") {
-        setUnfixedWarning_Message("")
+      if (unfixedWarning_Message != '') {
+        setUnfixedWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setUnfixedError_Message(errorMessage);
-      setUnfixedWarningSubmit(false);
-      setUnfixedSubmitting(false);
+    if (errorMessage != '') {
+      setUnfixedError_Message(errorMessage)
+      setUnfixedWarningSubmit(false)
+      setUnfixedSubmitting(false)
     } else {
-
-      if (unfixedError_Message != "") {
-        setUnfixedError_Message("")
+      if (unfixedError_Message != '') {
+        setUnfixedError_Message('')
       }
 
-      if (unfixedWarningSubmit == false && warningMessage != "") {
-        setUnfixedWarningSubmit(true);
-        setUnfixedSubmitting(false);
+      if (unfixedWarningSubmit == false && warningMessage != '') {
+        setUnfixedWarningSubmit(true)
+        setUnfixedSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
@@ -522,77 +506,74 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
           fixed_price,
           company_id: JSON.parse(companyData)?.record_id,
           user: session?.user?.name
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-unfixed-cotton";
+        const endpoint = '/api/add-unfixed-cotton'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setUnfixedSubmitted(true); setUnfixedSubmitting(false) });
+        const result = await response.json().then(() => { setUnfixedSubmitted(true); setUnfixedSubmitting(false) })
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
       }
     }
-
-  };
+  }
 
   const handleFixedFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setFixedSubmitting(true);
+    e.preventDefault()
+    setFixedSubmitting(true)
 
-    let contract = e.target["contract"]?.value;
-    let futures_month = e.target["futures_month"]?.value;
-    let basis = e.target["basis"]?.value;
-    let price = e.target["price"]?.value;
-    let amount = e.target["amount"]?.value;
-    let errorMessage = "";
-    let warningMessage = "";
+    const contract = e.target.contract?.value
+    const futures_month = e.target.futures_month?.value
+    const basis = e.target.basis?.value
+    const price = e.target.price?.value
+    const amount = e.target.amount?.value
+    const errorMessage = ''
+    const warningMessage = ''
 
-
-    if (warningMessage !== "") {
-      setFixedWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setFixedWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (fixedWarning_Message != "") {
-        setFixedWarning_Message("")
+      if (fixedWarning_Message != '') {
+        setFixedWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setFixedError_Message(errorMessage);
-      setFixedWarningSubmit(false);
-      setFixedSubmitting(false);
+    if (errorMessage != '') {
+      setFixedError_Message(errorMessage)
+      setFixedWarningSubmit(false)
+      setFixedSubmitting(false)
     } else {
-
-      if (fixedError_Message != "") {
-        setFixedError_Message("")
+      if (fixedError_Message != '') {
+        setFixedError_Message('')
       }
 
-      if (fixedWarningSubmit == false && warningMessage != "") {
-        setFixedWarningSubmit(true);
-        setFixedSubmitting(false);
+      if (fixedWarningSubmit == false && warningMessage != '') {
+        setFixedWarningSubmit(true)
+        setFixedSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
@@ -604,50 +585,49 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
           selected_contract: modifyingContract,
           company_id: JSON.parse(companyData)?.record_id,
           user: session?.user?.name
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-fixed-cotton";
+        const endpoint = '/api/add-fixed-cotton'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setFixedSubmitted(true); setFixedSubmitting(false) });
+        const result = await response.json().then(() => { setFixedSubmitted(true); setFixedSubmitting(false) })
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
       }
     }
-
-  };
+  }
 
   const getEstimatesData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
           dataset.data.push({ x: item.date_created, y: parseInt(item[property]) })
         } else {
-          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
           dataset.data.push({ x: item.date_created, y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
@@ -656,13 +636,13 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
     return datasetArray
   }
 
-  const [selectedSeason, setSelectedSeason] = React.useState("22/23")
+  const [selectedSeason, setSelectedSeason] = React.useState('22/23')
 
   const data = [
     { id: 1, name: 'John Doe', age: 30, email: 'john@example.com' },
     { id: 2, name: 'Jane Smith', age: 25, email: 'jane@example.com' },
-    { id: 3, name: 'Bob Johnson', age: 35, email: 'bob@example.com' },
-  ];
+    { id: 3, name: 'Bob Johnson', age: 35, email: 'bob@example.com' }
+  ]
 
   const [partiallyFixed, setPartiallyFixed] = React.useState(false)
   const [modifyingExistingContract, setModifyingExistingContract] = React.useState(false)
@@ -674,37 +654,37 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
       new_company_id: e.record_id,
       email: session?.user.email,
       user: session?.user?.name
-    };
+    }
 
-    console.log(data);
+    console.log(data)
 
     // Send the data to the server in JSON format.
-    const JSONdata = JSON.stringify(data);
+    const JSONdata = JSON.stringify(data)
 
     // API endpoint where we send form data.
-    const endpoint = "/api/change-selected-company";
+    const endpoint = '/api/change-selected-company'
 
     // Form the request for sending data to the server.
     const options = {
       // The method is POST because we are sending data.
-      method: "POST",
+      method: 'POST',
       // Tell the server we're sending JSON.
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       },
       // Body of the request is the JSON data we created above.
       body: JSONdata
-    };
+    }
 
     // Send the form data to our forms API on Vercel and get a response.
-    const response = await fetch(endpoint, options);
+    const response = await fetch(endpoint, options)
 
     // Get the response data from server as JSON.
     // If server returns the name submitted, that means the form works.
     const result = await response.json().then(() => {
       router.reload()
       // setSentimentData([...sentimentData, { record_id: "dummyid", bullish_or_bearish, high, low, intraday_average_points, open_interest }])
-    });
+    })
   }
 
   return (
@@ -731,7 +711,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
           <header className="z-40 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={"Position"} urlPath={urlPath} user={session?.user.name} />
+            <Breadcrumbs title={'Position'} urlPath={urlPath} user={session?.user.name} />
             {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
           </header>
           {/* <WeglotLanguageSwitcher
@@ -762,12 +742,12 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
             {/* {JSON.parse(productionData).length}
             {JSON.parse(costData).length}
             {JSON.parse(commercialisationData).length} */}
-            {JSON.parse(companyData)?.type == "producer" && (
+            {JSON.parse(companyData)?.type == 'producer' && (
               <>
                 <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
                   <div className="w-[200px] self-center">
                     <SingleSelectDropdown
-                      options={[{ name: "22/23", parameter: "22/23" }, { name: "23/24", parameter: "23/24" }, { name: "24/25", parameter: "24/25" }]}
+                      options={[{ name: '22/23', parameter: '22/23' }, { name: '23/24', parameter: '23/24' }, { name: '24/25', parameter: '24/25' }]}
                       label="Parameter"
                       variable="name"
                       colour="bg-deep_blue"
@@ -783,14 +763,14 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                       <div className="mt-6 -mb-2 font-semibold text-center">Production {selectedSeason}</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ["production_estimate"], ["Production Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ['production_estimate'], ['Production Estimate'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
                       </div>
                     </div>
                     <div>
                       <div className="mt-6 -mb-2 font-semibold text-center">Yield {selectedSeason}</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ["yield_estimate"], ["Yield Estimate"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ['yield_estimate'], ['Yield Estimate'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
                       </div>
                     </div>
                   </div>
@@ -926,14 +906,14 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                       <div className="mt-6 -mb-2 font-semibold text-center">Dollars per Hectare {selectedSeason}</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_dollar_per_hectare"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
+                        <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ['cost_estimate_dollar_per_hectare'], [''])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
                       </div>
                     </div>
                     <div>
                       <div className="mt-6 -mb-2 font-semibold text-center">Cents per Pound {selectedSeason}</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ["cost_estimate_cent_per_pound"], [""])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
+                        <LineGraph data={getEstimatesData(JSON.parse(costData).filter((estimate) => estimate.season == selectedSeason), ['cost_estimate_cent_per_pound'], [''])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Cost" />
                       </div>
                     </div>
                   </div>
@@ -1069,7 +1049,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                       <div className="mt-6 -mb-2 font-semibold text-center">Commercialisation {selectedSeason}</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph data={getEstimatesData(JSON.parse(commercialisationData).filter((estimate) => estimate.season == selectedSeason), ["percentage_sold"], ["Percentage"])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Percentage Sold" />
+                        <LineGraph data={getEstimatesData(JSON.parse(commercialisationData).filter((estimate) => estimate.season == selectedSeason), ['percentage_sold'], ['Percentage'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Percentage Sold" />
                       </div>
                     </div>
                     {/* <div>
@@ -1181,7 +1161,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                       <tr className="" key={row.record_id}>
                         <td className="px-4">{row.contract_number}</td>
                         <td className="px-4">{row.futures_month}</td>
-                        <td className="px-4">{row.fix_by.split("T")[0]}</td>
+                        <td className="px-4">{row.fix_by.split('T')[0]}</td>
                         <td className="px-4">{row.basis}</td>
                         <td className="px-4">{(100 - (parseFloat(row.amount_remaining) / parseFloat(row.total_amount) * 100)) ?? 0}</td>
                         <td className="px-4">{row.amount_remaining}</td>
@@ -1346,7 +1326,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                                   htmlFor="remaining"
                                   className="block text-gray-700 text-sm font-bold mb-2 pl-3 mt-3"
                                 >
-                                  Amount{partiallyFixed ? " Remaining" : ""}&nbsp;(tonnes)
+                                  Amount{partiallyFixed ? ' Remaining' : ''}&nbsp;(tonnes)
                                 </label>
                                 <input
                                   type="number"
@@ -1354,7 +1334,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                                   id="remaining"
                                   required
                                   className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                  placeholder={`Enter amount${partiallyFixed ? " remaining" : ""}`}
+                                  placeholder={`Enter amount${partiallyFixed ? ' remaining' : ''}`}
                                 />
                               </div>
                             </div>
@@ -1621,24 +1601,24 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
         </div>
       </main >
     </>
-  );
-};
-//some random shit added by Vic
+  )
+}
+// some random shit added by Vic
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
 
-  if (!session || (session?.type != "producer" && session?.type != "spinner" && session?.company_id != "cllxqmywr0000zbdg10nqp2up")) {
+  if (!session || (session?.type != 'producer' && session?.type != 'spinner' && session?.company_id != 'cllxqmywr0000zbdg10nqp2up')) {
     return {
       redirect: {
         permanent: false,
-        destination: `/`,
+        destination: '/'
       }
     }
   }
 
   let company_id = session?.company_id
 
-  if (session?.company_id == "cllxqmywr0000zbdg10nqp2up") {
+  if (session?.company_id == 'cllxqmywr0000zbdg10nqp2up') {
     company_id = session?.selected_company_id
   }
 
@@ -1656,10 +1636,10 @@ export const getServerSideProps = async (context: any) => {
 
   const production = await prisma?.producer_production_estimates.findMany({
     where: {
-      company_id: company_id
+      company_id
     },
     orderBy: {
-      date_created: "asc"
+      date_created: 'asc'
     }
   })
 
@@ -1667,10 +1647,10 @@ export const getServerSideProps = async (context: any) => {
 
   const cost = await prisma?.producer_cost_estimates.findMany({
     where: {
-      company_id: company_id
+      company_id
     },
     orderBy: {
-      date_created: "asc"
+      date_created: 'asc'
     }
   })
 
@@ -1678,10 +1658,10 @@ export const getServerSideProps = async (context: any) => {
 
   const commercialisation = await prisma?.producer_commercialisation_estimates.findMany({
     where: {
-      company_id: company_id
+      company_id
     },
     orderBy: {
-      date_created: "asc"
+      date_created: 'asc'
     }
   })
 
@@ -1689,18 +1669,18 @@ export const getServerSideProps = async (context: any) => {
 
   const strategylog = await prisma?.strategy_log.findMany({
     where: {
-      company_id: company_id
+      company_id
     }
   })
 
   const strategyLogData = JSON.stringify(strategylog)
 
-  const today = new Date(); // Current date
-  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const today = new Date() // Current date
+  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
 
   const fixed = await prisma?.fixed_cotton.findMany({
     where: {
-      company_id: company_id
+      company_id
     }
   })
 
@@ -1708,7 +1688,7 @@ export const getServerSideProps = async (context: any) => {
 
   const unfixed = await prisma?.unfixed_cotton.findMany({
     where: {
-      company_id: company_id
+      company_id
     }
   })
 
@@ -1716,7 +1696,7 @@ export const getServerSideProps = async (context: any) => {
 
   const premiumCompany = await prisma?.company.findMany({
     where: {
-      tier: "premium"
+      tier: 'premium'
     }
   })
 
@@ -1724,8 +1704,8 @@ export const getServerSideProps = async (context: any) => {
 
   // console.log(monthlyIndexData)
   return {
-    props: { companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData, premiumCompaniesData },
-  };
-};
+    props: { companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData, premiumCompaniesData }
+  }
+}
 
-export default Home;
+export default Home

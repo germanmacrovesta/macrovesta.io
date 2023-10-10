@@ -1,11 +1,11 @@
-import { useRouter } from "next/router"
-import Head from "next/head";
+import { useRouter } from 'next/router'
+import Head from 'next/head'
 
-export default function Verify() {
-    const router = useRouter();
-    const { verificationurl }: { verificationurl?: string } = router.query
-    console.log("verification URL", verificationurl)
-    return (
+export default function Verify () {
+  const router = useRouter()
+  const { verificationurl }: { verificationurl?: string } = router.query
+  console.log('verification URL', verificationurl)
+  return (
         <>
             <Head>
                 <title>Verify Email</title>
@@ -26,5 +26,5 @@ export default function Verify() {
                 </div>
             </div>
         </>
-    )
+  )
 }

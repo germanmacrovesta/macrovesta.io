@@ -33,7 +33,6 @@
 
 // export default About
 
-
 import Hero from '../components/hero'
 import Features from '../components/features'
 import FeaturesBlocks from '../components/features-blocks'
@@ -50,29 +49,29 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import DemoForm from '../components/demoForm'
 
-export default function Introduction() {
-    const router = useRouter()
+export default function Introduction () {
+  const router = useRouter()
 
-    const [showModal, setShowModal] = React.useState(false);
-    const modalContentRef = React.useRef(null);
+  const [showModal, setShowModal] = React.useState(false)
+  const modalContentRef = React.useRef(null)
 
-    const openModal = () => {
-        setShowModal(true);
-    };
+  const openModal = () => {
+    setShowModal(true)
+  }
 
-    const closeModal = () => {
-        setShowModal(false);
-    };
+  const closeModal = () => {
+    setShowModal(false)
+  }
 
-    const handleFormSubmit = (formData) => {
-        // Handle the form submission here
-        console.log(formData);
-        closeModal(); // Close the modal after form submission
-    };
+  const handleFormSubmit = (formData) => {
+    // Handle the form submission here
+    console.log(formData)
+    closeModal() // Close the modal after form submission
+  }
 
-    const [isModalOpen, setIsModalOpen] = React.useState(router.query.demo == "true" ? true : false);
+  const [isModalOpen, setIsModalOpen] = React.useState(router.query.demo == 'true')
 
-    return (
+  return (
         <>
             <Head>
                 <title>Macrovesta</title>
@@ -100,7 +99,7 @@ export default function Introduction() {
                             {/* Close button */}
                             <button
                                 className="absolute top-0 right-0 p-3 text-black cursor-pointer"
-                                onClick={(e) => { e.stopPropagation(); setIsModalOpen(false); }}
+                                onClick={(e) => { e.stopPropagation(); setIsModalOpen(false) }}
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +128,7 @@ export default function Introduction() {
                                     </text>
                                     <div>
                                         {/* <img src="/Full_Logo.svg" alt="Tracker" className="mx-auto w-[150px] invert -hue-rotate-90 sm:w-[500px]" /> */}
-                                        <img src={"/Logo File-13.png"} className="mx-auto w-[150px] sm:w-[500px] object-fill" />
+                                        <img src={'/Logo File-13.png'} className="mx-auto w-[150px] sm:w-[500px] object-fill" />
 
                                     </div>
                                 </div>
@@ -148,22 +147,22 @@ export default function Introduction() {
             <CookieConsent />
             <Footer />
         </>
-    )
+  )
 }
 
 export const getServerSideProps = async (context: any) => {
-    const session = await getSession({ req: context.req })
+  const session = await getSession({ req: context.req })
 
-    if (session && session?.company_id != null) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: `/`,
-            }
-        }
-    }
-
+  if (session && session?.company_id != null) {
     return {
-        props: {},
-    };
-};
+      redirect: {
+        permanent: false,
+        destination: '/'
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
+}

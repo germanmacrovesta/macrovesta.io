@@ -1,10 +1,10 @@
-import Head from "next/head";
-import { TVChartContainer } from "../components/TVChartContainer";
+import Head from 'next/head'
+import { TVChartContainer } from '../components/TVChartContainer'
 import {
-    ChartingLibraryWidgetOptions,
-    ResolutionString,
-} from "../../public/static/charting_library/charting_library";
-import ImportCsvForm from '../components/importCSVForm';
+  ChartingLibraryWidgetOptions,
+  ResolutionString
+} from '../../public/static/charting_library/charting_library'
+import ImportCsvForm from '../components/importCSVForm'
 import React from 'react'
 
 // const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
@@ -20,47 +20,47 @@ import React from 'react'
 //     autosize: true,
 // };
 
-export default function GraphPage() {
-    const [file, setFile] = React.useState(null);
+export default function GraphPage () {
+  const [file, setFile] = React.useState(null)
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
-        if (!file) {
-            alert('Please select a CSV file to import.');
-            return;
-        }
-        // const table = e.target['form'].value;
-        // console.log(table)
+    if (!file) {
+      alert('Please select a CSV file to import.')
+      return
+    }
+    // const table = e.target['form'].value;
+    // console.log(table)
 
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            const csvData = event.target?.result;
+    const reader = new FileReader()
+    reader.onload = async (event) => {
+      const csvData = event.target?.result
 
-            try {
-                const response = await fetch('/api/import-barchart-csv', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ csvData, table: "cotton_contracts", contract: "CTZ23" }),
-                });
+      try {
+        const response = await fetch('/api/import-barchart-csv', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ csvData, table: 'cotton_contracts', contract: 'CTZ23' })
+        })
 
-                // if (response.ok) {
-                //     alert('CSV data imported successfully.');
-                // } else {
-                //     const error = await response.json();
-                //     alert(`Error: ${error.message}`);
-                // }
-            } catch (error) {
-                console.error('Error importing CSV data:', error);
-                alert('Error importing CSV data.');
-            }
-        };
+        // if (response.ok) {
+        //     alert('CSV data imported successfully.');
+        // } else {
+        //     const error = await response.json();
+        //     alert(`Error: ${error.message}`);
+        // }
+      } catch (error) {
+        console.error('Error importing CSV data:', error)
+        alert('Error importing CSV data.')
+      }
+    }
 
-        reader.readAsText(file);
-    };
-    return (
+    reader.readAsText(file)
+  }
+  return (
         <>
             <Head>
                 <title>TradingView Charting Library and Next.js</title>
@@ -83,6 +83,5 @@ export default function GraphPage() {
                 </form>
             </main>
         </>
-    );
+  )
 }
-

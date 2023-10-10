@@ -2,8 +2,8 @@ import Image from 'next/image'
 import FadeInImage from './fadeInImage'
 // import TestimonialImage from '../../public/Jordie-09.png'
 
-export default function Testimonials() {
-    return (
+export default function Testimonials () {
+  return (
         <section className="relative">
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -17,7 +17,7 @@ export default function Testimonials() {
 
                     <div className="h-fit  mx-auto relative">
                         <img className='absolute inset-0' src='/Maps_Map_Background.svg' />
-                        <FadeInImage imageUrl={"/Maps_Map_Pins.svg"} hasShadow={false} />
+                        <FadeInImage imageUrl={'/Maps_Map_Pins.svg'} hasShadow={false} />
                         {/* <img className='absolute inset-0 opacity-0' src='/Maps_Map_Pins.svg' /> */}
 
                         {/* <div className="flex items-center justify-center py-2 col-span-2 md:col-auto">
@@ -86,5 +86,5 @@ export default function Testimonials() {
                 </div>
             </div>
         </section>
-    )
+  )
 }

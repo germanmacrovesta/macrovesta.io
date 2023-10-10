@@ -1,86 +1,82 @@
-import { type NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
-import { prisma } from '../server/db';
-import Sidebar from '../components/sidebar';
-import Breadcrumbs from '../components/breadcrumbs';
-import TabMenu from '../components/tabmenu';
-import { useRouter } from "next/router";
-import { TabMenuArray } from '../components/tabMenuArray';
-import React from "react";
-import SingleSelectDropdown from '../components/singleSelectDropdown';
-import { TVChartContainer } from "../components/TVChartContainer";
-import {
+import { type NextPage } from 'next'
+import Head from 'next/head'
+import Link from 'next/link'
+import { prisma } from '../server/db'
+import Sidebar from '../components/sidebar'
+import Breadcrumbs from '../components/breadcrumbs'
+import TabMenu from '../components/tabmenu'
+import { useRouter } from 'next/router'
+import { TabMenuArray } from '../components/tabMenuArray'
+import React from 'react'
+import SingleSelectDropdown from '../components/singleSelectDropdown'
+import { TVChartContainer } from '../components/TVChartContainer'
+import type {
   ChartingLibraryWidgetOptions,
-  ResolutionString,
-} from "../../public/static/charting_library/charting_library";
-import GroupedBarChart from '../components/groupedBarChart';
-import LineGraph from '../components/lineGraph';
-import LineGraphNotTime from '../components/lineGraphNotTime';
-import FormSubmit from '../components/formSubmit';
-import ReactMarkdown from 'react-markdown';
-import { render } from "react-dom";
-import BullishBearishDonut from '../components/bullishBearishDonut';
-import { useSession, getSession } from "next-auth/react";
-import Comments from '../components/comments';
-import IndexDial from '../components/indexDial';
-import SemiCircleDial from '../components/semiCircleDial';
-import MultipleSelectDropdown from '../components/multipleSelectDropdown';
-import DateField from '../components/dateField';
-import { useDateFormatter, useLocale } from 'react-aria';
-import { parseDate } from '@internationalized/date';
-import { WeglotLanguageSwitcher } from "~/components/weglotLanguageSwitcher";
-import useWeglotLang from '../components/useWeglotLang';
-import InfoButton from '../components/infoButton';
+  ResolutionString
+} from '../../public/static/charting_library/charting_library'
+import GroupedBarChart from '../components/groupedBarChart'
+import LineGraph from '../components/lineGraph'
+import LineGraphNotTime from '../components/lineGraphNotTime'
+import FormSubmit from '../components/formSubmit'
+import ReactMarkdown from 'react-markdown'
+import { render } from 'react-dom'
+import BullishBearishDonut from '../components/bullishBearishDonut'
+import { useSession, getSession } from 'next-auth/react'
+import Comments from '../components/comments'
+import IndexDial from '../components/indexDial'
+import SemiCircleDial from '../components/semiCircleDial'
+import MultipleSelectDropdown from '../components/multipleSelectDropdown'
+import DateField from '../components/dateField'
+import { useDateFormatter, useLocale } from 'react-aria'
+import { parseDate } from '@internationalized/date'
+import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
+import useWeglotLang from '../components/useWeglotLang'
+import InfoButton from '../components/infoButton'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
-  symbol: "AAPL",
-  interval: "1D" as ResolutionString,
-  library_path: "/static/charting_library/",
-  locale: "en",
-  charts_storage_url: "https://saveload.tradingview.com",
-  charts_storage_api_version: "1.1",
-  client_id: "tradingview.com",
-  user_id: "public_user_id",
+  symbol: 'AAPL',
+  interval: '1D' as ResolutionString,
+  library_path: '/static/charting_library/',
+  locale: 'en',
+  charts_storage_url: 'https://saveload.tradingview.com',
+  charts_storage_api_version: '1.1',
+  client_id: 'tradingview.com',
+  user_id: 'public_user_id',
   fullscreen: false,
-  autosize: true,
-};
+  autosize: true
+}
 
-function getCurrentMonth() {
+function getCurrentMonth () {
   // Create a new Date object
-  let date = new Date();
+  const date = new Date()
 
   // Create an array of month names
-  let monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December']
 
   // Get the month number from the Date object and use it to get the month name
-  let monthName = monthNames[date.getMonth()];
+  const monthName = monthNames[date.getMonth()]
 
-  return monthName;
+  return monthName
 }
 
 const selectAppropriateImage = (inv, value) => {
-  let imagesrc = "";
-  if (inv == "Y") {
+  let imagesrc = ''
+  if (inv == 'Y') {
     if (value < 15) {
-
-      imagesrc = "/Index_Neutral.jpg"
-
+      imagesrc = '/Index_Neutral.jpg'
     } else if (value < 50) {
-      imagesrc = "/Index_Inverse_Likely.jpg"
+      imagesrc = '/Index_Inverse_Likely.jpg'
     } else {
-      imagesrc = "/Index_Inverse_High.jpg"
+      imagesrc = '/Index_Inverse_High.jpg'
     }
   } else {
     if (value < 15) {
-
-      imagesrc = "/Index_Neutral.jpg"
-
+      imagesrc = '/Index_Neutral.jpg'
     } else if (value < 50) {
-      imagesrc = "/Index_Non_Likely.jpg"
+      imagesrc = '/Index_Non_Likely.jpg'
     } else {
-      imagesrc = "/Index_Non_High.jpg"
+      imagesrc = '/Index_Non_High.jpg'
     }
   }
   return (
@@ -89,31 +85,30 @@ const selectAppropriateImage = (inv, value) => {
 }
 
 const parseDateString = (dateString) => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear()).slice(-2);
+  const date = new Date(dateString)
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = String(date.getFullYear()).slice(-2)
 
   if (isNaN(date)) {
     return undefined
   } else {
-    return `${day}-${month}-${year}`;
+    return `${day}-${month}-${year}`
   }
+}
 
-};
-
-function getWeekNumber(d) {
+function getWeekNumber (d) {
   // Copy date so don't modify original
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
   // Set to nearest Thursday: current date + 4 - current day number
   // Make Sunday's day number 7
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
   // Get first day of year
-  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
   // Calculate full weeks to nearest Thursday
-  var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
   // Return array of year and week number
-  return [d.getUTCFullYear(), weekNo];
+  return [d.getUTCFullYear(), weekNo]
 }
 
 const renderers = {
@@ -126,27 +121,27 @@ const renderers = {
 }
 
 const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData }) => {
-  const router = useRouter();
-  const url = router.pathname;
+  const router = useRouter()
+  const url = router.pathname
 
-  const currentLang = useWeglotLang();
+  const currentLang = useWeglotLang()
 
-  const { data: session } = useSession();
-  console.log("session", session)
-  console.log("session.submittedSurvey", session?.submittedSurvey)
+  const { data: session } = useSession()
+  console.log('session', session)
+  console.log('session.submittedSurvey', session?.submittedSurvey)
 
   const todaysDate = new Date()
 
   const [sentimentData, setSentimentData] = React.useState(() => {
     try {
-      return JSON.parse(initialSentimentData);
+      return JSON.parse(initialSentimentData)
     } catch {
-      return [];
+      return []
     }
   })
 
-  const baseUrlArray = url.split('/');
-  let urlArray: any = [];
+  const baseUrlArray = url.split('/')
+  const urlArray: any = []
   baseUrlArray.forEach((urlCrumb) => {
     if (urlCrumb.startsWith('[')) {
       urlArray.push(router.query[`${urlCrumb.slice(1, -1)}`])
@@ -154,16 +149,16 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       urlArray.push(urlCrumb)
     }
   })
-  let root = '';
-  let urlPath = '';
+  let root = ''
+  let urlPath = ''
   const splitUrl = (urlcrumbs: any, number: any) => {
     for (let i = 1; i < urlcrumbs.length; i++) {
       if (i < number) {
-        root += '/';
-        root += urlcrumbs[i];
+        root += '/'
+        root += urlcrumbs[i]
       } else {
-        urlPath += '/';
-        urlPath += urlcrumbs[i];
+        urlPath += '/'
+        urlPath += urlcrumbs[i]
       }
     }
   }
@@ -198,46 +193,46 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   }, [futureContractsStudyData])
 
   React.useEffect(() => {
-    setDegrees(90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? 1 : -1))
+    setDegrees(90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == 'Y' ? 1 : -1))
   }, [monthlyIndexData])
 
   const data = [
     { country: 'Brazil', CTZ23: 10, CTZ24: 20 },
     { country: 'USA', CTZ23: 30, CTZ24: 40 },
     { country: 'WAF', CTZ23: 20, CTZ24: 40 },
-    { country: 'Australia', CTZ23: 30, CTZ24: 50 },
+    { country: 'Australia', CTZ23: 30, CTZ24: 50 }
     // ...
-  ];
+  ]
 
   const linedata = [
     {
-      name: "Series 1",
+      name: 'Series 1',
       data: [
-        { time: "2023-01-01T00:00:00Z", value: 12 },
-        { time: "2023-01-08T00:00:00Z", value: 12 },
-        { time: "2023-02-01T00:00:00Z", value: 22 },
-        { time: "2023-02-08T00:00:00Z", value: 22 },
-        { time: "2023-03-01T00:00:00Z", value: 21 },
-        { time: "2023-04-01T00:00:00Z", value: 23 },
-        { time: "2025-01-01T00:00:00Z", value: 26 },
+        { time: '2023-01-01T00:00:00Z', value: 12 },
+        { time: '2023-01-08T00:00:00Z', value: 12 },
+        { time: '2023-02-01T00:00:00Z', value: 22 },
+        { time: '2023-02-08T00:00:00Z', value: 22 },
+        { time: '2023-03-01T00:00:00Z', value: 21 },
+        { time: '2023-04-01T00:00:00Z', value: 23 },
+        { time: '2025-01-01T00:00:00Z', value: 26 }
         // more data...
-      ],
+      ]
     },
     {
-      name: "Series 2",
+      name: 'Series 2',
       data: [
-        { time: "2023-01-01T00:00:00Z", value: 15 },
-        { time: "2023-01-08T00:00:00Z", value: 15 },
-        { time: "2023-02-01T00:00:00Z", value: 18 },
-        { time: "2023-02-08T00:00:00Z", value: 18 },
-        { time: "2023-03-01T00:00:00Z", value: 11 },
-        { time: "2023-04-01T00:00:00Z", value: 13 },
-        { time: "2025-01-01T00:00:00Z", value: 16 },
+        { time: '2023-01-01T00:00:00Z', value: 15 },
+        { time: '2023-01-08T00:00:00Z', value: 15 },
+        { time: '2023-02-01T00:00:00Z', value: 18 },
+        { time: '2023-02-08T00:00:00Z', value: 18 },
+        { time: '2023-03-01T00:00:00Z', value: 11 },
+        { time: '2023-04-01T00:00:00Z', value: 13 },
+        { time: '2025-01-01T00:00:00Z', value: 16 }
         // more data...
-      ],
-    },
+      ]
+    }
     // more series...
-  ];
+  ]
 
   const [openBasisCostForm, setOpenBasisCostForm] = React.useState(false)
   const [openSnapshotForm, setOpenSnapshotForm] = React.useState(false)
@@ -250,16 +245,16 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const handleSentimentFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setSentimentSubmitting(true);
+    e.preventDefault()
+    setSentimentSubmitting(true)
 
-    let bullish_or_bearish = e.target["bullishbearish"].value;
-    let high = e.target["high"].value;
-    let low = e.target["low"].value;
-    let intraday_average_points = e.target["intraday"].value;
-    let open_interest = e.target["open_interest"].value;
-    let errorMessage = "";
-    let warningMessage = "";
+    const bullish_or_bearish = e.target.bullishbearish.value
+    const high = e.target.high.value
+    const low = e.target.low.value
+    const intraday_average_points = e.target.intraday.value
+    const open_interest = e.target.open_interest.value
+    let errorMessage = ''
+    const warningMessage = ''
 
     // if (bullishBearish != null && bullishBearish != "Select an Option") {
     //   bullish_or_bearish = bullishBearish;
@@ -267,50 +262,47 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     //   errorMessage += "Please select bullish or bearish. ";
     // }
 
-    if (bullish_or_bearish == null || bullish_or_bearish == "") {
-      errorMessage += "Please enter Estimate for market feeling. ";
+    if (bullish_or_bearish == null || bullish_or_bearish == '') {
+      errorMessage += 'Please enter Estimate for market feeling. '
     }
-    if (high == null || high == "") {
-      errorMessage += "Please enter Estimate for high. ";
+    if (high == null || high == '') {
+      errorMessage += 'Please enter Estimate for high. '
     }
-    if (low == null || low == "") {
-      errorMessage += "Please enter Estimate for low. ";
+    if (low == null || low == '') {
+      errorMessage += 'Please enter Estimate for low. '
     }
-    if (intraday_average_points == null || intraday_average_points == "") {
-      errorMessage += "Please enter Estimate for intraday average in points. ";
+    if (intraday_average_points == null || intraday_average_points == '') {
+      errorMessage += 'Please enter Estimate for intraday average in points. '
     }
-    if (open_interest == null || open_interest == "") {
-      errorMessage += "Please enter Estimate for open interest. ";
+    if (open_interest == null || open_interest == '') {
+      errorMessage += 'Please enter Estimate for open interest. '
     }
 
-
-
-    if (warningMessage !== "") {
-      setSentimentWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setSentimentWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (sentimentWarning_Message != "") {
-        setSentimentWarning_Message("")
+      if (sentimentWarning_Message != '') {
+        setSentimentWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setSentimentError_Message(errorMessage);
-      setSentimentWarningSubmit(false);
-      setSentimentSubmitting(false);
+    if (errorMessage != '') {
+      setSentimentError_Message(errorMessage)
+      setSentimentWarningSubmit(false)
+      setSentimentSubmitting(false)
     } else {
-
-      if (sentimentError_Message != "") {
-        setSentimentError_Message("")
+      if (sentimentError_Message != '') {
+        setSentimentError_Message('')
       }
 
-      if (sentimentWarningSubmit == false && warningMessage != "") {
-        setSentimentWarningSubmit(true);
-        setSentimentSubmitting(false);
+      if (sentimentWarningSubmit == false && warningMessage != '') {
+        setSentimentWarningSubmit(true)
+        setSentimentSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
-          bullish_or_bearish: bullish_or_bearish == "0" ? 'Neutral' : parseInt(bullish_or_bearish) < 0 ? 'Bearish' : 'Bullish',
+          bullish_or_bearish: bullish_or_bearish == '0' ? 'Neutral' : parseInt(bullish_or_bearish) < 0 ? 'Bearish' : 'Bullish',
           bullish_or_bearish_value: bullish_or_bearish,
           high,
           low,
@@ -318,101 +310,97 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
           open_interest,
           email: session?.user.email,
           user: session?.user?.name
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-sentiment-survey-results";
+        const endpoint = '/api/add-sentiment-survey-results'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
         const result = await response.json().then(() => {
-          setSentimentSubmitted(true);
-          setSentimentSubmitting(false);
-          setCurrentStage(1);
+          setSentimentSubmitted(true)
+          setSentimentSubmitting(false)
+          setCurrentStage(1)
           // setSentimentData([...sentimentData, { record_id: "dummyid", bullish_or_bearish, high, low, intraday_average_points, open_interest }])
-        });
+        })
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
       }
     }
-
-  };
+  }
 
   const handleBasisFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setSubmitting(true);
+    e.preventDefault()
+    setSubmitting(true)
 
-    let country = "";
-    let cost_type = "";
-    let contractOneBasis = e.target["ctz23"].value;
-    let contractTwoBasis = e.target["ctz24"].value;
-    let errorMessage = "";
-    let warningMessage = "";
+    let country = ''
+    let cost_type = ''
+    const contractOneBasis = e.target.ctz23.value
+    const contractTwoBasis = e.target.ctz24.value
+    let errorMessage = ''
+    const warningMessage = ''
 
-    if (selectedCountry != null && selectedCountry != "Select Country") {
-      country = selectedCountry;
+    if (selectedCountry != null && selectedCountry != 'Select Country') {
+      country = selectedCountry
     } else {
-      errorMessage += "Please select a Country. ";
+      errorMessage += 'Please select a Country. '
     }
 
-    if (selectedFormCostType != null && selectedFormCostType != "Select cost type") {
-      cost_type = selectedFormCostType;
+    if (selectedFormCostType != null && selectedFormCostType != 'Select cost type') {
+      cost_type = selectedFormCostType
     } else {
-      errorMessage += "Please select a cost type. ";
+      errorMessage += 'Please select a cost type. '
     }
 
-    if (contractOneBasis == null || contractOneBasis == "") {
-      errorMessage += "Please enter Estimate for CTZ23. ";
+    if (contractOneBasis == null || contractOneBasis == '') {
+      errorMessage += 'Please enter Estimate for CTZ23. '
     }
-    if (contractTwoBasis == null || contractTwoBasis == "") {
-      errorMessage += "Please enter Estimate for CTZ24. ";
+    if (contractTwoBasis == null || contractTwoBasis == '') {
+      errorMessage += 'Please enter Estimate for CTZ24. '
     }
 
-
-
-    if (warningMessage !== "") {
-      setWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (warning_Message != "") {
-        setWarning_Message("")
+      if (warning_Message != '') {
+        setWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setError_Message(errorMessage);
-      setWarningSubmit(false);
-      setSubmitting(false);
+    if (errorMessage != '') {
+      setError_Message(errorMessage)
+      setWarningSubmit(false)
+      setSubmitting(false)
     } else {
-
-      if (error_Message != "") {
-        setError_Message("")
+      if (error_Message != '') {
+        setError_Message('')
       }
 
-      if (warningSubmit == false && warningMessage != "") {
-        setWarningSubmit(true);
-        setSubmitting(false);
+      if (warningSubmit == false && warningMessage != '') {
+        setWarningSubmit(true)
+        setSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
@@ -421,94 +409,92 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
           contractTwoBasis,
           user: session?.user?.name,
           cost_type
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-basis-cost-estimate";
+        const endpoint = '/api/add-basis-cost-estimate'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) });
+        const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) })
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
       }
     }
+  }
 
-  };
-
-  const [selectedNewsType, setSelectedNewsType] = React.useState("")
+  const [selectedNewsType, setSelectedNewsType] = React.useState('')
 
   const handleSnapshotFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setSnapshotSubmitting(true);
+    e.preventDefault()
+    setSnapshotSubmitting(true)
 
-    let news_type = "";
-    let title = e.target["title"].value;
-    let text = e.target["text"].value;
-    let image = e.target["image"].value;
-    let errorMessage = "";
-    let warningMessage = "";
+    let news_type = ''
+    const title = e.target.title.value
+    const text = e.target.text.value
+    const image = e.target.image.value
+    let errorMessage = ''
+    let warningMessage = ''
 
     // console.log("textarea", text == "")
 
-    if (selectedNewsType != null && selectedNewsType != "" && selectedNewsType != "Select Snapshot Type") {
+    if (selectedNewsType != null && selectedNewsType != '' && selectedNewsType != 'Select Snapshot Type') {
       news_type = selectedNewsType
     } else {
-      errorMessage += "Please select a snapshot type. ";
+      errorMessage += 'Please select a snapshot type. '
     }
-    if (title == null || title == "") {
-      errorMessage += "Please enter a title. ";
+    if (title == null || title == '') {
+      errorMessage += 'Please enter a title. '
     }
-    if (text == null || text == "") {
-      errorMessage += "Please enter a text. ";
+    if (text == null || text == '') {
+      errorMessage += 'Please enter a text. '
     }
-    if (image == null || image == "") {
-      warningMessage += "You can add an image as well. If you don't want to just click confirm. ";
+    if (image == null || image == '') {
+      warningMessage += "You can add an image as well. If you don't want to just click confirm. "
     }
 
-    if (warningMessage !== "") {
-      setSnapshotWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setSnapshotWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (snapshotWarning_Message != "") {
-        setSnapshotWarning_Message("")
+      if (snapshotWarning_Message != '') {
+        setSnapshotWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setSnapshotError_Message(errorMessage);
-      setSnapshotWarningSubmit(false);
-      setSnapshotSubmitting(false);
+    if (errorMessage != '') {
+      setSnapshotError_Message(errorMessage)
+      setSnapshotWarningSubmit(false)
+      setSnapshotSubmitting(false)
     } else {
-
-      if (snapshotError_Message != "") {
-        setSnapshotError_Message("")
+      if (snapshotError_Message != '') {
+        setSnapshotError_Message('')
       }
 
-      if (snapshotWarningSubmit == false && warningMessage != "") {
-        setSnapshotWarningSubmit(true);
-        setSnapshotSubmitting(false);
+      if (snapshotWarningSubmit == false && warningMessage != '') {
+        setSnapshotWarningSubmit(true)
+        setSnapshotSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
@@ -517,90 +503,88 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
           image,
           user: session?.user?.name,
           news_type
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-snapshot";
+        const endpoint = '/api/add-snapshot'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setSnapshotSubmitted(true); setSnapshotSubmitting(false) });
+        const result = await response.json().then(() => { setSnapshotSubmitted(true); setSnapshotSubmitting(false) })
         // setSnapshotSubmitted(true); setSnapshotSubmitting(false)
       }
     }
-
-  };
-  const [snapshotError_Message, setSnapshotError_Message] = React.useState("");
-  const [snapshotSubmitted, setSnapshotSubmitted] = React.useState(false);
-  const [snapshotSubmitting, setSnapshotSubmitting] = React.useState(false);
-  const [snapshotWarning_Message, setSnapshotWarning_Message] = React.useState("");
-  const [snapshotWarningSubmit, setSnapshotWarningSubmit] = React.useState(false);
+  }
+  const [snapshotError_Message, setSnapshotError_Message] = React.useState('')
+  const [snapshotSubmitted, setSnapshotSubmitted] = React.useState(false)
+  const [snapshotSubmitting, setSnapshotSubmitting] = React.useState(false)
+  const [snapshotWarning_Message, setSnapshotWarning_Message] = React.useState('')
+  const [snapshotWarningSubmit, setSnapshotWarningSubmit] = React.useState(false)
 
   const handleCountryNewsFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
-    e.preventDefault();
-    setCountryNewsSubmitting(true);
+    e.preventDefault()
+    setCountryNewsSubmitting(true)
 
-    let title = e.target["title"].value;
-    let text = e.target["text"].value;
-    let image = e.target["image"].value;
-    let errorMessage = "";
-    let warningMessage = "";
+    const title = e.target.title.value
+    const text = e.target.text.value
+    const image = e.target.image.value
+    let errorMessage = ''
+    let warningMessage = ''
 
     // console.log("textarea", text == "")
 
-    if (title == null || title == "") {
-      errorMessage += "Please enter a title. ";
+    if (title == null || title == '') {
+      errorMessage += 'Please enter a title. '
     }
-    if (text == null || text == "") {
-      errorMessage += "Please enter a text. ";
+    if (text == null || text == '') {
+      errorMessage += 'Please enter a text. '
     }
-    if (image == null || image == "") {
-      warningMessage += "You can add an image as well. If you don't want to just click confirm. ";
+    if (image == null || image == '') {
+      warningMessage += "You can add an image as well. If you don't want to just click confirm. "
     }
 
-    if (warningMessage !== "") {
-      setCountryNewsWarning_Message(warningMessage);
+    if (warningMessage !== '') {
+      setCountryNewsWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (countryNewsWarning_Message != "") {
-        setCountryNewsWarning_Message("")
+      if (countryNewsWarning_Message != '') {
+        setCountryNewsWarning_Message('')
       }
     }
 
-    if (errorMessage != "") {
-      setCountryNewsError_Message(errorMessage);
-      setCountryNewsWarningSubmit(false);
-      setCountryNewsSubmitting(false);
+    if (errorMessage != '') {
+      setCountryNewsError_Message(errorMessage)
+      setCountryNewsWarningSubmit(false)
+      setCountryNewsSubmitting(false)
     } else {
-
-      if (countryNewsError_Message != "") {
-        setCountryNewsError_Message("")
+      if (countryNewsError_Message != '') {
+        setCountryNewsError_Message('')
       }
 
-      if (countryNewsWarningSubmit == false && warningMessage != "") {
-        setCountryNewsWarningSubmit(true);
-        setCountryNewsSubmitting(false);
+      if (countryNewsWarningSubmit == false && warningMessage != '') {
+        setCountryNewsWarningSubmit(true)
+        setCountryNewsSubmitting(false)
       } else {
         // Get data from the form.
         const data = {
@@ -608,57 +592,55 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
           text,
           image,
           user: session?.user?.name
-        };
+        }
 
-        console.log(data);
+        console.log(data)
 
         // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data);
+        const JSONdata = JSON.stringify(data)
 
         // API endpoint where we send form data.
-        const endpoint = "/api/add-country-news";
+        const endpoint = '/api/add-country-news'
 
         // Form the request for sending data to the server.
         const options = {
           // The method is POST because we are sending data.
-          method: "POST",
+          method: 'POST',
           // Tell the server we're sending JSON.
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           // Body of the request is the JSON data we created above.
           body: JSONdata
-        };
+        }
 
         // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options);
+        const response = await fetch(endpoint, options)
 
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setCountryNewsSubmitted(true); setCountryNewsSubmitting(false) });
+        const result = await response.json().then(() => { setCountryNewsSubmitted(true); setCountryNewsSubmitting(false) })
         // setCountryNewsSubmitted(true); setCountryNewsSubmitting(false)
       }
     }
+  }
+  const [countryNewsError_Message, setCountryNewsError_Message] = React.useState('')
+  const [countryNewsSubmitted, setCountryNewsSubmitted] = React.useState(false)
+  const [countryNewsSubmitting, setCountryNewsSubmitting] = React.useState(false)
+  const [countryNewsWarning_Message, setCountryNewsWarning_Message] = React.useState('')
+  const [countryNewsWarningSubmit, setCountryNewsWarningSubmit] = React.useState(false)
 
-  };
-  const [countryNewsError_Message, setCountryNewsError_Message] = React.useState("");
-  const [countryNewsSubmitted, setCountryNewsSubmitted] = React.useState(false);
-  const [countryNewsSubmitting, setCountryNewsSubmitting] = React.useState(false);
-  const [countryNewsWarning_Message, setCountryNewsWarning_Message] = React.useState("");
-  const [countryNewsWarningSubmit, setCountryNewsWarningSubmit] = React.useState(false);
+  const [error_Message, setError_Message] = React.useState('')
+  const [submitted, setSubmitted] = React.useState(false)
+  const [submitting, setSubmitting] = React.useState(false)
+  const [warning_Message, setWarning_Message] = React.useState('')
+  const [warningSubmit, setWarningSubmit] = React.useState(false)
 
-  const [error_Message, setError_Message] = React.useState("");
-  const [submitted, setSubmitted] = React.useState(false);
-  const [submitting, setSubmitting] = React.useState(false);
-  const [warning_Message, setWarning_Message] = React.useState("");
-  const [warningSubmit, setWarningSubmit] = React.useState(false);
-
-  const [sentimentError_Message, setSentimentError_Message] = React.useState("");
-  const [sentimentSubmitted, setSentimentSubmitted] = React.useState(false);
-  const [sentimentSubmitting, setSentimentSubmitting] = React.useState(false);
-  const [sentimentWarning_Message, setSentimentWarning_Message] = React.useState("");
-  const [sentimentWarningSubmit, setSentimentWarningSubmit] = React.useState(false);
-
+  const [sentimentError_Message, setSentimentError_Message] = React.useState('')
+  const [sentimentSubmitted, setSentimentSubmitted] = React.useState(false)
+  const [sentimentSubmitting, setSentimentSubmitting] = React.useState(false)
+  const [sentimentWarning_Message, setSentimentWarning_Message] = React.useState('')
+  const [sentimentWarningSubmit, setSentimentWarningSubmit] = React.useState(false)
 
   interface CountryData {
     country: string;
@@ -674,49 +656,49 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   }[]
 
   const basisBarChartData = (originalData: formattedBasis) => {
-    const today = new Date(); // Current date
-    const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const data: formattedBasis = originalData.filter((basis: formattedBasis[number]) => basis.date_of_basis_report > oneWeekAgo.toISOString());
+    const today = new Date() // Current date
+    const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+    const data: formattedBasis = originalData.filter((basis: formattedBasis[number]) => basis.date_of_basis_report > oneWeekAgo.toISOString())
     const result: CountryData[] = Object.values(data.reduce((accumulator: { [key: string]: CountryData }, current) => {
-      const { country, CTZ23, CTZ24 } = current;
+      const { country, CTZ23, CTZ24 } = current
 
       if (!accumulator[country]) {
         accumulator[country] = {
           country,
           CTZ23: CTZ23 || 0,
-          CTZ24: CTZ24 || 0,
-        };
+          CTZ24: CTZ24 || 0
+        }
       } else {
-        accumulator[country]!.CTZ23 += CTZ23 || 0;
-        accumulator[country]!.CTZ24 += CTZ24 || 0;
+        accumulator[country]!.CTZ23 += CTZ23 || 0
+        accumulator[country]!.CTZ24 += CTZ24 || 0
       }
 
-      return accumulator;
+      return accumulator
     }, {})).map((countryData: CountryData) => {
-      const { country, CTZ23, CTZ24 } = countryData;
-      const count = data.filter(obj => obj.country === country).length;
+      const { country, CTZ23, CTZ24 } = countryData
+      const count = data.filter(obj => obj.country === country).length
 
       return {
         country,
         CTZ23: parseFloat((CTZ23 / count).toFixed(0)),
         CTZ24: parseFloat((CTZ24 / count).toFixed(0))
-      };
-    });
+      }
+    })
 
-    console.log(result);
+    console.log(result)
     return result
   }
 
-  function getWeek(date, startDay) {
-    const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    tempDate.setUTCDate(tempDate.getUTCDate() + 3 - (tempDate.getUTCDay() + 6 - startDay + 7) % 7);
-    const week1 = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4));
-    return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7);
+  function getWeek (date, startDay) {
+    const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+    tempDate.setUTCDate(tempDate.getUTCDate() + 3 - (tempDate.getUTCDay() + 6 - startDay + 7) % 7)
+    const week1 = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4))
+    return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7)
   }
 
-  function transformData(input) {
-    const contract1Data = { name: "CTZ23", data: [], noCircles: true }
-    const contract2Data = { name: "CTZ24", data: [], noCircles: true }
+  function transformData (input) {
+    const contract1Data = { name: 'CTZ23', data: [], noCircles: true }
+    const contract2Data = { name: 'CTZ24', data: [], noCircles: true }
     input.forEach((item) => {
       contract1Data.data.push({ time: (new Date(item.date_of_basis_report)).toISOString(), value: item.CTZ23 })
       contract2Data.data.push({ time: (new Date(item.date_of_basis_report)).toISOString(), value: item.CTZ24 })
@@ -861,47 +843,47 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   //   return outputArray;
   // }
 
-  function transformSurveyData(inputArray, propertyUsed) {
-    const outputArray = [];
-    const averages = {};
+  function transformSurveyData (inputArray, propertyUsed) {
+    const outputArray = []
+    const averages = {}
     // const combinedSeries = {
     //   name: "Combined",
     //   data: []
     // };
-    averages["Bullish"] = {}
-    averages["Bearish"] = {}
-    averages["Neutral"] = {}
+    averages.Bullish = {}
+    averages.Bearish = {}
+    averages.Neutral = {}
 
     for (const obj of inputArray) {
-      const groupName = obj.bullish_or_bearish;
+      const groupName = obj.bullish_or_bearish
 
       if (!averages[groupName]) {
-        averages[groupName] = {};
+        averages[groupName] = {}
       }
-      if (!averages["Average"]) {
-        averages["Average"] = {};
+      if (!averages.Average) {
+        averages.Average = {}
       }
 
-      const date = new Date(obj.date_of_survey);
-      const dateString = date.toISOString().split("T")[0];
+      const date = new Date(obj.date_of_survey)
+      const dateString = date.toISOString().split('T')[0]
 
       if (!averages[groupName][dateString]) {
         averages[groupName][dateString] = {
           sum: 0,
           count: 0
-        };
+        }
       }
-      if (!averages["Average"][dateString]) {
-        averages["Average"][dateString] = {
+      if (!averages.Average[dateString]) {
+        averages.Average[dateString] = {
           sum: 0,
           count: 0
-        };
+        }
       }
 
-      averages[groupName][dateString].sum += parseFloat(obj[propertyUsed]);
-      averages[groupName][dateString].count++;
-      averages["Average"][dateString].sum += parseFloat(obj[propertyUsed]);
-      averages["Average"][dateString].count++;
+      averages[groupName][dateString].sum += parseFloat(obj[propertyUsed])
+      averages[groupName][dateString].count++
+      averages.Average[dateString].sum += parseFloat(obj[propertyUsed])
+      averages.Average[dateString].count++
 
       // Add the values to the combined series
       // if (!isNaN(parseFloat(obj[propertyUsed]))) {
@@ -918,32 +900,31 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     }
 
     for (const groupName in averages) {
-      const group = averages[groupName];
-      const data = [];
+      const group = averages[groupName]
+      const data = []
 
       for (const dateString in group) {
         const average =
-          group[dateString].sum / group[dateString].count;
-        const date = new Date(dateString);
+          group[dateString].sum / group[dateString].count
+        const date = new Date(dateString)
 
         data.push({
           time: date.toISOString(),
           value: average
-        });
+        })
       }
-      if (groupName == "Average") {
+      if (groupName == 'Average') {
         outputArray.push({
           name: groupName,
-          data: data,
+          data,
           dottedLine: true
-        });
+        })
       } else {
         outputArray.push({
           name: groupName,
-          data: data
-        });
+          data
+        })
       }
-
     }
     // Calculate the average for the combined series
     // for (const dateString in combinedSeries.data) {
@@ -959,38 +940,38 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
     // outputArray.push(combinedSeries);
     console.log(propertyUsed, outputArray)
-    return outputArray;
+    return outputArray
   }
 
-  function calculateSpread(arr1, arr2, name) {
+  function calculateSpread (arr1, arr2, name) {
     // Transform arrays into maps for easy lookup
-    const map1 = new Map(arr1.map(item => [item.datetime, item.close]));
-    const map2 = new Map(arr2.map(item => [item.datetime, item.close]));
+    const map1 = new Map(arr1.map(item => [item.datetime, item.close]))
+    const map2 = new Map(arr2.map(item => [item.datetime, item.close]))
 
     // Find the later start date
-    const start1 = new Date(arr1[0].datetime);
-    const start2 = new Date(arr2[0].datetime);
-    const start = start1 > start2 ? start1.toISOString() : start2.toISOString();
+    const start1 = new Date(arr1[0].datetime)
+    const start2 = new Date(arr2[0].datetime)
+    const start = start1 > start2 ? start1.toISOString() : start2.toISOString()
 
     // Merge arrays
-    const merged = [];
+    const merged = []
     for (const [datetime, close1] of map1) {
       if (datetime >= start) {
-        const close2 = map2.get(datetime);
+        const close2 = map2.get(datetime)
         if (close2 !== undefined) {
           merged.push({
             time: datetime,
-            value: Number((close1 - close2).toPrecision(4)),
-          });
+            value: Number((close1 - close2).toPrecision(4))
+          })
         }
       }
     }
 
-    return [{ name: name, data: merged, noCircles: true, noHover: true }];
+    return [{ name, data: merged, noCircles: true, noHover: true }]
   }
 
   const addFullYear = (twoDigitYear) => {
-    if (twoDigitYear[0] == "0" || twoDigitYear[0] == "1" || twoDigitYear[0] == "2") {
+    if (twoDigitYear[0] == '0' || twoDigitYear[0] == '1' || twoDigitYear[0] == '2') {
       const newYear = `20${twoDigitYear}`
       // return `20${twoDigitYear}`
       return newYear
@@ -1015,14 +996,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   //   return [october, december, march, may, july]
   // }
   const getCottonOnCallWeekData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
           dataset.data.push({ x: item.date, y: parseInt(item[property]) })
         } else {
-          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
           dataset.data.push({ x: item.date, y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
@@ -1031,14 +1012,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return datasetArray
   }
   const getCottonOnCallSeasonData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
           dataset.data.push({ x: parseInt(addFullYear(String(item.season).substring(0, 2))), y: parseInt(item[property]) })
         } else {
-          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
           dataset.data.push({ x: parseInt(addFullYear(String(item.season).substring(0, 2))), y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
@@ -1047,14 +1028,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return datasetArray
   }
   const getCommitmentOfTradersWeekData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
           dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
         } else {
-          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
           dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
@@ -1063,14 +1044,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return datasetArray
   }
   const getCommitmentOfTradersSeasonData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
           dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
         } else {
-          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
           dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
@@ -1080,17 +1061,17 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   }
 
   const getSupplyAndDemandData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
           if (parseInt(item[property]) != 0) {
-            let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+            const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
             dataset.data.push({ time: item.date, value: parseInt(item[property]) })
           }
         } else {
           if (parseInt(item[property]) != 0) {
-            let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+            const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
             dataset.data.push({ time: item.date, value: parseInt(item[property]) })
             datasetArray.push(dataset)
           }
@@ -1101,14 +1082,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   }
 
   const getUSExportSalesData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
           dataset.data.push({ x: item.week_ending, y: parseInt(item[property]) })
         } else {
-          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
           dataset.data.push({ x: item.week_ending, y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
@@ -1117,14 +1098,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return datasetArray
   }
   const getUSExportSalesWeekData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
           dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
         } else {
-          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
           dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
@@ -1133,14 +1114,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return datasetArray
   }
   const getUSExportSalesSeasonData = (data, propertyArray, datasetNameArray) => {
-    let datasetArray = [];
+    const datasetArray = []
     data.forEach((item) => {
       propertyArray.forEach((property, index) => {
         if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          let dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
+          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
           dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
         } else {
-          let dataset = { name: datasetNameArray[index], data: [], noCircles: true }
+          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
           dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
           datasetArray.push(dataset)
         }
@@ -1193,137 +1174,135 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   //   return [producer_merchant_net, open_interest_all, swap_position_net, managed_money_net, other_reportables_net, total_reportables_net, non_reportables_net, specs_net]
   // }
 
-  console.log("Basis Data", JSON.parse(basisData).filter((basis) => basis.country == "Brazil"))
-  console.log("Line Data", transformData(JSON.parse(basisData).filter((basis) => basis.country == "Brazil")))
-  console.log("basis", JSON.parse(basisData))
+  console.log('Basis Data', JSON.parse(basisData).filter((basis) => basis.country == 'Brazil'))
+  console.log('Line Data', transformData(JSON.parse(basisData).filter((basis) => basis.country == 'Brazil')))
+  console.log('basis', JSON.parse(basisData))
 
-  const [basisCountry, setBasisCountry] = React.useState("Brazil");
+  const [basisCountry, setBasisCountry] = React.useState('Brazil')
 
-  const [WeekOrYear, setWeekOrYear] = React.useState("Year")
-  const [Year, setYear] = React.useState("0102")
+  const [WeekOrYear, setWeekOrYear] = React.useState('Year')
+  const [Year, setYear] = React.useState('0102')
   const [Week, setWeek] = React.useState(1)
 
-  const [salesWeekOrYear, setSalesWeekOrYear] = React.useState("Week")
-  const [salesYear, setSalesYear] = React.useState("0102")
+  const [salesWeekOrYear, setSalesWeekOrYear] = React.useState('Week')
+  const [salesYear, setSalesYear] = React.useState('0102')
   const [salesWeek, setSalesWeek] = React.useState(1)
 
-  const [purchasesWeekOrYear, setPurchasesWeekOrYear] = React.useState("Week")
-  const [purchasesYear, setPurchasesYear] = React.useState("0102")
+  const [purchasesWeekOrYear, setPurchasesWeekOrYear] = React.useState('Week')
+  const [purchasesYear, setPurchasesYear] = React.useState('0102')
   const [purchasesWeek, setPurchasesWeek] = React.useState(1)
 
-  const [totalOnCallWeekOrYear, setTotalOnCallWeekOrYear] = React.useState("Week")
-  const [totalOnCallYear, setTotalOnCallYear] = React.useState("0102")
+  const [totalOnCallWeekOrYear, setTotalOnCallWeekOrYear] = React.useState('Week')
+  const [totalOnCallYear, setTotalOnCallYear] = React.useState('0102')
   const [totalOnCallWeek, setTotalOnCallWeek] = React.useState(1)
 
-  const [UOCWeekOrYear, setUOCWeekOrYear] = React.useState("Week")
-  const [UOCYear, setUOCYear] = React.useState("0102")
+  const [UOCWeekOrYear, setUOCWeekOrYear] = React.useState('Week')
+  const [UOCYear, setUOCYear] = React.useState('0102')
   const [UOCWeek, setUOCWeek] = React.useState(1)
 
-  const [commitmentWeekOrYear, setCommitmentWeekOrYear] = React.useState("Week")
+  const [commitmentWeekOrYear, setCommitmentWeekOrYear] = React.useState('Week')
   const [commitmentYear, setCommitmentYear] = React.useState(2010)
   const [commitmentWeek, setCommitmentWeek] = React.useState(1)
 
-  const [exportSalesWeekOrYear, setExportSalesWeekOrYear] = React.useState("Week")
+  const [exportSalesWeekOrYear, setExportSalesWeekOrYear] = React.useState('Week')
   const [exportSalesYear, setExportSalesYear] = React.useState(2010)
   const [exportSalesWeek, setExportSalesWeek] = React.useState(1)
 
-  const locale = useLocale();
+  const locale = useLocale()
 
   const options = {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
-  };
-  const formatter = new Intl.DateTimeFormat(locale, options);
+    day: 'numeric'
+  }
+  const formatter = new Intl.DateTimeFormat(locale, options)
 
-  var temp = new Date();
-  temp.setSeconds(0);
-  var dd = String(temp.getDate()).padStart(2, '0');
-  var mm = String(temp.getMonth() + 1).padStart(2, '0'); //January is 0!
-  var yyyy = temp.getFullYear();
+  const temp = new Date()
+  temp.setSeconds(0)
+  const dd = String(temp.getDate()).padStart(2, '0')
+  const mm = String(temp.getMonth() + 1).padStart(2, '0') // January is 0!
+  const yyyy = temp.getFullYear()
 
-  let today = `${yyyy}-${mm}-${dd}`;
+  const today = `${yyyy}-${mm}-${dd}`
 
-  let temp2 = new Date(); // get the current date
-  temp2.setMonth(temp2.getMonth() - 6); // subtract 6 months
+  const temp2 = new Date() // get the current date
+  temp2.setMonth(temp2.getMonth() - 6) // subtract 6 months
 
   // format the date as yyyy-mm-dd
-  let year = temp2.getFullYear();
-  let month = (temp2.getMonth() + 1).toString(); // JavaScript months are 0-based, so we add 1
-  let day = (temp2.getDate()).toString();
+  const year = temp2.getFullYear()
+  let month = (temp2.getMonth() + 1).toString() // JavaScript months are 0-based, so we add 1
+  let day = (temp2.getDate()).toString()
 
   // ensure month and day are 2 digits
   if (parseInt(month) < 10) {
-    month = '0' + month;
+    month = '0' + month
   }
   if (parseInt(day) < 10) {
-    day = '0' + day;
+    day = '0' + day
   }
 
-  let dateSixMonthsAgo = `${year}-${month}-${day}`;
-  const [selectedStartDate, setSelectedStartDate] = React.useState(parseDate(dateSixMonthsAgo));
-  const [selectedEndDate, setSelectedEndDate] = React.useState(parseDate(today));
+  const dateSixMonthsAgo = `${year}-${month}-${day}`
+  const [selectedStartDate, setSelectedStartDate] = React.useState(parseDate(dateSixMonthsAgo))
+  const [selectedEndDate, setSelectedEndDate] = React.useState(parseDate(today))
 
   // const [selectedSupplyAndDemandStartDate, setSelectedSupplyAndDemandStartDate] = React.useState(parseDate(dateSixMonthsAgo));
   // const [selectedSupplyAndDemandEndDate, setSelectedSupplyAndDemandEndDate] = React.useState(parseDate(today));
-  const [selectedSupplyAndDemandStartDate, setSelectedSupplyAndDemandStartDate] = React.useState(parseDate('2020-01-01'));
-  const [selectedSupplyAndDemandEndDate, setSelectedSupplyAndDemandEndDate] = React.useState(parseDate("2023-12-31"));
-  const [selectedSupplyAndDemandSeason, setSelectedSupplyAndDemandSeason] = React.useState("20/21");
+  const [selectedSupplyAndDemandStartDate, setSelectedSupplyAndDemandStartDate] = React.useState(parseDate('2020-01-01'))
+  const [selectedSupplyAndDemandEndDate, setSelectedSupplyAndDemandEndDate] = React.useState(parseDate('2023-12-31'))
+  const [selectedSupplyAndDemandSeason, setSelectedSupplyAndDemandSeason] = React.useState('20/21')
 
-  let temp3 = new Date();
-  temp3.setFullYear(temp3.getFullYear() - 1);
+  const temp3 = new Date()
+  temp3.setFullYear(temp3.getFullYear() - 1)
 
-  let year2 = temp3.getFullYear();
-  let month2 = (temp3.getMonth() + 1).toString().padStart(2, '0'); // add leading zero if necessary
-  let day2 = temp3.getDate().toString().padStart(2, '0'); // add leading zero if necessary
+  const year2 = temp3.getFullYear()
+  const month2 = (temp3.getMonth() + 1).toString().padStart(2, '0') // add leading zero if necessary
+  const day2 = temp3.getDate().toString().padStart(2, '0') // add leading zero if necessary
 
-  let dateOneYearAgo = `${year2}-${month2}-${day2}`;
+  const dateOneYearAgo = `${year2}-${month2}-${day2}`
 
-  const dateToday = new Date(); // Current date
-  const oneWeekAgo = new Date(dateToday.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const dateToday = new Date() // Current date
+  const oneWeekAgo = new Date(dateToday.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-  const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo));
-  const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today));
+  const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo))
+  const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today))
 
   // const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["open_interest_all", "producer_merchant_net", "swap_position_net", "managed_money_net", "other_reportables_net", "total_reportables_net", "non_reportables_net", "specs_net"])
   // const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Open Interest All", "Producer Merchant Net", "Swap Position Net", "Managed Money Net", "Other Reportables Net", "Total Reportables Net", "Non Reportables Net", "Specs Net"])
-  const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["specs_net"])
-  const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Specs Net"])
+  const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(['specs_net'])
+  const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(['Specs Net'])
 
-  const [supplyAndDemandPropertiesArray, setSupplyAndDemandPropertiesArray] = React.useState(["production_usda"])
-  const [supplyAndDemandNamesArray, setSupplyAndDemandNamesArray] = React.useState(["Production USDA"])
-  const [supplyAndDemandProjectedPropertiesArray, setSupplyAndDemandProjectedPropertiesArray] = React.useState(["production_usda", "production_eap"])
-  const [supplyAndDemandProjectedNamesArray, setSupplyAndDemandProjectedNamesArray] = React.useState(["Production USDA", "Production EAP"])
+  const [supplyAndDemandPropertiesArray, setSupplyAndDemandPropertiesArray] = React.useState(['production_usda'])
+  const [supplyAndDemandNamesArray, setSupplyAndDemandNamesArray] = React.useState(['Production USDA'])
+  const [supplyAndDemandProjectedPropertiesArray, setSupplyAndDemandProjectedPropertiesArray] = React.useState(['production_usda', 'production_eap'])
+  const [supplyAndDemandProjectedNamesArray, setSupplyAndDemandProjectedNamesArray] = React.useState(['Production USDA', 'Production EAP'])
 
-  const [currentStage, setCurrentStage] = React.useState(0);
+  const [currentStage, setCurrentStage] = React.useState(0)
 
   const getUniqueOptions = (data, property) => {
-    let uniqueValues = data.reduce((acc, obj) => {
-      return acc.includes(obj[property]) ? acc : [...acc, obj[property]];
-    }, []);
-    let options = []
+    const uniqueValues = data.reduce((acc, obj) => {
+      return acc.includes(obj[property]) ? acc : [...acc, obj[property]]
+    }, [])
+    const options = []
     uniqueValues.forEach((value) => {
       options.push({ value: String(value) })
     })
-    return options.sort((a, b) => a.value - b.value);
+    return options.sort((a, b) => a.value - b.value)
   }
 
   const goNext = () => {
     if (currentStage < stages.length - 1) {
-      setCurrentStage(currentStage + 1);
+      setCurrentStage(currentStage + 1)
     }
-  };
+  }
 
   const goPrevious = () => {
     if (currentStage > 0) {
-      setCurrentStage(currentStage - 1);
+      setCurrentStage(currentStage - 1)
     }
-  };
+  }
 
-
-
-  const stages = [1, 2];
+  const stages = [1, 2]
 
   const markdown = `# Ira media medius induit deum
 
@@ -1338,35 +1317,35 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   Rhoetus arcusque; in coma nosti fratrem ipse abstulerat fassurae satyri: nil dextra corripitur saetae, expositum sententia scelus. Latentia sua progenuit nam enim lyramque amori post, Ilithyiam datis per vestris ferrugine quorum, admirantibus. Novos iter ut: ego omnes, campis memini.
   
   `
-  const [contractParameter, setContractParameter] = React.useState("close")
+  const [contractParameter, setContractParameter] = React.useState('close')
 
   const getSeasonData = (s1, s2, s3) => {
-    let array = []
-    if (s1 != null && s1 != "Select Season") {
+    const array = []
+    if (s1 != null && s1 != 'Select Season') {
       const s1Data = { name: s1.season, data: [{ x: s1.month_of_low, y: s1.low_price }, { x: s1.month_of_high, y: s1.high_price }] }
       array.push(s1Data)
     }
-    if (s2 != null && s2 != "Select Season") {
+    if (s2 != null && s2 != 'Select Season') {
       const s2Data = { name: s2.season, data: [{ x: s2.month_of_low, y: s2.low_price }, { x: s2.month_of_high, y: s2.high_price }] }
       array.push(s2Data)
     }
-    if (s3 != null && s3 != "Select Season") {
+    if (s3 != null && s3 != 'Select Season') {
       const s3Data = { name: s3.season, data: [{ x: s3.month_of_low, y: s3.low_price }, { x: s3.month_of_high, y: s3.high_price }] }
       array.push(s3Data)
     }
     return array
   }
   const getStudyData = (s1, s2, s3) => {
-    let array = []
-    if (s1 != null && s1 != "Select Contract") {
+    const array = []
+    if (s1 != null && s1 != 'Select Contract') {
       const s1Data = { name: s1.year, data: [{ x: s1.month_of_low, y: s1.low }, { x: s1.month_of_high, y: s1.high }] }
       array.push(s1Data)
     }
-    if (s2 != null && s2 != "Select Contract") {
+    if (s2 != null && s2 != 'Select Contract') {
       const s2Data = { name: s2.year, data: [{ x: s2.month_of_low, y: s2.low }, { x: s2.month_of_high, y: s2.high }] }
       array.push(s2Data)
     }
-    if (s3 != null && s3 != "Select Contract") {
+    if (s3 != null && s3 != 'Select Contract') {
       const s3Data = { name: s3.year, data: [{ x: s3.month_of_low, y: s3.low }, { x: s3.month_of_high, y: s3.high }] }
       array.push(s3Data)
     }
@@ -1376,31 +1355,31 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const averageFutureContract = (data, property) => {
     const array = data.reduce((acc, obj) => {
       acc[0] += parseFloat(obj[property])
-      acc[1]++;
-      return acc;
+      acc[1]++
+      return acc
     }, [0, 0])
     return array[0] / array[1]
   }
 
   React.useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.weglot.com/weglot.min.js';
-    script.async = true;
+    const script = document.createElement('script')
+    script.src = 'https://cdn.weglot.com/weglot.min.js'
+    script.async = true
 
     script.onload = () => {
       Weglot.initialize({
-        api_key: 'wg_60b49229f516dee77edb3109e6a46c379',
-      });
-    };
+        api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
+      })
+    }
 
-    document.body.appendChild(script);
+    document.body.appendChild(script)
 
     return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+      document.body.removeChild(script)
+    }
+  }, [])
 
-  const [selectedCostType, setSelectedCostType] = React.useState("FOB")
+  const [selectedCostType, setSelectedCostType] = React.useState('FOB')
 
   return (
     <>
@@ -1426,7 +1405,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
           <header className="z-50 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={"Overview"} urlPath={urlPath} user={session?.user.name} />
+            <Breadcrumbs title={'Overview'} urlPath={urlPath} user={session?.user.name} />
             <TabMenu data={TabMenuArray} urlPath={urlPath} />
           </header>
           {/* <WeglotLanguageSwitcher
@@ -1446,35 +1425,34 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               <div className="flex justify-around gap-8">
                 {/* <IndexDial probability={0} /> */}
 
-
                 <div className="relative">
-                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
 
                   <div className="text-center font-semibold">
                     Monthly Index
                   </div>
                   <div className="justify-self-end">
                     {/* <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} /> */}
-                    <SemiCircleDial value={parseFloat(JSON.parse(monthlyIndexData).probability_rate) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? -1 : 1)} />
+                    <SemiCircleDial value={parseFloat(JSON.parse(monthlyIndexData).probability_rate) * (JSON.parse(monthlyIndexData).inverse_month == 'Y' ? -1 : 1)} />
                   </div>
                   {/* {selectAppropriateImage(JSON.parse(monthlyIndexData).inverse_month, parseFloat(JSON.parse(monthlyIndexData).probability_rate))}
 
                   <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
                     transform: `rotate(${90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? 1 : -1)}deg)`
                   }}>
-                   
+
                   </div>
                   <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(monthlyIndexData).probability_rate}</div> */}
                 </div>
                 <div className="relative flex flex-col justify-between">
-                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
 
                   <div className="text-center font-semibold">
                     Seasonal Index
                   </div>
                   <div className="justify-self-end">
                     {/* <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} /> */}
-                    <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? -1 : 1)} />
+                    <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == 'Y' ? -1 : 1)} />
                   </div>
                   {/* {selectAppropriateImage(JSON.parse(seasonalIndexData).inverse_year, parseFloat(JSON.parse(seasonalIndexData).probability_rate))}
                   <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
@@ -1488,13 +1466,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             </div>
             {/* ---------------------------------------------------------------------------------------------- */}
-            {JSON.parse(commentsData).find((obj) => obj.section == "Current Contract" && obj.added_by == "Victor Fernandes")?.comment != undefined && (
+            {JSON.parse(commentsData).find((obj) => obj.section == 'Current Contract' && obj.added_by == 'Victor Fernandes')?.comment != undefined && (
               <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
                 <div className="grid grid-cols-1">
                   <div className="relative flex flex-col gap-y-6 items-center px-8">
                     <div className="text-left font-semibold text-lg">Conclusion of Current Front Month</div>
-                    <div>{JSON.parse(commentsData).find((obj) => obj.section == "Current Contract" && obj.added_by == "Victor Fernandes")?.comment}</div>
+                    <div>{JSON.parse(commentsData).find((obj) => obj.section == 'Current Contract' && obj.added_by == 'Victor Fernandes')?.comment}</div>
                     {/* <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a> */}
                     {/* <div>{currentLang}</div> */}
                   </div>
@@ -1511,11 +1489,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <div className="flex justify-around gap-8">
                 <div className="relative w-full text-center font-semibold text-xl">
-                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
                   Recent Events
                 </div>
                 <div className="relative w-full text-center font-semibold text-xl">
-                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
                   Future Considerations
                 </div>
               </div>
@@ -1526,7 +1504,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     {snapshot.title_of_snapshot_strategy}
                   </div>
                 ))} */}
-                  {JSON.parse(snapshotsData).filter((object: any, index: number) => object.news_type == "Recent Events" && object.impact == "High").filter((object: any, index: number) => index < 8).map((snapshot) => (
+                  {JSON.parse(snapshotsData).filter((object: any, index: number) => object.news_type == 'Recent Events' && object.impact == 'High').filter((object: any, index: number) => index < 8).map((snapshot) => (
                     <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
                       {snapshot.title_of_snapshot_strategy}
                     </div>
@@ -1557,7 +1535,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     {snapshot.title_of_snapshot_strategy}
                   </div>
                 ))} */}
-                  {JSON.parse(snapshotsData).filter((object: any, index: number) => ((object.news_type == "Short Term" || object.news_type == "Long Term") && object.impact == "High")).filter((object: any, index: number) => index < 8).sort((a, b) => { if (a.news_type < b.news_type) return 1; if (a.news_type > b.news_type) return -1; return 0; }).map((snapshot) => (
+                  {JSON.parse(snapshotsData).filter((object: any, index: number) => ((object.news_type == 'Short Term' || object.news_type == 'Long Term') && object.impact == 'High')).filter((object: any, index: number) => index < 8).sort((a, b) => { if (a.news_type < b.news_type) return 1; if (a.news_type > b.news_type) return -1; return 0 }).map((snapshot) => (
                     <div className="border flex justify-between hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full h-fit py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
                       <div>
                         {snapshot.title_of_snapshot_strategy}
@@ -1588,7 +1566,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )}
                 </div>
               </div>
-              {(session?.role == "partner" || session?.role == "admin") && (
+              {(session?.role == 'partner' || session?.role == 'admin') && (
                 <div className="flex justify-center">
                   <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenSnapshotForm(true)}>
                     Add 30 Seconds Snapshot
@@ -1607,7 +1585,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                           <div className="mb-4">
                             <div className="mb-4">
                               <SingleSelectDropdown
-                                options={[{ name: "Recent Events", value: "Recent Events" }, { name: "Short Term Consideration", value: "Short Term" }, { name: "Long Term Consideration", value: "Long Term" }]}
+                                options={[{ name: 'Recent Events', value: 'Recent Events' }, { name: 'Short Term Consideration', value: 'Short Term' }, { name: 'Long Term Consideration', value: 'Long Term' }]}
                                 label="snapshot_type"
                                 variable="name"
                                 colour="bg-deep_blue"
@@ -1676,11 +1654,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
               <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
                 <div className="relative text-center font-semibold text-xl">
-                  <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                  <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
                   In Country News
                 </div>
                 <div className="flex flex-col justify-around items-start gap-4 mt-4">
-                  {JSON.parse(countryNewsData).filter((object) => object.impact == "High").filter((object: any, index: number) => index < 10).map((news) => (
+                  {JSON.parse(countryNewsData).filter((object) => object.impact == 'High').filter((object: any, index: number) => index < 10).map((news) => (
                     <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setCountryNewsPopup(news)}>
                       {news.title_of_in_country_news}
                     </div>
@@ -1718,7 +1696,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                   )}
 
                 </div>
-                {(session?.role == "partner" || session?.role == "admin") && (
+                {(session?.role == 'partner' || session?.role == 'admin') && (
                   <div className="flex justify-center">
                     <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenCountryNewsForm(true)}>
                       Add in country news
@@ -1791,13 +1769,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             </div>
             {/* ---------------------------------------------------------------------------------------------- */}
-            {JSON.parse(commentsData).find((obj) => obj.section == "Cotton On Call" && obj.added_by == "Victor Fernandes")?.comment != undefined && (
+            {JSON.parse(commentsData).find((obj) => obj.section == 'Cotton On Call' && obj.added_by == 'Victor Fernandes')?.comment != undefined && (
               <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
                 <div className="grid grid-cols-1">
                   <div className="relative flex flex-col gap-y-6 items-center px-8">
                     <div className="text-left font-semibold text-lg">Conclusion of CFTC Cotton On Call</div>
-                    <div>{JSON.parse(commentsData).find((obj) => obj.section == "Cotton On Call" && obj.added_by == "Victor Fernandes")?.comment}</div>
+                    <div>{JSON.parse(commentsData).find((obj) => obj.section == 'Cotton On Call' && obj.added_by == 'Victor Fernandes')?.comment}</div>
                     {/* <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a> */}
                     {/* <div>{currentLang}</div> */}
                   </div>
@@ -1811,13 +1789,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             )}
             {/* ---------------------------------------------------------------------------------------------- */}
-            {JSON.parse(commentsData).find((obj) => obj.section == "Commitment Of Traders" && obj.added_by == "Victor Fernandes")?.comment != undefined && (
+            {JSON.parse(commentsData).find((obj) => obj.section == 'Commitment Of Traders' && obj.added_by == 'Victor Fernandes')?.comment != undefined && (
               <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
                 <div className="grid grid-cols-1">
                   <div className="relative flex flex-col gap-y-6 items-center px-8">
                     <div className="text-left font-semibold text-lg">Conclusion of Commitment of traders</div>
-                    <div>{JSON.parse(commentsData).find((obj) => obj.section == "Commitment Of Traders" && obj.added_by == "Victor Fernandes")?.comment}</div>
+                    <div>{JSON.parse(commentsData).find((obj) => obj.section == 'Commitment Of Traders' && obj.added_by == 'Victor Fernandes')?.comment}</div>
                     {/* <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a> */}
                     {/* <div>{currentLang}</div> */}
                   </div>
@@ -1831,13 +1809,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               </div>
             )}
             {/* ---------------------------------------------------------------------------------------------- */}
-            {JSON.parse(commentsData).find((obj) => obj.section == "Supply And Demand" && obj.added_by == "Victor Fernandes")?.comment != undefined && (
+            {JSON.parse(commentsData).find((obj) => obj.section == 'Supply And Demand' && obj.added_by == 'Victor Fernandes')?.comment != undefined && (
               <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-                <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+                <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
                 <div className="grid grid-cols-1">
                   <div className="relative flex flex-col gap-y-6 items-center px-8">
                     <div className="text-left font-semibold text-lg">Conclusion of Supply and Demand</div>
-                    <div>{JSON.parse(commentsData).find((obj) => obj.section == "Supply And Demand" && obj.added_by == "Victor Fernandes")?.comment}</div>
+                    <div>{JSON.parse(commentsData).find((obj) => obj.section == 'Supply And Demand' && obj.added_by == 'Victor Fernandes')?.comment}</div>
                     {/* <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a> */}
                     {/* <div>{currentLang}</div> */}
                   </div>
@@ -1852,12 +1830,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             )}
             {/* ---------------------------------------------------------------------------------------------- */}
             <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-              <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
+              <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
               <div className="grid grid-cols-1">
                 <div className="relative flex flex-col gap-y-6 items-center px-8">
                   <div className="text-left font-semibold text-lg">Conclusion of latest market report</div>
                   <div>{JSON.parse(conclusionData)?.text}</div>
-                  <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == "en")?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a>
+                  <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == 'en')?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a>
                   {/* <div>{currentLang}</div> */}
                 </div>
                 {/* <div className="flex flex-col gap-4">
@@ -1873,9 +1851,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
         </div>
       </main >
     </>
-  );
-};
-//some random shit added by Vic
+  )
+}
+// some random shit added by Vic
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
 
@@ -1883,7 +1861,7 @@ export const getServerSideProps = async (context: any) => {
     return {
       redirect: {
         permanent: false,
-        destination: `/`,
+        destination: '/'
       }
     }
   }
@@ -1896,7 +1874,7 @@ export const getServerSideProps = async (context: any) => {
     } else {
       acc[obj.contract].push(obj)
     }
-    return acc;
+    return acc
   }, {})
 
   const CTZ23 = contractsObject?.CTZ23
@@ -1913,19 +1891,19 @@ export const getServerSideProps = async (context: any) => {
 
   const sentiment = await prisma?.sentiment_survey.findMany({
     orderBy: {
-      date_of_survey: "asc"
+      date_of_survey: 'asc'
     }
   })
   const initialSentimentData = JSON.stringify(sentiment)
 
-  console.log("intitalData", initialSentimentData)
+  console.log('intitalData', initialSentimentData)
 
-  const today = new Date(); // Current date
-  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const today = new Date() // Current date
+  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
 
   const basis = await prisma?.basis_comparison.findMany({
     orderBy: {
-      date_of_basis_report: "asc"
+      date_of_basis_report: 'asc'
     }
     // where: {
     //   date_of_basis_report: {
@@ -1938,8 +1916,8 @@ export const getServerSideProps = async (context: any) => {
   // console.log("basis length", basis.length)
 
   const formattedBasis = basis.map((basis) => {
-    console.log("cost_type", basis.cost_type)
-    const { country, date_of_basis_report, contract_december_2023: CTZ23, contract_december_2024: CTZ24, cost_type } = basis;
+    console.log('cost_type', basis.cost_type)
+    const { country, date_of_basis_report, contract_december_2023: CTZ23, contract_december_2024: CTZ24, cost_type } = basis
     return { country, date_of_basis_report, CTZ23, CTZ24, cost_type }
   })
 
@@ -1950,11 +1928,11 @@ export const getServerSideProps = async (context: any) => {
       date_of_low: 'desc'
     }
   })
-  const seasonsData = JSON.stringify(season);
+  const seasonsData = JSON.stringify(season)
 
   const future = await prisma?.future_contracts_study.findMany({
     orderBy: {
-      date_of_high: "desc"
+      date_of_high: 'desc'
     }
   })
 
@@ -1965,7 +1943,7 @@ export const getServerSideProps = async (context: any) => {
       verified: true
     },
     orderBy: {
-      date_of_in_country_news: "desc"
+      date_of_in_country_news: 'desc'
     }
   })
   const countryNewsData = JSON.stringify(countryNews)
@@ -1975,25 +1953,25 @@ export const getServerSideProps = async (context: any) => {
       verified: true
     },
     orderBy: {
-      date_of_snapshot_strategy: "desc"
+      date_of_snapshot_strategy: 'desc'
     }
   })
-  const snapshotsData = JSON.stringify(snapshot);
+  const snapshotsData = JSON.stringify(snapshot)
 
   const monthlyindex = await prisma?.monthly_index.findFirst({
     where: {
       year: new Date().getFullYear(),
       month: getCurrentMonth()
     }
-  });
-  const monthlyIndexData = JSON.stringify(monthlyindex);
+  })
+  const monthlyIndexData = JSON.stringify(monthlyindex)
 
   const seasonalIndex = await prisma?.seasonal_index.findFirst({
     // where: {
     //   year: new Date().getFullYear()
     // }
-  });
-  const seasonalIndexData = JSON.stringify(seasonalIndex);
+  })
+  const seasonalIndexData = JSON.stringify(seasonalIndex)
 
   const comment = await prisma?.comments.findMany({
     where: {
@@ -2002,7 +1980,7 @@ export const getServerSideProps = async (context: any) => {
       }
     },
     orderBy: {
-      date_of_comment: "desc"
+      date_of_comment: 'desc'
     }
   })
   const commentsData = JSON.stringify(comment)
@@ -2029,10 +2007,10 @@ export const getServerSideProps = async (context: any) => {
 
   const cottonreport = await prisma?.external_Links.findMany({
     where: {
-      type: "Cotton Report"
+      type: 'Cotton Report'
     },
     orderBy: {
-      date_created: "desc"
+      date_created: 'desc'
     }
   })
 
@@ -2040,7 +2018,7 @@ export const getServerSideProps = async (context: any) => {
 
   const conclusion = await prisma?.conclusion.findFirst({
     orderBy: {
-      date_created: "desc"
+      date_created: 'desc'
     }
   })
 
@@ -2048,8 +2026,8 @@ export const getServerSideProps = async (context: any) => {
 
   // console.log(monthlyIndexData)
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData },
-  };
-};
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData }
+  }
+}
 
-export default Home;
+export default Home

@@ -1,28 +1,27 @@
-import Image from "next/image";
-import AnimatedHeadline from './animatedHeadline';
+import Image from 'next/image'
+import AnimatedHeadline from './animatedHeadline'
 // import DemoModal from './demoModal';
-import Counter from './counter';
+import Counter from './counter'
 // import EndOfLifeDonut from './endOfLifeDonut';
 // import DonutProgress from './donutProgress';
-import React, { useState } from "react";
-import { useRouter } from "next/router";
+import React, { useState } from 'react'
+import { useRouter } from 'next/router'
 
 const Hero = ({ setIsModalOpen }) => {
-    const router = useRouter()
-    const customdynamicText = ['Processors ', 'Farmers', 'Merchants', 'Retailers'];
-    const customstaticText = 'AI-Powered Cotton Trading for';
-    // const [isModalOpen, setIsModalOpen] = useState(router.query.demo == "true" ? true : false);
+  const router = useRouter()
+  const customdynamicText = ['Processors ', 'Farmers', 'Merchants', 'Retailers']
+  const customstaticText = 'AI-Powered Cotton Trading for'
+  // const [isModalOpen, setIsModalOpen] = useState(router.query.demo == "true" ? true : false);
 
+  // const openModal = () => {
+  //   setIsModalOpen(true);
+  // };
 
-    // const openModal = () => {
-    //   setIsModalOpen(true);
-    // };
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  // };
 
-    // const closeModal = () => {
-    //   setIsModalOpen(false);
-    // };
-
-    return (
+  return (
         <section className="relative w-full overflow-clip z-20 pt-20">
             <div className="relative mx-auto w-full">
 
@@ -52,7 +51,6 @@ const Hero = ({ setIsModalOpen }) => {
                                 >
                                     How it works
                                 </a> */}
-
 
                                 <a
                                     className="btn w-full rounded-xl bg-deep_blue p-4 text-white hover:bg-gray-800 sm:ml-4 sm:w-auto"
@@ -125,9 +123,6 @@ const Hero = ({ setIsModalOpen }) => {
                                         className="animate-insideleft"
                                     />
 
-
-
-
                                 </div>
                             </div>
                             {/* laptop image here */}
@@ -137,7 +132,6 @@ const Hero = ({ setIsModalOpen }) => {
                                 height={432}
                                 alt="Modal video thumbnail"
                             />
-
 
                         </div>
                         <div id="demo" className="">
@@ -167,7 +161,7 @@ const Hero = ({ setIsModalOpen }) => {
 
                 {/* second illustration */}
                 {/* <div className='-z-10 pointer-events-none hidden sm:block relative '>
-                    
+
                     <div className="opacity-0 absolute w-[200px] h-[200px] pointer-events-none animate-fade-grow-l bottom-[125px] left-56 mt-8 ml-8 @container order-2 group/delivered flex flex-col place-content-center border bg-white rounded-2xl shadow-lg p-4 ">
                         <img className="self-center w-[100px] animate-grow group-hover/delivered:scale-110 duration-300" src="/ProductsCollected_Iso.png" />
                         <div className="flex justify-center gap-4">
@@ -207,15 +201,13 @@ const Hero = ({ setIsModalOpen }) => {
                             </div>
                         </div>
                     </div>
-                    
-
 
                 </div> */}
 
             </div>
 
         </section>
-    );
-};
+  )
+}
 
-export default Hero;
+export default Hero

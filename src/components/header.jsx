@@ -1,32 +1,32 @@
-import React from 'react';
-import Link from "next/link";
-import { useRouter } from 'next/router';
+import React from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
-const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white", bannerGradient = "bg-[#ffffff20]" }) => {
-    const router = useRouter();
+const Header = ({ textColour = 'text-white', textHoverColour = 'hover:text-white', bannerGradient = 'bg-[#ffffff20]' }) => {
+  const router = useRouter()
 
-    const [mobileHeaderOpen, setMobileHeaderOpen] = React.useState(false)
+  const [mobileHeaderOpen, setMobileHeaderOpen] = React.useState(false)
 
-    const [homeOpen, setHomeOpen] = React.useState(false)
-    const [aboutOpen, setAboutOpen] = React.useState(false)
-    const [servicesOpen, setServicesOpen] = React.useState(false)
-    const [contactOpen, setContactOpen] = React.useState(false)
+  const [homeOpen, setHomeOpen] = React.useState(false)
+  const [aboutOpen, setAboutOpen] = React.useState(false)
+  const [servicesOpen, setServicesOpen] = React.useState(false)
+  const [contactOpen, setContactOpen] = React.useState(false)
 
-    const closeDropdowns = () => {
-        setHomeOpen(false)
-        setAboutOpen(false)
-        setServicesOpen(false)
-        setContactOpen(false)
-    }
+  const closeDropdowns = () => {
+    setHomeOpen(false)
+    setAboutOpen(false)
+    setServicesOpen(false)
+    setContactOpen(false)
+  }
 
-    return (
+  return (
         <>
             {mobileHeaderOpen && (
                 <>
-                    <div className='z-[100] absolute inset-0 -bottom-[1000px] bg-gray-500 bg-opacity-20 backdrop-blur-sm' onClick={(e) => { e.stopPropagation(); setMobileHeaderOpen(false); }}>
+                    <div className='z-[100] absolute inset-0 -bottom-[1000px] bg-gray-500 bg-opacity-20 backdrop-blur-sm' onClick={(e) => { e.stopPropagation(); setMobileHeaderOpen(false) }}>
                         <div className='absolute flex flex-col overflow-y-auto justify-between right-0 top-[112px] bottom-[1000px] left-8 bg-white text-black py-8 rounded-l-xl' onClick={(e) => e.stopPropagation()}>
                             <div className="flex flex-col justify-center space-y-4 items-left pl-8">
-                                <div onClick={(e) => { e.stopPropagation(); closeDropdowns(); setHomeOpen(!homeOpen); }} className="flex justify-between text-center cursor-pointer pr-10">
+                                <div onClick={(e) => { e.stopPropagation(); closeDropdowns(); setHomeOpen(!homeOpen) }} className="flex justify-between text-center cursor-pointer pr-10">
                                     <div className='mr-1 text-xl font-semibold text-gray-700' onClick={(e) => { e.stopPropagation(); router.push('/') }}>
                                         Home
                                     </div>
@@ -49,7 +49,7 @@ const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white
                                     </div> */}
                                     </>
                                 )}
-                                <div onClick={(e) => { e.stopPropagation(); closeDropdowns(); setAboutOpen(!aboutOpen); }} className="flex justify-between text-center cursor-pointer pr-10">
+                                <div onClick={(e) => { e.stopPropagation(); closeDropdowns(); setAboutOpen(!aboutOpen) }} className="flex justify-between text-center cursor-pointer pr-10">
                                     <div className='mr-1 text-xl font-semibold text-gray-700' onClick={(e) => { e.stopPropagation(); router.push('/about') }}>
                                         About
                                     </div>
@@ -97,7 +97,7 @@ const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white
                                     <img className={`w-[15px] opacity-40 duration-300 scale-x-150 ${servicesOpen ? "-scale-y-100" : ""}`} src="/ArrowDown_B_SQ.png" />
 
                                 </div> */}
-                                <div onClick={(e) => { e.stopPropagation(); closeDropdowns(); setAboutOpen(!aboutOpen); }} className="flex justify-between text-center cursor-pointer pr-10">
+                                <div onClick={(e) => { e.stopPropagation(); closeDropdowns(); setAboutOpen(!aboutOpen) }} className="flex justify-between text-center cursor-pointer pr-10">
                                     <div className='mr-1 text-xl font-semibold text-gray-700' onClick={(e) => { e.stopPropagation(); router.push('/contact') }}>
                                         Contact
                                     </div>
@@ -193,7 +193,7 @@ const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white
                         <div className='z-50 w-full'>
                             {/* <img src={"Portal_Logo.png"} className="h-16" /> */}
                             {/* <img src={"/Full_Logo.svg"} className="h-16" /> */}
-                            <img src={"/Logo File-14.png"} className="h-16 object-fill" />
+                            <img src={'/Logo File-14.png'} className="h-16 object-fill" />
                         </div>
                         <div className='z-50'>
                             <div className="cursor-pointer sm:hidden" onClick={() => setMobileHeaderOpen(!mobileHeaderOpen)}>
@@ -229,7 +229,7 @@ const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white
                                 </ul>
 
                                 <div className="md:flex items-center hidden space-x-4 ml-8 lg:ml-12">
-                                    <a href="/api/auth/signin" className={`py-2 hover:cursor-pointer px-4 shadow-md rounded text-white font-semibold bg-[#ffffff30] hover:shadow-lg`}>
+                                    <a href="/api/auth/signin" className={'py-2 hover:cursor-pointer px-4 shadow-md rounded text-white font-semibold bg-[#ffffff30] hover:shadow-lg'}>
                                         Login
                                     </a>
                                     {/* <a href="/api/auth/signin" className={`${textColour} py-2 hover:cursor-pointer ${textHoverColour}`}>
@@ -246,7 +246,7 @@ const Header = ({ textColour = "text-white", textHoverColour = "hover:text-white
                 </div>
             </header >
         </>
-    );
-};
+  )
+}
 
-export default Header;
+export default Header

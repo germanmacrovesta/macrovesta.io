@@ -1,28 +1,26 @@
 import Link from 'next/link'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
+export default function Breadcrumbs (props) {
+  // const router = useRouter();
 
-export default function Breadcrumbs(props) {
-    // const router = useRouter();
+  const urlcrumbs = props.urlPath.split('/')
+  const textcrumbs = props.urlPath.replace('-', ' ').split('/')
+  // const newRoot = props.root.split('/', 3);
+  textcrumbs.shift()
+  urlcrumbs.shift()
 
-    const urlcrumbs = props.urlPath.split('/');
-    const textcrumbs = props.urlPath.replace('-', ' ').split('/');
-    // const newRoot = props.root.split('/', 3);
-    textcrumbs.shift();
-    urlcrumbs.shift();
-
-    function partialURL(index) {
-        let url = props.root + '/';
-        for (let i = 0; i <= index; i++) {
-            url += urlcrumbs[i];
-            url += '/';
-        }
-        console.log(url);
-        return url;
-
+  function partialURL (index) {
+    let url = props.root + '/'
+    for (let i = 0; i <= index; i++) {
+      url += urlcrumbs[i]
+      url += '/'
     }
+    console.log(url)
+    return url
+  }
 
-    return (
+  return (
         <div className="px-8 py-4">
             <h5 className="text-2xl">{props.title}</h5>
             <h6>
@@ -54,7 +52,6 @@ export default function Breadcrumbs(props) {
                     </span>
                 )
 
-
                 )} */}
                 {/* <Link href={{ pathname: '/home' }} >
                     <span>
@@ -69,5 +66,5 @@ export default function Breadcrumbs(props) {
                 / Overview */}
             </h6>
         </div>
-    )
+  )
 }

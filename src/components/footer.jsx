@@ -1,9 +1,9 @@
-import React from 'react';
-import Link from 'next/link';
-import { useRouter } from "next/router";
+import React from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const Footer = () => {
-    return (
+  return (
 
         <footer className="bg-gray-200">
             <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
@@ -11,7 +11,7 @@ const Footer = () => {
                     <div className="mb-6 md:mb-0 flex items-center">
                         <a href="https://rubbishportal.com" className="flex items-center">
                             {/* <img src="/Full_Logo.svg" className="h-28 mr-3 invert -hue-rotate-90" alt="Rubbish Portal Logo" /> */}
-                            <img src={"/Logo File-13.png"} className="h-28 object-fill" />
+                            <img src={'/Logo File-13.png'} className="h-28 object-fill" />
                         </a>
                     </div>
                     <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
@@ -72,7 +72,7 @@ const Footer = () => {
             </div>
         </footer>
 
-    );
-};
+  )
+}
 
-export default Footer;
+export default Footer

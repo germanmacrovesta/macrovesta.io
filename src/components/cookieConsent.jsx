@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useCookies } from 'react-cookie';
+import React, { useState, useEffect } from 'react'
+import { useCookies } from 'react-cookie'
 
 const CookieConsent = () => {
-    const [cookies, setCookies] = useCookies(['cookieConsent']);
-    const [shouldShow, setShouldShow] = useState(true);
-    const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [cookies, setCookies] = useCookies(['cookieConsent'])
+  const [shouldShow, setShouldShow] = useState(true)
+  const [isLoading, setIsLoading] = useState(true) // Add loading state
 
-    useEffect(() => {
-        if (cookies.cookieConsent === 'accepted') {
-            setShouldShow(false);
-        }
-        setIsLoading(false); // Loading is complete
-    }, [cookies]);
-
-    const handleAccept = () => {
-        setCookies('cookieConsent', 'accepted', { path: '/' });
-        setShouldShow(false);
-    };
-
-    if (isLoading) {
-        return null; // Return null while loading
+  useEffect(() => {
+    if (cookies.cookieConsent === 'accepted') {
+      setShouldShow(false)
     }
+    setIsLoading(false) // Loading is complete
+  }, [cookies])
 
-    if (!shouldShow) {
-        return null; // Consent already accepted, don't show the component
-    }
+  const handleAccept = () => {
+    setCookies('cookieConsent', 'accepted', { path: '/' })
+    setShouldShow(false)
+  }
 
-    return (
+  if (isLoading) {
+    return null // Return null while loading
+  }
+
+  if (!shouldShow) {
+    return null // Consent already accepted, don't show the component
+  }
+
+  return (
         <div
             className="fixed bottom-0 right-0 p-4 z-[1000] animate-fade-in"
         >
@@ -53,7 +53,7 @@ const CookieConsent = () => {
                 </div>
             </div>
         </div>
-    );
-};
+  )
+}
 
-export default CookieConsent;
+export default CookieConsent

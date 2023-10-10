@@ -1,14 +1,12 @@
+import Image from 'next/image'
 
-import Image from "next/image";
-
-export default function FeaturesBlocks() {
-    return (
+export default function FeaturesBlocks () {
+  return (
         <section className=" relative overflow-hidden">
-
 
             {/* <div className="-z-10 absolute top-1/3  left-0 right-0">
                 <div className="overflow-hidden h-1/2">
-                
+
                 <img src="Rubbish_Border_Reverse.svg" alt="Complex Shape Divider" />
                 </div>
             </div> */}
@@ -38,7 +36,7 @@ export default function FeaturesBlocks() {
                                 {/* <div>
                                 <img className="h-[100px] w-[100px]" src="/SortingTick_ISO.png" alt="Emissions Saving Icon" />
                             </div> */}
-                                <Image width={100} height={100} src={"/ICONS_Live Market Forecasting.svg"} alt="macrovesta board meeting image" />
+                                <Image width={100} height={100} src={'/ICONS_Live Market Forecasting.svg'} alt="macrovesta board meeting image" />
                                 <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Live AI market forecasting, insights and alerts</h4>
                                 {/* <p className="text-gray-600 text-center">Download reports and recycling certificates for compliance and marketing</p> */}
                             </div>
@@ -47,7 +45,7 @@ export default function FeaturesBlocks() {
                                 {/* <div>
                                 <img className="h-[100px] w-[100px]" src="/Sorted_Iso.png" alt="Waste Icon" />
                             </div> */}
-                                <Image width={100} height={100} src={"/ICONS_Multilingual.svg"} alt="macrovesta board meeting image" />
+                                <Image width={100} height={100} src={'/ICONS_Multilingual.svg'} alt="macrovesta board meeting image" />
                                 <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Multilingual Deep Learning AI translated platform</h4>
                                 {/* <p className="text-gray-600 text-center">Get traceability on your product or material waste streams and their recycling </p> */}
                             </div>
@@ -57,7 +55,7 @@ export default function FeaturesBlocks() {
                                 {/* <div>
                                 <img className="h-[100px] w-[100px]" src="/Emissions_Iso.png" alt="Emissions Icon" />
                             </div> */}
-                                <Image width={100} height={100} src={"/ICONS_Expert Reports.svg"} alt="macrovesta board meeting image" />
+                                <Image width={100} height={100} src={'/ICONS_Expert Reports.svg'} alt="macrovesta board meeting image" />
                                 <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Leading industry expert reports</h4>
                                 {/* <p className="text-gray-600 text-center">Measure the carbon emissions of your product consumption and waste </p> */}
                             </div>
@@ -67,7 +65,7 @@ export default function FeaturesBlocks() {
                                 {/* <div>
                                 <img className="h-[100px] w-[100px]" src="/Emissions_Saving_Iso.png" alt="Emissions Saving Icon" />
                             </div> */}
-                                <Image width={100} height={100} src={"/ICONS_Position Management.svg"} alt="macrovesta board meeting image" />
+                                <Image width={100} height={100} src={'/ICONS_Position Management.svg'} alt="macrovesta board meeting image" />
                                 <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Position management consultations</h4>
                                 {/* <p className="text-gray-600 text-center">Get help to improve your recycling rates and reduce your carbon footprint</p> */}
                             </div>
@@ -77,7 +75,7 @@ export default function FeaturesBlocks() {
                                 {/* <div>
                                 <img className=" h-[100px] p-3" src="/hero-image.png" alt="Emissions Saving Icon" />
                             </div> */}
-                                <Image width={100} height={100} src={"/ICONS_Analysis Tools.svg"} alt="macrovesta board meeting image" />
+                                <Image width={100} height={100} src={'/ICONS_Analysis Tools.svg'} alt="macrovesta board meeting image" />
                                 <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Analysis & reporting tools for independent research</h4>
                                 {/* <p className="text-gray-600 text-center">See your impact in real time, monitor your improvement and set company goals </p> */}
                             </div>
@@ -87,16 +85,15 @@ export default function FeaturesBlocks() {
                                 {/* <div>
                                 <img className="h-[100px] w-[100px]" src="/Upload_ISO_SQ.png" alt="Emissions Saving Icon" />
                             </div> */}
-                                <Image width={100} height={100} src={"/ICONS_Learning Tools Icon.svg"} alt="macrovesta board meeting image" />
+                                <Image width={100} height={100} src={'/ICONS_Learning Tools Icon.svg'} alt="macrovesta board meeting image" />
                                 <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Library of learning tools and deep-dive studies</h4>
                                 {/* <p className="text-gray-600 text-center">Use our easy forms, or simplify your waste tracking with automated API data submission</p> */}
                             </div>
                         </div>
 
-
                     </div>
                 </div>
             </div>
         </section>
-    );
+  )
 }

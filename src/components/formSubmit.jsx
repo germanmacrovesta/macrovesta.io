@@ -1,8 +1,5 @@
-
-
-export default function FormSubmit(props) {
-
-    return (
+export default function FormSubmit (props) {
+  return (
         <>
             <div className="flex flex-col items-center w-full">
                 {props.submitted != undefined && props.submitted == true && (
@@ -26,13 +23,13 @@ export default function FormSubmit(props) {
                         </div>
                     </button>
                 )}
-                {props.warningMessage && props.warningMessage != "" && (
+                {props.warningMessage && props.warningMessage != '' && (
                     <div className="bg-emerald text-black rounded-lg p-4 mt-2 text-center w-[600px]">
                         <b>Suggestions</b><br />
                         {props.warningMessage}
                     </div>
                 )}
-                {props.errorMessage && props.errorMessage != "" && (
+                {props.errorMessage && props.errorMessage != '' && (
                     <div className="bg-accent text-black rounded-lg p-4 mt-2 text-center w-[600px]">
                         <b>Errors</b><br />
                         {props.errorMessage}
@@ -41,5 +38,5 @@ export default function FormSubmit(props) {
 
             </div>
         </>
-    )
+  )
 }

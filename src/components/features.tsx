@@ -4,23 +4,20 @@ import Image from 'next/image'
 // import FeaturesBg from '../public/features-bg.png'
 // import FeaturesElement from '../public/features-element.png'
 
-export default function Features() {
+export default function Features () {
+  const [tab, setTab] = useState<number>(1)
 
-    const [tab, setTab] = useState<number>(1)
+  const tabs = useRef<HTMLDivElement>(null)
 
-    const tabs = useRef<HTMLDivElement>(null)
+  const heightFix = () => {
+    if (tabs.current && tabs.current.parentElement) tabs.current.parentElement.style.height = `${tabs.current.clientHeight}px`
+  }
 
-    const heightFix = () => {
-        if (tabs.current && tabs.current.parentElement) tabs.current.parentElement.style.height = `${tabs.current.clientHeight}px`
-    }
+  useEffect(() => {
+    heightFix()
+  }, [])
 
-    useEffect(() => {
-        heightFix()
-    }, [])
-
-
-
-    return (
+  return (
         <section className="relative mb-8 lg:mb-0">
 
             {/* Section background (needs .relative class on parent and next sibling elements) */}
@@ -50,7 +47,7 @@ export default function Features() {
                                 <a
                                     className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${tab !== 1 ? 'bg-white shadow-md border-gray-200 hover:shadow-lg' : 'bg-gray-200 border-transparent'}`}
                                     href="#0"
-                                    onClick={(e) => { e.preventDefault(); setTab(1); }}
+                                    onClick={(e) => { e.preventDefault(); setTab(1) }}
                                 >
                                     <div>
                                         <div className="font-bold leading-snug tracking-tight mb-1">Streamline Waste Management Across Multiple Venues</div>
@@ -65,7 +62,7 @@ export default function Features() {
                                 <a
                                     className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${tab !== 2 ? 'bg-white shadow-md border-gray-200 hover:shadow-lg' : 'bg-gray-200 border-transparent'}`}
                                     href="#0"
-                                    onClick={(e) => { e.preventDefault(); setTab(2); }}
+                                    onClick={(e) => { e.preventDefault(); setTab(2) }}
                                 >
                                     <div>
                                         <div className="font-bold leading-snug tracking-tight mb-1">Enhanced Waste Traceability for Distributors, Manufacturers, and Waste Managers</div>
@@ -80,7 +77,7 @@ export default function Features() {
                                 <a
                                     className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${tab !== 3 ? 'bg-white shadow-md border-gray-200 hover:shadow-lg' : 'bg-gray-200 border-transparent'}`}
                                     href="#0"
-                                    onClick={(e) => { e.preventDefault(); setTab(3); }}
+                                    onClick={(e) => { e.preventDefault(); setTab(3) }}
                                 >
                                     <div>
                                         <div className="font-bold leading-snug tracking-tight mb-1">Foster Collaborative Waste Management Efforts</div>
@@ -114,8 +111,8 @@ export default function Features() {
                                         unmount={false}
                                     >
                                         <div className="relative inline-flex flex-col">
-                                            <Image className="md:max-w-none mx-auto rounded" src={"/Full_Logo.svg"} width={500} height="462" alt="Features" />
-                                            <Image className="md:max-w-none absolute w-full left-0 transform animate-float" src={"/Full_Logo.svg"} width={500} height="44" alt="Element" style={{ top: '30%' }} />
+                                            <Image className="md:max-w-none mx-auto rounded" src={'/Full_Logo.svg'} width={500} height="462" alt="Features" />
+                                            <Image className="md:max-w-none absolute w-full left-0 transform animate-float" src={'/Full_Logo.svg'} width={500} height="44" alt="Element" style={{ top: '30%' }} />
                                             {/* <Image className="md:max-w-none absolute w-[250px] left-[125px] transform animate-float" src={"/Deliveries_Iso.png"} width={500} height="44" alt="Element" style={{ top: '50%' }} /> */}
                                         </div>
                                     </Transition>
@@ -134,8 +131,8 @@ export default function Features() {
                                         unmount={false}
                                     >
                                         <div className="relative inline-flex flex-col">
-                                            <Image className="md:max-w-none mx-auto rounded" src={"/Full_Logo.svg"} width={500} height="462" alt="Features bg" />
-                                            <Image className="md:max-w-none absolute w-full left-0 transform animate-float" src={"/Full_Logo.svg"} width={500} height="44" alt="Element" style={{ top: '30%' }} />
+                                            <Image className="md:max-w-none mx-auto rounded" src={'/Full_Logo.svg'} width={500} height="462" alt="Features bg" />
+                                            <Image className="md:max-w-none absolute w-full left-0 transform animate-float" src={'/Full_Logo.svg'} width={500} height="44" alt="Element" style={{ top: '30%' }} />
                                         </div>
                                     </Transition>
                                     {/* Item 3 */}
@@ -153,8 +150,8 @@ export default function Features() {
                                         unmount={false}
                                     >
                                         <div className="relative inline-flex flex-col">
-                                            <Image className="md:max-w-none mx-auto rounded" src={"/Full_Logo.svg"} width={500} height="462" alt="Features bg" />
-                                            <Image className="md:max-w-none absolute w-full left-0 transform animate-float" src={"/Full_Logo.svg"} width={500} height="44" alt="Element" style={{ top: '30%' }} />
+                                            <Image className="md:max-w-none mx-auto rounded" src={'/Full_Logo.svg'} width={500} height="462" alt="Features bg" />
+                                            <Image className="md:max-w-none absolute w-full left-0 transform animate-float" src={'/Full_Logo.svg'} width={500} height="44" alt="Element" style={{ top: '30%' }} />
                                         </div>
                                     </Transition>
                                 </div>
@@ -166,5 +163,5 @@ export default function Features() {
                 </div>
             </div>
         </section>
-    )
+  )
 }

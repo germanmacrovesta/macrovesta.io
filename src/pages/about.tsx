@@ -35,23 +35,22 @@
 
 // export default About
 
-
-import React, { useEffect, useState, useRef } from 'react';
-import Header from '../components/header';
-import Footer from '../components/footer';
+import React, { useEffect, useState, useRef } from 'react'
+import Header from '../components/header'
+import Footer from '../components/footer'
 import SlideInImage from '../components/slideInImage'
-import CookieConsent from '../components/cookieConsent';
+import CookieConsent from '../components/cookieConsent'
 import { getSession } from 'next-auth/react'
-import Head from "next/head";
-import Link from "next/link";
-import Image from 'next/image';
+import Head from 'next/head'
+import Link from 'next/link'
+import Image from 'next/image'
 
 export const metadata = {
   title: 'About',
-  description: 'Learn more about The Rubbish Portal',
-};
+  description: 'Learn more about The Rubbish Portal'
+}
 
-export default function About() {
+export default function About () {
   return (
     <>
       <Head>
@@ -181,7 +180,7 @@ export default function About() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/JE.jpeg"} alt='Jo Earlam Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/JE.jpeg'} alt='Jo Earlam Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/JE.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -192,7 +191,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Olly.jpeg"} alt='Oliver Jobling Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/Olly.jpeg'} alt='Oliver Jobling Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/Olly.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -203,7 +202,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Nafisah Badmos.jpeg"} alt='Nafisah Badmos Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/Nafisah Badmos.jpeg'} alt='Nafisah Badmos Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/Nafisah Badmos.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -215,7 +214,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/Vic.jpeg"} alt='Victor Fernandes Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/Vic.jpeg'} alt='Victor Fernandes Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="Vic.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -227,7 +226,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/default-avatar-icon-of-social-media-user-vector.jpeg"} alt='Gary Ferguson Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/default-avatar-icon-of-social-media-user-vector.jpeg'} alt='Gary Ferguson Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -239,7 +238,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/NJB.jpg"} alt='Nick Brice Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/NJB.jpg'} alt='Nick Brice Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/NJB.jpg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -251,7 +250,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/default-avatar-icon-of-social-media-user-vector.jpeg"} alt='Chris Williams Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/default-avatar-icon-of-social-media-user-vector.jpeg'} alt='Chris Williams Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/default-avatar-icon-of-social-media-user-vector.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -263,7 +262,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/HWB.jpeg"} alt='Harry Bennett Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/HWB.jpeg'} alt='Harry Bennett Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/HWB.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -275,7 +274,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/BW.jpeg"} alt='Ben Williams Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/BW.jpeg'} alt='Ben Williams Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -287,7 +286,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/simone_profile.jpg"} alt='Simone Massardi Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/simone_profile.jpg'} alt='Simone Massardi Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -299,7 +298,7 @@ export default function About() {
                 </div>
                 <div className="w-full bg-white rounded-lg p-4 flex flex-col justify-start items-center">
                   <div className="mb-8">
-                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={"/nick_profile.jpg"} alt='Nick Newns Profile' />
+                    <Image style={{ objectPosition: 'center', objectFit: 'cover', borderRadius: '9999px', height: '144px' }} width={144} height={144} src={'/nick_profile.jpg'} alt='Nick Newns Profile' />
                     {/* <img className="object-center object-cover rounded-full h-36 w-36" src="/BW.jpeg" alt="photo" /> */}
                   </div>
                   <div className="text-center">
@@ -347,7 +346,6 @@ export default function About() {
         </div>
       </div>
 
-
       <div className="relative isolate overflow-hidden bg-white px-6 py-12 sm:py-12 lg:overflow-visible lg:px-0">
         <div className="absolute inset-0 -z-10 overflow-hidden">
         </div>
@@ -373,7 +371,6 @@ export default function About() {
               </a>
             </div>
           </div>
-
 
           <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
             <div className="lg:pr-4">
@@ -420,10 +417,9 @@ export default function About() {
         </div>
       </div>
 
-
       <Footer />
     </>
-  );
+  )
 }
 
 export const getServerSideProps = async (context: any) => {
@@ -433,12 +429,12 @@ export const getServerSideProps = async (context: any) => {
     return {
       redirect: {
         permanent: false,
-        destination: `/`,
+        destination: '/'
       }
     }
   }
 
   return {
-    props: {},
-  };
-};
+    props: {}
+  }
+}

@@ -1,23 +1,22 @@
-export function html(params: { url: string; host: string; token: string; }) {
+export function html (params: { url: string; host: string; token: string; }) {
   const { url: callbackurl, host, token } = params
 
-  const url = new URL(callbackurl);
+  const url = new URL(callbackurl)
 
-  console.log(url.origin);  // Outputs: https://rubbishportal.com
+  console.log(url.origin) // Outputs: https://rubbishportal.com
 
-
-  const escapedHost = host.replace(/\./g, "&#8203;.")
+  const escapedHost = host.replace(/\./g, '&#8203;.')
 
   // const brandColor = theme.brandColor || "#346df1"
-  const brandColor = "#346df1"
+  const brandColor = '#346df1'
   const color = {
-    background: "#f9f9f9",
-    text: "#444",
-    mainBackground: "#fff",
+    background: '#f9f9f9',
+    text: '#444',
+    mainBackground: '#fff',
     buttonBackground: brandColor,
     buttonBorder: brandColor,
     // buttonText: theme.buttonText || "#fff",
-    buttonText: "#fff",
+    buttonText: '#fff'
   }
 
   return `
@@ -53,8 +52,7 @@ export function html(params: { url: string; host: string; token: string; }) {
 }
 
 /** Email Text body (fallback for email clients that don't render HTML, e.g. feature phones) */
-export function text({ url: callbackurl, host, token }: { url: string; host: string; token: string; }) {
-
-  const url = new URL(callbackurl);
+export function text ({ url: callbackurl, host, token }: { url: string; host: string; token: string; }) {
+  const url = new URL(callbackurl)
   return `Sign in to ${host}\n\nYour code is: ${token}`
 }

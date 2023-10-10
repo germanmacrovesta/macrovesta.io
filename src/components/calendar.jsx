@@ -1,43 +1,43 @@
-import { useCalendar, useCalendarGrid, useCalendarCell, useDateFormatter, useLocale } from 'react-aria';
-import { useCalendarState } from 'react-stately';
-import { createCalendar, getWeeksInMonth, parseDateTime } from '@internationalized/date';
-import * as React from 'react';
-import Button from '../components/button';
+import { useCalendar, useCalendarGrid, useCalendarCell, useDateFormatter, useLocale } from 'react-aria'
+import { useCalendarState } from 'react-stately'
+import { createCalendar, getWeeksInMonth, parseDateTime } from '@internationalized/date'
+import * as React from 'react'
+import Button from '../components/button'
 
 // Reuse the Button from your component library. See below for details.
 
-function formatDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+function formatDate (date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0') // Months are zero-based
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
 
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
-export default function Calendar({ setIsOpen, yearOptions = [-43, 1], ...props }) {
-    let { locale } = useLocale();
-    let state = useCalendarState({
-        ...props,
-        locale,
-        createCalendar
-    });
+export default function Calendar ({ setIsOpen, yearOptions = [-43, 1], ...props }) {
+  const { locale } = useLocale()
+  const state = useCalendarState({
+    ...props,
+    locale,
+    createCalendar
+  })
 
-    let ref = React.useRef();
-    let { calendarProps, prevButtonProps, nextButtonProps, title } = useCalendar(
-        props,
-        state,
-        ref
-    );
+  const ref = React.useRef()
+  const { calendarProps, prevButtonProps, nextButtonProps, title } = useCalendar(
+    props,
+    state,
+    ref
+  )
 
-    return (
+  return (
         <div {...calendarProps} ref={ref} className="border shadow-lg bg-white w-full h-fit rounded-xl">
             <div className="p-2 bg-secondarywhite text-black text-center rounded-t-xl">
                 <div className='flex justify-between'>
                     <Button {...prevButtonProps}>&lt;</Button>
                     {/* <h2>{title}</h2> */}
-                    <div className={"flex text-sm"}>
+                    <div className={'flex text-sm'}>
                         <MonthDropdown state={state} />
                         <YearDropdown state={state} yearOptions={yearOptions} />
                     </div>
@@ -46,37 +46,37 @@ export default function Calendar({ setIsOpen, yearOptions = [-43, 1], ...props }
             </div>
             <CalendarGrid state={state} setIsOpen={setIsOpen} />
         </div>
-    );
+  )
 }
 
-function MonthDropdown({ state }) {
-    let months = [];
-    let formatter = useDateFormatter({
-        month: "long",
-        timeZone: state.timeZone
-    });
+function MonthDropdown ({ state }) {
+  const months = []
+  const formatter = useDateFormatter({
+    month: 'long',
+    timeZone: state.timeZone
+  })
 
-    // Format the name of each month in the year according to the
-    // current locale and calendar system. Note that in some calendar
-    // systems, such as the Hebrew, the number of months may differ
-    // between years.
-    let numMonths = state.focusedDate.calendar.getMonthsInYear(state.focusedDate);
-    for (let i = 1; i <= numMonths; i++) {
-        let date = state.focusedDate.set({ month: i });
-        months.push(formatter.format(date.toDate(state.timeZone)));
-    }
+  // Format the name of each month in the year according to the
+  // current locale and calendar system. Note that in some calendar
+  // systems, such as the Hebrew, the number of months may differ
+  // between years.
+  const numMonths = state.focusedDate.calendar.getMonthsInYear(state.focusedDate)
+  for (let i = 1; i <= numMonths; i++) {
+    const date = state.focusedDate.set({ month: i })
+    months.push(formatter.format(date.toDate(state.timeZone)))
+  }
 
-    let onChange = (e) => {
-        let value = Number(e.target.value);
-        let date = state.focusedDate.set({ month: value });
-        state.setFocusedDate(date);
-    };
+  const onChange = (e) => {
+    const value = Number(e.target.value)
+    const date = state.focusedDate.set({ month: value })
+    state.setFocusedDate(date)
+  }
 
-    return (
+  return (
         <select
             aria-label="Month"
             onChange={onChange}
-            className={"bg-white text-center py-2"}
+            className={'bg-white text-center py-2'}
         >
             {months.map((month, i) => (
                 <>
@@ -99,41 +99,41 @@ function MonthDropdown({ state }) {
                 </>
             ))}
         </select>
-    );
+  )
 }
 
-function YearDropdown({ state, yearOptions }) {
-    let years = [];
-    let formatter = useDateFormatter({
-        year: "numeric",
-        timeZone: state.timeZone
-    });
+function YearDropdown ({ state, yearOptions }) {
+  const years = []
+  const formatter = useDateFormatter({
+    year: 'numeric',
+    timeZone: state.timeZone
+  })
 
-    // Format 20 years on each side of the current year according
-    // to the current locale and calendar system.
-    // for (let i = -20; i <= 20; i++) {
-    const todaysDate = formatDate(new Date())
-    const todaysCalendarDate = parseDateTime(todaysDate)
-    for (let i = yearOptions[0]; i <= yearOptions[1]; i++) {
-        let date = todaysCalendarDate.add({ years: i });
-        years.push({
-            value: date,
-            formatted: formatter.format(date.toDate(state.timeZone))
-        });
-    }
+  // Format 20 years on each side of the current year according
+  // to the current locale and calendar system.
+  // for (let i = -20; i <= 20; i++) {
+  const todaysDate = formatDate(new Date())
+  const todaysCalendarDate = parseDateTime(todaysDate)
+  for (let i = yearOptions[0]; i <= yearOptions[1]; i++) {
+    const date = todaysCalendarDate.add({ years: i })
+    years.push({
+      value: date,
+      formatted: formatter.format(date.toDate(state.timeZone))
+    })
+  }
 
-    let onChange = (e) => {
-        let index = Number(e.target.value);
-        let date = years[index].value;
-        state.setFocusedDate((prevDate) => prevDate.set({ year: date.year }));
-        // state.setFocusedDate(JSON.parse(e.target.value));
-    };
+  const onChange = (e) => {
+    const index = Number(e.target.value)
+    const date = years[index].value
+    state.setFocusedDate((prevDate) => prevDate.set({ year: date.year }))
+    // state.setFocusedDate(JSON.parse(e.target.value));
+  }
 
-    return (
+  return (
         <select
             aria-label="Year"
             onChange={onChange}
-            className={"bg-white text-center py-2"}
+            className={'bg-white text-center py-2'}
         >
             {years.map((year, i) => (
                 // use the index as the value so we can retrieve the full
@@ -164,18 +164,17 @@ function YearDropdown({ state, yearOptions }) {
                 </>
             ))}
         </select>
-    );
+  )
 }
 
+function CalendarGrid ({ state, setIsOpen, ...props }) {
+  const { locale } = useLocale()
+  const { gridProps, headerProps, weekDays } = useCalendarGrid(props, state)
 
-function CalendarGrid({ state, setIsOpen, ...props }) {
-    let { locale } = useLocale();
-    let { gridProps, headerProps, weekDays } = useCalendarGrid(props, state);
+  // Get the number of weeks in the month so we can render the proper number of rows.
+  const weeksInMonth = getWeeksInMonth(state.visibleRange.start, locale)
 
-    // Get the number of weeks in the month so we can render the proper number of rows.
-    let weeksInMonth = getWeeksInMonth(state.visibleRange.start, locale);
-
-    return (
+  return (
         <table className=' bg-secondarywhite w-full rounded-b-xl' {...gridProps}>
             <thead {...headerProps}>
                 <tr>
@@ -186,8 +185,8 @@ function CalendarGrid({ state, setIsOpen, ...props }) {
                 {[...new Array(weeksInMonth).keys()].map((weekIndex) => (
                     <tr key={weekIndex}>
                         {state.getDatesInWeek(weekIndex).map((date, i) => (
-                            date
-                                ? (
+                          date
+                            ? (
                                     <CalendarCell
                                         key={i}
                                         state={state}
@@ -195,34 +194,33 @@ function CalendarGrid({ state, setIsOpen, ...props }) {
                                         setIsOpen={setIsOpen}
 
                                     />
-                                )
-                                : <td key={i} />
+                              )
+                            : <td key={i} />
                         ))}
                     </tr>
                 ))}
             </tbody>
         </table>
-    );
+  )
 }
 
+function CalendarCell ({ state, date, setIsOpen }) {
+  const ref = React.useRef()
+  const {
+    cellProps,
+    buttonProps,
+    isSelected,
+    isOutsideVisibleRange,
+    isDisabled,
+    isUnavailable,
+    formattedDate
+  } = useCalendarCell({ date }, state, ref)
 
-function CalendarCell({ state, date, setIsOpen }) {
-    let ref = React.useRef();
-    let {
-        cellProps,
-        buttonProps,
-        isSelected,
-        isOutsideVisibleRange,
-        isDisabled,
-        isUnavailable,
-        formattedDate
-    } = useCalendarCell({ date }, state, ref);
+  const { onClick: onClickProp, ...restOfButtonProps } = buttonProps
 
-    let { onClick: onClickProp, ...restOfButtonProps } = buttonProps
+  const newformattedDate = <div className='text-center'>{formattedDate}</div>
 
-    let newformattedDate = <div className='text-center'>{formattedDate}</div>
-
-    return (
+  return (
         <td {...cellProps}>
             <div
                 {...restOfButtonProps}
@@ -235,5 +233,5 @@ function CalendarCell({ state, date, setIsOpen }) {
                 {newformattedDate}
             </div>
         </td>
-    );
+  )
 }
