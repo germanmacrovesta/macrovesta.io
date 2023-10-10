@@ -32,6 +32,22 @@ import { parseDate } from '@internationalized/date'
 import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
 import useWeglotLang from '../components/useWeglotLang'
 import InfoButton from '../components/infoButton'
+import MonthlyIndex from '~/components/MonthlyIndex'
+import {
+  getCottonOnCallWeekData,
+  getCottonOnCallSeasonData,
+  getCommitmentOfTradersWeekData,
+  getCommitmentOfTradersSeasonData,
+  getSupplyAndDemandData, getAIndexData,
+  getUSExportSalesData,
+  getUSExportSalesWeekData,
+  getUSExportSalesSeasonData,
+  getSeasonData,
+  getStudyData
+} from '../utils/getDataUtils'
+import { calculateSpread, transformData, basisBarChartData, averageFutureContract, averageMarketSentiment } from '../utils/calculateUtils'
+import { getCurrentMonth, parseDateString, getWeekNumber, addFullYear, getWeek } from '../utils/dateUtils'
+import SeasonalIndex from '~/components/SeasonalIndex'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: 'AAPL',
@@ -44,20 +60,6 @@ const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   user_id: 'public_user_id',
   fullscreen: false,
   autosize: true
-}
-
-function getCurrentMonth () {
-  // Create a new Date object
-  const date = new Date()
-
-  // Create an array of month names
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December']
-
-  // Get the month number from the Date object and use it to get the month name
-  const monthName = monthNames[date.getMonth()]
-
-  return monthName
 }
 
 const selectAppropriateImage = (inv, value) => {
@@ -82,33 +84,6 @@ const selectAppropriateImage = (inv, value) => {
   return (
     <img className="w-[400px]" src={imagesrc} />
   )
-}
-
-const parseDateString = (dateString) => {
-  const date = new Date(dateString)
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = String(date.getFullYear()).slice(-2)
-
-  if (isNaN(date)) {
-    return undefined
-  } else {
-    return `${day}-${month}-${year}`
-  }
-}
-
-function getWeekNumber (d) {
-  // Copy date so don't modify original
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
-  // Set to nearest Thursday: current date + 4 - current day number
-  // Make Sunday's day number 7
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
-  // Get first day of year
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  // Calculate full weeks to nearest Thursday
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
-  // Return array of year and week number
-  return [d.getUTCFullYear(), weekNo]
 }
 
 const renderers = {
@@ -661,58 +636,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     CTZ24: number;
   }[]
 
-  const basisBarChartData = (originalData: formattedBasis) => {
-    const today = new Date() // Current date
-    const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-    const data: formattedBasis = originalData.filter((basis: formattedBasis[number]) => basis.date_of_basis_report > oneWeekAgo.toISOString())
-    const result: CountryData[] = Object.values(data.reduce((accumulator: { [key: string]: CountryData }, current) => {
-      const { country, CTZ23, CTZ24 } = current
-
-      if (!accumulator[country]) {
-        accumulator[country] = {
-          country,
-          CTZ23: CTZ23 || 0,
-          CTZ24: CTZ24 || 0
-        }
-      } else {
-        accumulator[country]!.CTZ23 += CTZ23 || 0
-        accumulator[country]!.CTZ24 += CTZ24 || 0
-      }
-
-      return accumulator
-    }, {})).map((countryData: CountryData) => {
-      const { country, CTZ23, CTZ24 } = countryData
-      const count = data.filter(obj => obj.country === country).length
-
-      return {
-        country,
-        CTZ23: parseFloat((CTZ23 / count).toFixed(0)),
-        CTZ24: parseFloat((CTZ24 / count).toFixed(0))
-      }
-    })
-
-    console.log(result)
-    return result
-  }
-
-  function getWeek (date, startDay) {
-    const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-    tempDate.setUTCDate(tempDate.getUTCDate() + 3 - (tempDate.getUTCDay() + 6 - startDay + 7) % 7)
-    const week1 = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4))
-    return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7)
-  }
-
-  function transformData (input) {
-    const contract1Data = { name: 'CTZ23', data: [], noCircles: true }
-    const contract2Data = { name: 'CTZ24', data: [], noCircles: true }
-    input.forEach((item) => {
-      contract1Data.data.push({ time: (new Date(item.date_of_basis_report)).toISOString(), value: item.CTZ23 })
-      contract2Data.data.push({ time: (new Date(item.date_of_basis_report)).toISOString(), value: item.CTZ24 })
-    })
-
-    return [contract1Data, contract2Data]
-  }
-
   // function transformData(input) {
   //   // Create a container for the new data structure
   //   let output = {};
@@ -849,143 +772,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   //   return outputArray;
   // }
 
-  function transformSurveyData (inputArray, propertyUsed, precision = 2) {
-    const outputArray = []
-    const averages = {}
-    // const combinedSeries = {
-    //   name: "Combined",
-    //   data: []
-    // };
-    averages.Bullish = {}
-    averages.Bearish = {}
-    averages.Neutral = {}
-
-    for (const obj of inputArray) {
-      const groupName = obj.bullish_or_bearish
-
-      if (!averages[groupName]) {
-        averages[groupName] = {}
-      }
-      if (!averages.Average) {
-        averages.Average = {}
-      }
-
-      const date = new Date(obj.date_of_survey)
-      const dateString = date.toISOString().split('T')[0]
-
-      if (!averages[groupName][dateString]) {
-        averages[groupName][dateString] = {
-          sum: 0,
-          count: 0
-        }
-      }
-      if (!averages.Average[dateString]) {
-        averages.Average[dateString] = {
-          sum: 0,
-          count: 0
-        }
-      }
-
-      averages[groupName][dateString].sum += parseFloat(obj[propertyUsed])
-      averages[groupName][dateString].count++
-      averages.Average[dateString].sum += parseFloat(obj[propertyUsed])
-      averages.Average[dateString].count++
-
-      // Add the values to the combined series
-      // if (!isNaN(parseFloat(obj[propertyUsed]))) {
-      //   if (!combinedSeries.data[dateString]) {
-      //     combinedSeries.data[dateString] = {
-      //       sum: 0,
-      //       count: 0
-      //     };
-      //   }
-
-      //   combinedSeries.data[dateString].sum += parseFloat(obj[propertyUsed]);
-      //   combinedSeries.data[dateString].count++;
-      // }
-    }
-
-    for (const groupName in averages) {
-      const group = averages[groupName]
-      const data = []
-
-      for (const dateString in group) {
-        const average =
-          parseFloat((group[dateString].sum / group[dateString].count).toFixed(precision))
-        const date = new Date(dateString)
-
-        data.push({
-          time: date.toISOString(),
-          value: average
-        })
-      }
-      if (groupName == 'Average') {
-        outputArray.push({
-          name: groupName,
-          data,
-          dottedLine: true
-        })
-      } else {
-        outputArray.push({
-          name: groupName,
-          data
-        })
-      }
-    }
-    // Calculate the average for the combined series
-    // for (const dateString in combinedSeries.data) {
-    //   const average =
-    //     combinedSeries.data[dateString].sum / combinedSeries.data[dateString].count;
-    //   const date = new Date(dateString);
-
-    //   combinedSeries.data[dateString] = {
-    //     time: date.toISOString(),
-    //     value: average
-    //   };
-    // }
-
-    // outputArray.push(combinedSeries);
-    console.log(propertyUsed, outputArray)
-    return outputArray
-  }
-
-  function calculateSpread (arr1, arr2, name) {
-    // Transform arrays into maps for easy lookup
-    const map1 = new Map(arr1.map(item => [item.datetime, item.close]))
-    const map2 = new Map(arr2.map(item => [item.datetime, item.close]))
-
-    // Find the later start date
-    const start1 = new Date(arr1[0].datetime)
-    const start2 = new Date(arr2[0].datetime)
-    const start = start1 > start2 ? start1.toISOString() : start2.toISOString()
-
-    // Merge arrays
-    const merged = []
-    for (const [datetime, close1] of map1) {
-      if (datetime >= start) {
-        const close2 = map2.get(datetime)
-        if (close2 !== undefined) {
-          merged.push({
-            time: datetime,
-            value: Number((close1 - close2).toPrecision(4))
-          })
-        }
-      }
-    }
-
-    return [{ name, data: merged, noCircles: true, noHover: true }]
-  }
-
-  const addFullYear = (twoDigitYear) => {
-    if (twoDigitYear[0] == '0' || twoDigitYear[0] == '1' || twoDigitYear[0] == '2') {
-      const newYear = `20${twoDigitYear}`
-      // return `20${twoDigitYear}`
-      return newYear
-    } else {
-      return `19${twoDigitYear}`
-    }
-  }
-
   // const getCottonOnCallWeekData = (data, salesOrPurchases) => {
   //   let october = { name: "october", data: [], noCircles: true }
   //   let december = { name: "december", data: [], noCircles: true }
@@ -1001,158 +787,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   //   })
   //   return [october, december, march, may, july]
   // }
-  const getCottonOnCallWeekData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: item.date, y: parseInt(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: item.date, y: parseInt(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
-  const getCottonOnCallSeasonData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: parseInt(addFullYear(String(item.season).substring(0, 2))), y: parseInt(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: parseInt(addFullYear(String(item.season).substring(0, 2))), y: parseInt(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
-  const getCommitmentOfTradersWeekData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
-  const getCommitmentOfTradersSeasonData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
 
-  const getSupplyAndDemandData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          if (parseInt(item[property]) != 0) {
-            const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-            dataset.data.push({ time: item.date, value: parseInt(item[property]) })
-          }
-        } else {
-          if (parseInt(item[property]) != 0) {
-            const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-            dataset.data.push({ time: item.date, value: parseInt(item[property]) })
-            datasetArray.push(dataset)
-          }
-        }
-      })
-    })
-    return datasetArray
-  }
-
-  const getAIndexData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: item.date, y: parseFloat(item[property]) })
-          // dataset.data.push({ x: item.date, y: parseFloat(item[spreadVariable]) - parseFloat(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: item.date, y: parseFloat(item[property]) })
-          // dataset.data.push({ x: item.date, y: parseFloat(item[spreadVariable]) - parseFloat(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
-  const getUSExportSalesData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: item.week_ending, y: parseInt(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: item.week_ending, y: parseInt(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
-  const getUSExportSalesWeekData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: parseInt(item.week), y: parseInt(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
-  const getUSExportSalesSeasonData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: parseInt(item.calendar_year), y: parseInt(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
   // const getCommitmentOfTradersWeekData = (data) => {
   //   let producer_merchant_net = { name: "Producer Merchant Net", data: [], noCircles: true }
   //   let open_interest_all = { name: "Open Interest All", data: [], noCircles: true }
@@ -1356,48 +991,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   `
   const [contractParameter, setContractParameter] = React.useState('close')
 
-  const getSeasonData = (s1, s2, s3) => {
-    const array = []
-    if (s1 != null && s1 != 'Select Season') {
-      const s1Data = { name: s1.season, data: [{ x: s1.month_of_low, y: s1.low_price }, { x: s1.month_of_high, y: s1.high_price }] }
-      array.push(s1Data)
-    }
-    if (s2 != null && s2 != 'Select Season') {
-      const s2Data = { name: s2.season, data: [{ x: s2.month_of_low, y: s2.low_price }, { x: s2.month_of_high, y: s2.high_price }] }
-      array.push(s2Data)
-    }
-    if (s3 != null && s3 != 'Select Season') {
-      const s3Data = { name: s3.season, data: [{ x: s3.month_of_low, y: s3.low_price }, { x: s3.month_of_high, y: s3.high_price }] }
-      array.push(s3Data)
-    }
-    return array
-  }
-  const getStudyData = (s1, s2, s3) => {
-    const array = []
-    if (s1 != null && s1 != 'Select Contract') {
-      const s1Data = { name: s1.year, data: [{ x: s1.month_of_low, y: s1.low }, { x: s1.month_of_high, y: s1.high }] }
-      array.push(s1Data)
-    }
-    if (s2 != null && s2 != 'Select Contract') {
-      const s2Data = { name: s2.year, data: [{ x: s2.month_of_low, y: s2.low }, { x: s2.month_of_high, y: s2.high }] }
-      array.push(s2Data)
-    }
-    if (s3 != null && s3 != 'Select Contract') {
-      const s3Data = { name: s3.year, data: [{ x: s3.month_of_low, y: s3.low }, { x: s3.month_of_high, y: s3.high }] }
-      array.push(s3Data)
-    }
-    return array
-  }
-
-  const averageFutureContract = (data, property) => {
-    const array = data.reduce((acc, obj) => {
-      acc[0] += parseFloat(obj[property])
-      acc[1]++
-      return acc
-    }, [0, 0])
-    return array[0] / array[1]
-  }
-
   React.useEffect(() => {
     const script = document.createElement('script')
     script.src = 'https://cdn.weglot.com/weglot.min.js'
@@ -1498,13 +1091,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     fetchData()
   }, [])
 
-  const averageMarketSentiment = () => {
-    const data = sentimentData.filter((sentiment) => new Date(sentiment.date_of_survey) > oneWeekAgo)
-    const total = data.reduce((acc, obj) => { acc += parseFloat(obj.bullish_or_bearish_value); return acc }, 0)
-    console.log('total', total)
-    return sentimentData.length > 0 ? total / data.length : 0
-  }
-
   const [countryNewsFilter, setCountryNewsFilter] = React.useState('All Countries')
   const [countryNewsFormCountry, setCountryNewsFormCountry] = React.useState('')
 
@@ -1546,49 +1132,11 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 <LineGraph data={linedata} />
               </div> */}
 
-              <div className="text-center font-semibold text-xl">
-                The Macrovesta Index
-              </div>
+              <div className="text-center font-semibold text-xl">The Macrovesta Index</div>
               <div className="flex justify-around gap-8">
                 {/* <IndexDial probability={0} /> */}
-
-                <div className="relative">
-                  <InfoButton text={'The Macrovesta Monthly Index gives you the percentage likelihood of the current month to be either inverse and non-inverse. This indicator is directly liked to our statistical model and updated every month. '} />
-
-                  <div className="text-center font-semibold">
-                    Monthly Index
-                  </div>
-                  <div className="justify-self-end">
-                    {/* <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} /> */}
-                    <SemiCircleDial value={parseFloat(JSON.parse(monthlyIndexData).probability_rate) * (JSON.parse(monthlyIndexData).inverse_month == 'Y' ? -1 : 1)} />
-                  </div>
-                  {/* {selectAppropriateImage(JSON.parse(monthlyIndexData).inverse_month, parseFloat(JSON.parse(monthlyIndexData).probability_rate))}
-
-                  <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
-                    transform: `rotate(${90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == "Y" ? 1 : -1)}deg)`
-                  }}>
-
-                  </div>
-                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(monthlyIndexData).probability_rate}</div> */}
-                </div>
-                <div className="relative flex flex-col justify-between">
-                  <InfoButton text={'The Macrovesta Monthly Index gives you the percentage likelihood of the current month to be either inverse and non-inverse. This indicator is directly liked to our statistical model and updated every month. 	The Macrovesta Seasonal Index gives you the percentage likelihood of the current season to be either inverse and non-inverse. This indicator is directly liked to our statistical model and updated every month. '} />
-
-                  <div className="text-center font-semibold">
-                    Seasonal Index
-                  </div>
-                  <div className="justify-self-end">
-                    {/* <SemiCircleDial value={2.66} rangeStart={-5} rangeEnd={5} arcAxisText={["-5", "-3", "0", "3", "5"]} leftText="Bearish" rightText="Bullish" decimals={1} /> */}
-                    <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == 'Y' ? -1 : 1)} />
-                  </div>
-                  {/* {selectAppropriateImage(JSON.parse(seasonalIndexData).inverse_year, parseFloat(JSON.parse(seasonalIndexData).probability_rate))}
-                  <div className="absolute origin-right bg-turquoise w-[130px] ml-[68px] bottom-[45px] h-2 transition-all duration-1000" style={{
-                    transform: `rotate(${90 - (parseFloat(JSON.parse(seasonalIndexData).probability_rate) / 100 * 90) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? 1 : -1)}deg)`
-                  }}>
-
-                  </div>
-                  <div className="absolute bg-white shadow-center-lg text-black rounded-full right-0 w-12 h-12 grid place-content-center -translate-x-[178px] -translate-y-[25px] bottom-0">{JSON.parse(seasonalIndexData).probability_rate}</div> */}
-                </div>
+                <MonthlyIndex monthlyIndexData={monthlyIndexData}></MonthlyIndex>
+                <SeasonalIndex seasonalIndexData={seasonalIndexData}></SeasonalIndex>
 
               </div>
             </div>
@@ -1943,7 +1491,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                         <div className="flex flex-col items-center">
                           <div className="font-semibold mb-20">Market Sentiment Strength</div>
 
-                          <SemiCircleDial value={averageMarketSentiment()} rangeStart={-5} rangeEnd={5} arcAxisText={['-5', '-3', '0', '3', '5']} leftText="Bearish" rightText="Bullish" decimals={1} />
+                          <SemiCircleDial value={averageMarketSentiment(sentimentData, oneWeekAgo)} rangeStart={-5} rangeEnd={5} arcAxisText={['-5', '-3', '0', '3', '5']} leftText="Bearish" rightText="Bullish" decimals={1} />
                         </div>
                         {/* <SemiCircleDial value={parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year == "Y" ? -1 : 1)} /> */}
 
