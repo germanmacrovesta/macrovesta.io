@@ -55,3 +55,7 @@ export function getWeek (date, startDay) {
   const week1 = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4))
   return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7)
 }
+
+export const today = new Date() // Current date
+
+export const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)

@@ -45,8 +45,8 @@ import {
   getSeasonData,
   getStudyData
 } from '../utils/getDataUtils'
-import { calculateSpread, transformData, basisBarChartData, averageFutureContract, averageMarketSentiment } from '../utils/calculateUtils'
-import { getCurrentMonth, parseDateString, getWeekNumber, addFullYear, getWeek } from '../utils/dateUtils'
+import { calculateSpread, transformData, basisBarChartData, averageFutureContract, averageMarketSentiment, groupAndStringifyContracts, formatAndStringifyBasisData } from '../utils/calculateUtils'
+import { getCurrentMonth, parseDateString, getWeekNumber, addFullYear, getWeek, oneWeekAgo } from '../utils/dateUtils'
 import SeasonalIndex from '~/components/SeasonalIndex'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
@@ -920,9 +920,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const dateOneYearAgo = `${year2}-${month2}-${day2}`
 
-  const dateToday = new Date() // Current date
-  const oneWeekAgo = new Date(dateToday.getTime() - 7 * 24 * 60 * 60 * 1000)
-
   const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo))
   const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today))
 
@@ -1137,7 +1134,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 {/* <IndexDial probability={0} /> */}
                 <MonthlyIndex monthlyIndexData={monthlyIndexData}></MonthlyIndex>
                 <SeasonalIndex seasonalIndexData={seasonalIndexData}></SeasonalIndex>
-
               </div>
             </div>
             <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
@@ -3052,182 +3048,69 @@ export const getServerSideProps = async (context: any) => {
     }
   }
 
-  const contract = await prisma?.cotton_contracts.findMany({})
-
-  const contractsObject = contract.reduce((acc, obj) => {
-    if (acc[obj.contract] == undefined) {
-      acc[obj.contract] = [obj]
-    } else {
-      acc[obj.contract].push(obj)
-    }
-    return acc
-  }, {})
-
-  const CTZ23 = contractsObject?.CTZ23
-  const CTH24 = contractsObject?.CTH24
-  const CTK24 = contractsObject?.CTK24
-  const CTN24 = contractsObject?.CTN24
-  const CTZ24 = contractsObject?.CTZ24
-
-  const CTZ23Data = JSON.stringify(CTZ23)
-  const CTH24Data = JSON.stringify(CTH24)
-  const CTK24Data = JSON.stringify(CTK24)
-  const CTN24Data = JSON.stringify(CTN24)
-  const CTZ24Data = JSON.stringify(CTZ24)
-
-  // const CTZ23Data = JSON.stringify({ variable: "hello world" })
-  // const CTH24Data = JSON.stringify({ variable: "hello world" })
-  // const CTK24Data = JSON.stringify({ variable: "hello world" })
-  // const CTN24Data = JSON.stringify({ variable: "hello world" })
-  // const CTZ24Data = JSON.stringify({ variable: "hello world" })
-
-  const sentiment = await prisma?.sentiment_survey.findMany({
-    orderBy: {
-      date_of_survey: 'asc'
-    }
-  })
-  const initialSentimentData = JSON.stringify(sentiment)
-
-  console.log('intitalData', initialSentimentData)
-
-  const today = new Date() // Current date
-  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-
-  const basis = await prisma?.basis_comparison.findMany({
-    orderBy: {
-      date_of_basis_report: 'asc'
-    }
-    // where: {
-    //   date_of_basis_report: {
-    //     gte: oneWeekAgo.toISOString(), // Filtering records greater than or equal to one week ago
-    //     lte: today.toISOString() // Filtering records less than or equal to the current date
-    //   }
-    // }
-  })
-
-  // console.log("basis length", basis.length)
-
-  const formattedBasis = basis.map((basis) => {
-    console.log('cost_type', basis.cost_type)
-    const { country, date_of_basis_report, contract_december_2023: CTZ23, contract_december_2024: CTZ24, cost_type } = basis
-    return { country, date_of_basis_report, CTZ23, CTZ24, cost_type }
-  })
-
-  const basisData = JSON.stringify(formattedBasis)
-
-  const season = await prisma?.comparison_charts_with_17_months_year.findMany({
-    orderBy: {
-      date_of_low: 'desc'
-    }
-  })
-  const seasonsData = JSON.stringify(season)
-
-  const future = await prisma?.future_contracts_study.findMany({
-    orderBy: {
-      date_of_high: 'desc'
-    }
-  })
-
-  const futureContractsStudyData = JSON.stringify(future)
-
-  const countryNews = await prisma?.in_country_news.findMany({
-    where: {
-      verified: true
-    },
-    orderBy: {
-      date_of_in_country_news: 'desc'
-    }
-  })
-  const countryNewsData = JSON.stringify(countryNews)
-
-  const snapshot = await prisma?.snapshot_strategy.findMany({
-    where: {
-      verified: true
-    },
-    orderBy: {
-      date_of_snapshot_strategy: 'desc'
-    }
-  })
-  const snapshotsData = JSON.stringify(snapshot)
-
-  const monthlyindex = await prisma?.monthly_index.findFirst({
-    where: {
-      year: new Date().getFullYear(),
-      month: getCurrentMonth()
-    }
-  })
-  const monthlyIndexData = JSON.stringify(monthlyindex)
-
-  const seasonalIndex = await prisma?.seasonal_index.findFirst({
-    // where: {
-    //   year: new Date().getFullYear()
-    // }
-  })
-  const seasonalIndexData = JSON.stringify(seasonalIndex)
-
-  const comment = await prisma?.comments.findMany({
-    where: {
-      date_of_comment: {
-        gt: oneWeekAgo.toISOString()
+  // TODO Parallel querys using Promise.all - Better performance
+  const [sentiment, basis, contract, season, future, countryNews, snapshot, monthlyIndex, seasonalIndex, comments, commitment, supplydemand, cottonreport, conclusion] = await Promise.all([
+    prisma?.sentiment_survey.findMany({ orderBy: { date_of_survey: 'asc' } }),
+    prisma?.basis_comparison.findMany({
+      orderBy: {
+        date_of_basis_report: 'asc'
       }
-    },
-    orderBy: {
-      date_of_comment: 'desc'
-    }
-  })
-  const commentsData = JSON.stringify(comment)
+      // where: {
+      //   date_of_basis_report: {
+      //     gte: oneWeekAgo.toISOString(), // Filtering records greater than or equal to one week ago
+      //     lte: today.toISOString() // Filtering records less than or equal to the current date
+      //   }
+      // }
+    }),
+    prisma?.cotton_contracts.findMany({}),
+    prisma?.comparison_charts_with_17_months_year.findMany({ orderBy: { date_of_low: 'desc' } }),
+    prisma?.future_contracts_study.findMany({ orderBy: { date_of_high: 'desc' } }),
+    prisma?.in_country_news.findMany({ where: { verified: true }, orderBy: { date_of_in_country_news: 'desc' } }),
+    prisma?.snapshot_strategy.findMany({ where: { verified: true }, orderBy: { date_of_snapshot_strategy: 'desc' } }),
+    prisma?.monthly_index.findFirst({ where: { year: new Date().getFullYear(), month: getCurrentMonth() } }),
+    prisma?.seasonal_index.findFirst({ /* where: {year: new Date().getFullYear()} */ }),
+    prisma?.comments.findMany({ where: { date_of_comment: { gt: oneWeekAgo.toISOString() } }, orderBy: { date_of_comment: 'desc' } }),
+    prisma?.commitment_of_traders.findMany({}),
+    prisma?.supply_and_demand.findMany({ orderBy: { date: 'asc' } }),
+    prisma?.external_Links.findMany({ where: { type: 'Cotton Report' }, orderBy: { date_created: 'desc' } }),
+    prisma?.conclusion.findFirst({ orderBy: { date_created: 'desc' } })
+  ])
 
-  // const onCall = await prisma?.cotton_on_call.findMany({
+  // Transform data for properly read by components
+  const initialSentimentData = JSON.stringify(sentiment)
+  const basisData = formatAndStringifyBasisData(basis)
+  const contractData = groupAndStringifyContracts(contract)
 
-  // })
+  const {
+    CTZ23: CTZ23Data,
+    CTH24: CTH24Data,
+    CTK24: CTK24Data,
+    CTN24: CTN24Data,
+    CTZ24: CTZ24Data
+  } = contractData
 
+  const seasonsData = JSON.stringify(season)
+  const futureContractsStudyData = JSON.stringify(future)
+  const countryNewsData = JSON.stringify(countryNews)
+  const snapshotsData = JSON.stringify(snapshot)
+  const monthlyIndexData = JSON.stringify(monthlyIndex)
+  const seasonalIndexData = JSON.stringify(seasonalIndex)
+  const commentsData = JSON.stringify(comments)
+  // const onCall = await prisma?.cotton_on_call.findMany({})
   // const cottonOnCallData = JSON.stringify(onCall)
   const cottonOnCallData = JSON.stringify({ variable: 'hello world' })
-
-  const commitment = await prisma?.commitment_of_traders.findMany({
-
-  })
-
   const commitmentData = JSON.stringify(commitment)
-
   // const exportdata = await prisma?.us_export_sales.findMany({})
-
   // const exportSalesData = JSON.stringify(exportdata)
   const exportSalesData = JSON.stringify({ variable: 'hello world' })
-
-  const supplydemand = await prisma?.supply_and_demand.findMany({
-    orderBy: {
-      date: 'asc'
-    }
-  })
-
   const supplyAndDemandData = JSON.stringify(supplydemand)
-
-  const cottonreport = await prisma?.external_Links.findMany({
-    where: {
-      type: 'Cotton Report'
-    },
-    orderBy: {
-      date_created: 'desc'
-    }
-  })
-
   const cottonReportURLData = JSON.stringify(cottonreport)
-
-  const conclusion = await prisma?.conclusion.findFirst({
-    orderBy: {
-      date_created: 'desc'
-    }
-  })
-
   const conclusionData = JSON.stringify(conclusion)
-
   // const aIndex = await prisma?.a_index.findMany({})
-
   // const aIndexData = JSON.stringify(aIndex)
   const aIndexData = JSON.stringify({ variable: 'hello world' })
-
   // console.log(monthlyIndexData)
+
   return {
     props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }
   }

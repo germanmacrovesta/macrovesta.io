@@ -185,10 +185,42 @@ export function transformSurveyData (inputArray, propertyUsed, precision = 2) {
   console.log(propertyUsed, outputArray)
   return outputArray
 }
+
 export function parseSeasonalIndex (seasonalIndexData) {
   return parseFloat(JSON.parse(seasonalIndexData).probability_rate) * (JSON.parse(seasonalIndexData).inverse_year === 'Y' ? -1 : 1)
 }
 
 export function parseMonthlyIndex (monthlyIndexData) {
   return parseFloat(JSON.parse(monthlyIndexData).probability_rate) * (JSON.parse(monthlyIndexData).inverse_month === 'Y' ? -1 : 1)
+}
+
+// Contract
+export function groupAndStringifyContracts (contract) {
+  const contractData = contract.reduce((acc, obj) => {
+    const key = obj.contract
+    if (!acc[key]) {
+      acc[key] = [obj]
+    } else {
+      acc[key].push(obj)
+    }
+    return acc
+  }, {})
+
+  for (const key in contractData) {
+    if (contractData.hasOwnProperty(key)) {
+      contractData[key] = JSON.stringify(contractData[key])
+    }
+  }
+
+  return contractData
+}
+
+export function formatAndStringifyBasisData (data) {
+  return JSON.stringify(data.map((basis) => ({
+    country: basis.country,
+    date_of_basis_report: basis.date_of_basis_report,
+    CTZ23: basis.contract_december_2023,
+    CTZ24: basis.contract_december_2024,
+    cost_type: basis.cost_type
+  })))
 }
