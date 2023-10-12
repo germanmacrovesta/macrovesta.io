@@ -194,7 +194,6 @@ export function parseMonthlyIndex (monthlyIndexData) {
   return parseFloat(JSON.parse(monthlyIndexData).probability_rate) * (JSON.parse(monthlyIndexData).inverse_month === 'Y' ? -1 : 1)
 }
 
-// Contract
 export function groupAndStringifyContracts (contract) {
   const contractData = contract.reduce((acc, obj) => {
     const key = obj.contract
@@ -207,7 +206,7 @@ export function groupAndStringifyContracts (contract) {
   }, {})
 
   for (const key in contractData) {
-    if (contractData.hasOwnProperty(key)) {
+    if (Object.hasOwnProperty.call(contractData, key)) {
       contractData[key] = JSON.stringify(contractData[key])
     }
   }

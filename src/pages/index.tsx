@@ -45,9 +45,12 @@ import {
   getSeasonData,
   getStudyData
 } from '../utils/getDataUtils'
-import { calculateSpread, transformData, basisBarChartData, averageFutureContract, averageMarketSentiment, groupAndStringifyContracts, formatAndStringifyBasisData } from '../utils/calculateUtils'
+import { calculateSpread, transformData, basisBarChartData, averageFutureContract, averageMarketSentiment, groupAndStringifyContracts, formatAndStringifyBasisData, parseContractData } from '../utils/calculateUtils'
 import { getCurrentMonth, parseDateString, getWeekNumber, addFullYear, getWeek, oneWeekAgo } from '../utils/dateUtils'
 import SeasonalIndex from '~/components/SeasonalIndex'
+import LatestMarketReport from '~/components/LatestMarketReport'
+import CTZ23 from '~/components/CTZ23'
+import DomesticPrices from '~/components/DomesticPrices'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: 'AAPL',
@@ -95,7 +98,7 @@ const renderers = {
   h6: ({ node, ...props }) => <h6 {...props} />
 }
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }) => {
+const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, contractData, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }) => {
   const router = useRouter()
   const url = router.pathname
 
@@ -875,6 +878,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     month: 'long',
     day: 'numeric'
   }
+
   const formatter = new Intl.DateTimeFormat(locale, options)
 
   const temp = new Date()
@@ -922,6 +926,8 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo))
   const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today))
+  console.log(selectedCottonContractsStartDate)
+  console.log(selectedCottonContractsEndDate)
 
   const [selectedIndexStartDate, setSelectedIndexStartDate] = React.useState(parseDate('2023-01-01'))
   const [selectedIndexEndDate, setSelectedIndexEndDate] = React.useState(parseDate(today))
@@ -1122,7 +1128,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             domain="macrovesta.ai"
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
           <div className="p-6 bg-slate-200">
-            Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
+            <p className='mx-8 text-justify'>
+              Macrovesta is being developed to deliver AI-powered cotton market expertise from farmer to retailer. The insights delivered by your personalised dashboard will provide you with the information and context you need to make confident risk and position management decisions. Our artificial intelligence model uses cutting edge technology to generate insights and explain how and why they are important to your business.
+            </p>
             <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
 
               {/* <div>
@@ -1136,191 +1144,42 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                 <SeasonalIndex seasonalIndexData={seasonalIndexData}></SeasonalIndex>
               </div>
             </div>
-            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-              <InfoButton text={'A quick shortcut to our latest market report as well as the conclusion of the report. '} />
-              <div className="grid grid-cols-1">
-                <div className="relative flex flex-col gap-y-6 items-center px-8">
-                  <div className="text-left font-semibold text-lg">Conclusion of latest market report</div>
-                  <div>{JSON.parse(conclusionData)?.text}</div>
-                  <a href={JSON.parse(cottonReportURLData).find((report) => report.language == currentLang)?.url ?? JSON.parse(cottonReportURLData).find((report) => report.language == 'en')?.url} className="px-12 py-2 shadow-lg rounded-lg border text-center w-fit bg-deep_blue text-white cursor-pointer">Cotton Market Report Link</a>
-                  {/* <div>{currentLang}</div> */}
-                </div>
-                {/* <div className="flex flex-col gap-4">
-                  <div className="px-3 py-2 shadow-lg rounded-lg border text-center">Cotton Market Report Link</div>
-                  <div className="grid place-content-center w-full">
-                    <img src="https://mcusercontent.com/672ff4ca3cd7768c1563b69f0/images/697840bb-da2a-35c5-28b6-237954d8b369.png" className="rounded-lg w-full" />
-                  </div>
-                </div> */}
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <div className="grid grid-cols-2 auto-row-[300px] gap-x-8 gap-y-4 pb-12 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-4 py-2 mb-8 mx-8">
-                <div className="flex col-span-2 gap-x-8 mx-8 mt-4">
-                  <div className="mb-4 w-full">
-                    <DateField yearOptions={[-2, 0]} label='Start Date' setDate={setSelectedCottonContractsStartDate} date={selectedCottonContractsStartDate} formatter={formatter} />
-                  </div>
-                  <div className="mb-4 w-full">
-                    <DateField yearOptions={[-2, 0]} label='Start Date' setDate={setSelectedCottonContractsEndDate} date={selectedCottonContractsEndDate} formatter={formatter} />
-                  </div>
-                </div>
-                <div className="relative flex flex-col col-span-2 items-center">
-                  <InfoButton text={'This section analyses technically what has happened to the front month of cotton as well as relevant futures spreads over the past week.'} />
-                  <div className="mt-6 -mb-2 font-semibold">CTZ23</div>
-                  <LineGraph verticalTooltip={true} data={contractParameter != null ? [{ name: 'CTZ23', data: JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue="datetime" yValue={contractParameter} graphWidth={1000} graphHeight={400} />
-                  <div className="flex justify-center mt-8">
-                    <div className="w-[200px]">
-                      <SingleSelectDropdown
-                        options={[{ name: 'Open', parameter: 'open' }, { name: 'Close', parameter: 'close' }, { name: 'High', parameter: 'high' }, { name: 'Low', parameter: 'low' }]}
-                        label="Parameter"
-                        variable="name"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setContractParameter(e.parameter)}
-                        placeholder="Select Parameter"
-                        searchPlaceholder="Search Parameter"
-                        includeLabel={false}
-                        defaultValue="Close"
-                      />
-                    </div>
-                  </div>
-                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'Current Contract')} session={session} section="Current Contract" commentLength={800} />
-                </div>
-                <div className="relative flex flex-col items-center">
-                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
-                  <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTH24 Spread</div>
-                  <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTH24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), 'CTZ23 / CTH24 Spread')} monthsTicks={6} />
-                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'Nearby Spread')} session={session} section="Nearby Spread" />
-                </div>
-                <div className="relative flex flex-col items-center">
-                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
-                  <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTK24 Spread</div>
-                  <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTK24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), 'CTZ23 / CTK24 Spread')} monthsTicks={6} />
-                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'Second Spread')} session={session} section="Second Spread" />
-                </div>
-                <div className="relative flex flex-col items-center">
-                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
-                  <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTN24 Spread</div>
-                  <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTN24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), 'CTZ23 / CTN24 Spread')} />
-                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'Third Spread')} session={session} section="Third Spread" />
-                </div>
-                <div className="relative flex flex-col items-center">
-                  {/* <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} /> */}
-                  <div className="mt-6 -mb-2 font-semibold">CTZ23 / CTZ24 Spread</div>
-                  <LineGraph verticalTooltip={true} data={calculateSpread(JSON.parse(CTZ23Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(CTZ24Data).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), 'CTZ23 / CTZ24 Spread')} />
-                  <Comments styling="mt-8 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'Fourth Spread')} session={session} section="Fourth Spread" />
-                </div>
-              </div>
-            </div>
-            <div className="relative flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8">
 
-              <div className="relative grid grid-cols-2">
-                <InfoButton text={'In this section, you can use the multi-select dropdown menu to pick which markets you would like to compare. At the moment, the markets available are MCX (Indian), CEPEA (Brazilian), CC-Index (China), and ICE (American). The A-INDEX is intended to be representative of the level of offering prices on the international raw cotton market. It is an average of the cheapest five quotations from a selection of the principal upland cottons traded internationally.'} />
-                <div className="col-span-2 text-center text-xl font-semibold mb-4">
-                  Domestic Prices
-                </div>
-                <div className="col-span-2 grid grid-cols-2 w-full gap-x-4 px-8">
-                  <div className="mb-4 w-full">
-                    <DateField yearOptions={[-28, 0]} label='Start Date' setDate={setSelectedIndexStartDate} date={selectedIndexStartDate} formatter={formatter} />
-                  </div>
-                  <div className="mb-4 w-full">
-                    <DateField yearOptions={[-28, 0]} label='Start Date' setDate={setSelectedIndexEndDate} date={selectedIndexEndDate} formatter={formatter} />
-                  </div>
+            <LatestMarketReport
+              conclusionData={conclusionData}
+              cottonReportURLData={cottonReportURLData}
+              currentLang={currentLang}
+            />
 
-                  {/* <div className="mb-4 w-full">
+            <CTZ23
+              setSelectedCottonContractsStartDate={setSelectedCottonContractsStartDate}
+              selectedCottonContractsStartDate={selectedCottonContractsStartDate}
+              formatter={formatter}
+              setSelectedCottonContractsEndDate={setSelectedCottonContractsEndDate}
+              selectedCottonContractsEndDate={selectedCottonContractsEndDate}
+              contractParameter={contractParameter}
+              setContractParameter={setContractParameter}
+              commentsData={commentsData}
+              session={session}
+              calculateSpread={calculateSpread}
+              contractData={contractData}
+            />
 
-                      <SingleSelectDropdown
-                        options={[{ name: "Week" }, { name: "Year" }]}
-                        label="Week or Year"
-                        variable="name"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setCommitmentWeekOrYear(e.name)}
-                        placeholder="Select Week or Year"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="Week"
-                      />
-                    </div>
-                    {commitmentWeekOrYear == "Year" && (
-                      <>
-                        <div className="mb-4 w-full">
-
-                          <SingleSelectDropdown
-                            options={getUniqueOptions(JSON.parse(commitmentData), "calendar_year")}
-                            label="Year"
-                            variable="value"
-                            colour="bg-deep_blue"
-                            onSelectionChange={(e) => setCommitmentYear(parseInt(e.value))}
-                            placeholder="Select a specific year"
-                            searchPlaceholder="Search Options"
-                            includeLabel={false}
-                            defaultValue="2010"
-                          />
-                        </div>
-                      </>
-                    )}
-                    {commitmentWeekOrYear == "Week" && (
-                      <>
-                        <div className="mb-4 w-full">
-
-                          <SingleSelectDropdown
-                            options={getUniqueOptions(JSON.parse(commitmentData), "week")}
-                            label="Week"
-                            variable="value"
-                            colour="bg-deep_blue"
-                            onSelectionChange={(e) => setCommitmentWeek(parseInt(e.value))}
-                            placeholder="Select a specific week"
-                            searchPlaceholder="Search Options"
-                            includeLabel={false}
-                            defaultValue="1"
-                          />
-                        </div>
-                      </>
-                    )} */}
-                  <div className="col-span-2 mb-4 w-full">
-
-                    <MultipleSelectDropdown
-                      options={[{ property: 'a_index', name: 'A-Index' }, { property: 'ice_highest_open_interest_17_months', name: 'Ice Highest' }, { property: 'cc_index', name: 'CC Index' }, { property: 'mcx', name: 'MCX' }, { property: 'cepea', name: 'CEPEA' }]}
-                      variable="name"
-                      colour="bg-deep_blue"
-                      label="Variables"
-                      onSelectionChange={(e) => { if (e.length > 0) { setIndexPropertiesArray(e.map((selection) => selection.property)); setIndexNamesArray(e.map((selection) => selection.name)) } }}
-                      // onSelectionChange={(e) => { setCommitmentPropertiesArray(["open_interest_all"]); setCommitmentNamesArray(["Open Interest All"]) }}
-                      placeholder="Select Variables"
-                      searchPlaceholder="Search Variables"
-                      includeLabel={false}
-                    // defaultValues={["A-Index", "Ice Highest", "CC Index"]}
-                    />
-                  </div>
-                </div>
-
-                <div className="col-span-2 flex flex-col items-center w-full">
-                  <div className="mt-6 -mb-2 font-semibold">Domestic Prices by Week</div>
-                  <div className="mb-4 w-full">
-
-                    {/* <LineGraph verticalTooltip={true} data={getAIndexData(JSON.parse(aIndexData).filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" /> */}
-                    <LineGraph showPositiveSign={false} verticalTooltip={true} data={getAIndexData(clientAIndexData.filter((data) => data.date < selectedIndexEndDate && data.date > selectedIndexStartDate), indexPropertiesArray, indexNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
-                  </div>
-                  {/* {commitmentWeekOrYear == "Year" && (
-                      <>
-                        <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
-                        <div className="mb-16 w-full">
-
-                          <LineGraph data={getUSExportSalesWeekData(JSON.parse(exportSalesData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} xDomain2={52} xAxisTitle="Week" />
-                        </div>
-                      </>
-                    )}
-                    {commitmentWeekOrYear == "Week" && (
-                      <>
-                        <div className="mt-6 -mb-2 font-semibold">US Export Sales by Year</div>
-                        <div className="mb-16 w-full">
-
-                          <LineGraphNotTime data={getUSExportSalesSeasonData(JSON.parse(exportSalesData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
-                        </div>
-                      </>
-                    )} */}
-                </div>
-              </div>
-              <Comments styling="px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'A-Index')} session={session} section="A-Index" />
-            </div>
+            <DomesticPrices
+              setSelectedIndexStartDate={setSelectedIndexStartDate}
+              selectedIndexStartDate={selectedIndexStartDate}
+              formatter={formatter}
+              setSelectedIndexEndDate={setSelectedIndexEndDate}
+              selectedIndexEndDate={selectedIndexEndDate}
+              setIndexPropertiesArray={setIndexPropertiesArray}
+              setIndexNamesArray={setIndexNamesArray}
+              getAIndexData={getAIndexData}
+              clientAIndexData={clientAIndexData}
+              indexPropertiesArray={indexPropertiesArray}
+              indexNamesArray={indexNamesArray}
+              commentsData={commentsData}
+              session={session}
+            />
             {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <TVChartContainer {...defaultWidgetProps} />
             </div> */}
@@ -3081,14 +2940,6 @@ export const getServerSideProps = async (context: any) => {
   const basisData = formatAndStringifyBasisData(basis)
   const contractData = groupAndStringifyContracts(contract)
 
-  const {
-    CTZ23: CTZ23Data,
-    CTH24: CTH24Data,
-    CTK24: CTK24Data,
-    CTN24: CTN24Data,
-    CTZ24: CTZ24Data
-  } = contractData
-
   const seasonsData = JSON.stringify(season)
   const futureContractsStudyData = JSON.stringify(future)
   const countryNewsData = JSON.stringify(countryNews)
@@ -3112,7 +2963,7 @@ export const getServerSideProps = async (context: any) => {
   // console.log(monthlyIndexData)
 
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, CTZ23Data, CTH24Data, CTK24Data, CTN24Data, CTZ24Data, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, contractData, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }
   }
 }
 
