@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Calendar from '../components/calendar'
 import { parseDate, getLocalTimeZone, today, isWeekend } from '@internationalized/date'
 import { useDateFormatter, useLocale } from 'react-aria'
-
+import { Button } from '@nextui-org/react'
 export default function DateField ({ setDate, date, label, formatter, yearOptions = [-43, 1] }) {
   const [isOpen, setIsOpen] = useState(false)
   const [selected, setSelected] = useState(null)
@@ -41,9 +41,9 @@ export default function DateField ({ setDate, date, label, formatter, yearOption
           {/* <div className='px-8 py-2'>
                         <label htmlFor={label}>{label}</label>
                     </div> */}
-          <div className='relative flex flex-col justify-center w-full rounded-lg bg-deep_blue text-white py-2'>
+          <div className='relative flex flex-col justify-center w-full rounded-lg text-white'>
             {/* <input autoComplete="off" className='b bg-transparent w-full h-full p-2 text-center appearance-none' type="text" name={props.label} placeholder={props.placeholder} /> */}
-            <button type='button' className='text-center w-full px-2' onClick={toggleMenu}>
+            <Button onClick={toggleMenu} variant='light'>
               {date && (
                 <>
                   {formatter.format(date.toDate(getLocalTimeZone()))}
@@ -53,7 +53,8 @@ export default function DateField ({ setDate, date, label, formatter, yearOption
                   {/* {JSON.stringify(new Date())} */}
                 </>
               )}
-            </button>
+            </Button>
+
             {isOpen && (
               <div className='absolute top-10 w-full z-10 opacity-100'>
                 <Calendar
