@@ -38,7 +38,7 @@ import {
   getCottonOnCallSeasonData,
   getCommitmentOfTradersWeekData,
   getCommitmentOfTradersSeasonData,
-  getSupplyAndDemandData, getAIndexData,
+  getSupplyAndDemandData,
   getUSExportSalesData,
   getUSExportSalesWeekData,
   getUSExportSalesSeasonData,
@@ -51,7 +51,10 @@ import SeasonalIndex from '~/components/SeasonalIndex'
 import LatestMarketReport from '~/components/LatestMarketReport'
 import CTZ23 from '~/components/CTZ23'
 import DomesticPrices from '~/components/DomesticPrices'
-import WeeklySurvey from '~/components/WeeklySurvey'
+import WeeklySentimentSurvey from '~/components/WeeklySentimentSurvey'
+import RecentEvents from '~/components/RecentEvents'
+import BasisCosts from '~/components/BasisCosts'
+import USExportSales from '~/components/USExportSales'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: 'AAPL',
@@ -98,6 +101,7 @@ const renderers = {
   h5: ({ node, ...props }) => <h5 {...props} />,
   h6: ({ node, ...props }) => <h6 {...props} />
 }
+// TODO: Use <Image></Image> from next instead <img> - Better performance.
 
 const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, contractData, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }) => {
   const router = useRouter()
@@ -108,16 +112,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const { data: session } = useSession()
   console.log('session', session)
   console.log('session.submittedSurvey', session?.submittedSurvey)
-
-  const todaysDate = new Date()
-
-  const [sentimentData, setSentimentData] = React.useState(() => {
-    try {
-      return JSON.parse(initialSentimentData)
-    } catch {
-      return []
-    }
-  })
 
   const baseUrlArray = url.split('/')
   const urlArray: any = []
@@ -154,7 +148,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [contract3, setContract3] = React.useState('')
 
   const [countryNewsPopup, setCountryNewsPopup] = React.useState(null)
-  const [snapshotPopup, setSnapshotPopup] = React.useState(null)
+
 
   React.useEffect(() => {
     setSeason1(JSON.parse(seasonsData)[2]?.season ?? '')
@@ -221,112 +215,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [selectedFormCostType, setSelectedFormCostType] = React.useState(undefined)
 
   const [bullishBearish, setBullishBearish] = React.useState(undefined)
-
-  const handleSentimentFormSubmit = async (e: any) => {
-    // Stop the form from submitting and refreshing the page.
-    e.preventDefault()
-    setSentimentSubmitting(true)
-
-    const bullish_or_bearish = e.target.bullishbearish.value
-    const high = e.target.high.value
-    const low = e.target.low.value
-    const intraday_average_points = e.target.intraday.value
-    const open_interest = e.target.open_interest.value
-    let errorMessage = ''
-    const warningMessage = ''
-
-    // if (bullishBearish != null && bullishBearish != "Select an Option") {
-    //   bullish_or_bearish = bullishBearish;
-    // } else {
-    //   errorMessage += "Please select bullish or bearish. ";
-    // }
-
-    if (bullish_or_bearish == null || bullish_or_bearish == '') {
-      errorMessage += 'Please enter Estimate for market feeling. '
-    }
-    if (high == null || high == '') {
-      errorMessage += 'Please enter Estimate for high. '
-    }
-    if (low == null || low == '') {
-      errorMessage += 'Please enter Estimate for low. '
-    }
-    if (intraday_average_points == null || intraday_average_points == '') {
-      errorMessage += 'Please enter Estimate for intraday average in points. '
-    }
-    if (open_interest == null || open_interest == '') {
-      errorMessage += 'Please enter Estimate for open interest. '
-    }
-
-    if (warningMessage !== '') {
-      setSentimentWarning_Message(warningMessage)
-      // throw new Error(errorMessage)
-    } else {
-      if (sentimentWarning_Message != '') {
-        setSentimentWarning_Message('')
-      }
-    }
-
-    if (errorMessage != '') {
-      setSentimentError_Message(errorMessage)
-      setSentimentWarningSubmit(false)
-      setSentimentSubmitting(false)
-    } else {
-      if (sentimentError_Message != '') {
-        setSentimentError_Message('')
-      }
-
-      if (sentimentWarningSubmit == false && warningMessage != '') {
-        setSentimentWarningSubmit(true)
-        setSentimentSubmitting(false)
-      } else {
-        // Get data from the form.
-        const data = {
-          bullish_or_bearish: bullish_or_bearish == '0' ? 'Neutral' : parseInt(bullish_or_bearish) < 0 ? 'Bearish' : 'Bullish',
-          bullish_or_bearish_value: bullish_or_bearish,
-          high,
-          low,
-          intraday_average_points,
-          open_interest,
-          email: session?.user.email,
-          user: session?.user?.name
-        }
-
-        console.log(data)
-
-        // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data)
-
-        // API endpoint where we send form data.
-        const endpoint = '/api/add-sentiment-survey-results'
-
-        // Form the request for sending data to the server.
-        const options = {
-          // The method is POST because we are sending data.
-          method: 'POST',
-          // Tell the server we're sending JSON.
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          // Body of the request is the JSON data we created above.
-          body: JSONdata
-        }
-
-        // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options)
-
-        // Get the response data from server as JSON.
-        // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => {
-          setSentimentSubmitted(true)
-          setSentimentSubmitting(false)
-          setCurrentStage(1)
-          // setSentimentData([...sentimentData, { record_id: "dummyid", bullish_or_bearish, high, low, intraday_average_points, open_interest }])
-        })
-        // setSubmitted(true); setSubmitting(false)
-        // console.log(result);
-      }
-    }
-  }
 
   const handleBasisFormSubmit = async (e: any) => {
     // Stop the form from submitting and refreshing the page.
@@ -418,105 +306,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
         const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) })
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
-      }
-    }
-  }
-
-  const [selectedNewsType, setSelectedNewsType] = React.useState('')
-
-  const [snapshotError_Message, setSnapshotError_Message] = React.useState('')
-  const [snapshotSubmitted, setSnapshotSubmitted] = React.useState(false)
-  const [snapshotSubmitting, setSnapshotSubmitting] = React.useState(false)
-  const [snapshotWarning_Message, setSnapshotWarning_Message] = React.useState('')
-  const [snapshotWarningSubmit, setSnapshotWarningSubmit] = React.useState(false)
-
-  const handleSnapshotFormSubmit = async (e: any) => {
-    // Stop the form from submitting and refreshing the page.
-    e.preventDefault()
-    setSnapshotSubmitting(true)
-
-    let news_type = ''
-    const title = e.target.title.value
-    const text = e.target.text.value
-    const image = e.target.image.value
-    let errorMessage = ''
-    let warningMessage = ''
-
-    // console.log("textarea", text == "")
-
-    if (selectedNewsType != null && selectedNewsType != '' && selectedNewsType != 'Select Snapshot Type') {
-      news_type = selectedNewsType
-    } else {
-      errorMessage += 'Please select a snapshot type. '
-    }
-    if (title == null || title == '') {
-      errorMessage += 'Please enter a title. '
-    }
-    if (text == null || text == '') {
-      errorMessage += 'Please enter a text. '
-    }
-    if (image == null || image == '') {
-      warningMessage += "You can add an image as well. If you don't want to just click confirm. "
-    }
-
-    if (warningMessage !== '') {
-      setSnapshotWarning_Message(warningMessage)
-      // throw new Error(errorMessage)
-    } else {
-      if (snapshotWarning_Message != '') {
-        setSnapshotWarning_Message('')
-      }
-    }
-
-    if (errorMessage != '') {
-      setSnapshotError_Message(errorMessage)
-      setSnapshotWarningSubmit(false)
-      setSnapshotSubmitting(false)
-    } else {
-      if (snapshotError_Message != '') {
-        setSnapshotError_Message('')
-      }
-
-      if (snapshotWarningSubmit == false && warningMessage != '') {
-        setSnapshotWarningSubmit(true)
-        setSnapshotSubmitting(false)
-      } else {
-        // Get data from the form.
-        const data = {
-          title,
-          text,
-          image,
-          user: session?.user?.name,
-          news_type
-        }
-
-        console.log(data)
-
-        // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data)
-
-        // API endpoint where we send form data.
-        const endpoint = '/api/add-snapshot'
-
-        // Form the request for sending data to the server.
-        const options = {
-          // The method is POST because we are sending data.
-          method: 'POST',
-          // Tell the server we're sending JSON.
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          // Body of the request is the JSON data we created above.
-          body: JSONdata
-        }
-
-        // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options)
-
-        // Get the response data from server as JSON.
-        // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setSnapshotSubmitted(true); setSnapshotSubmitting(false) })
-        // setSnapshotSubmitted(true); setSnapshotSubmitting(false)
       }
     }
   }
@@ -620,12 +409,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [submitting, setSubmitting] = React.useState(false)
   const [warning_Message, setWarning_Message] = React.useState('')
   const [warningSubmit, setWarningSubmit] = React.useState(false)
-
-  const [sentimentError_Message, setSentimentError_Message] = React.useState('')
-  const [sentimentSubmitted, setSentimentSubmitted] = React.useState(false)
-  const [sentimentSubmitting, setSentimentSubmitting] = React.useState(false)
-  const [sentimentWarning_Message, setSentimentWarning_Message] = React.useState('')
-  const [sentimentWarningSubmit, setSentimentWarningSubmit] = React.useState(false)
 
   interface CountryData {
     country: string;
@@ -882,6 +665,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
   const formatter = new Intl.DateTimeFormat(locale, options)
 
+  // Get today - Already in dateUtils.js
   const temp = new Date()
   temp.setSeconds(0)
   const dd = String(temp.getDate()).padStart(2, '0')
@@ -889,6 +673,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const yyyy = temp.getFullYear()
 
   const today = `${yyyy}-${mm}-${dd}`
+  // ---------------------------------
 
   const temp2 = new Date() // get the current date
   temp2.setMonth(temp2.getMonth() - 6) // subtract 6 months
@@ -916,23 +701,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [selectedSupplyAndDemandEndDate, setSelectedSupplyAndDemandEndDate] = React.useState(new Date('2023-12-31').toISOString())
   const [selectedSupplyAndDemandSeason, setSelectedSupplyAndDemandSeason] = React.useState('20/21')
 
-  const temp3 = new Date()
-  temp3.setFullYear(temp3.getFullYear() - 1)
-
-  const year2 = temp3.getFullYear()
-  const month2 = (temp3.getMonth() + 1).toString().padStart(2, '0') // add leading zero if necessary
-  const day2 = temp3.getDate().toString().padStart(2, '0') // add leading zero if necessary
-
-  const dateOneYearAgo = `${year2}-${month2}-${day2}`
-
-  const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = React.useState(parseDate(dateOneYearAgo))
-  const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = React.useState(parseDate(today))
-  console.log(selectedCottonContractsStartDate)
-  console.log(selectedCottonContractsEndDate)
-
-  const [selectedIndexStartDate, setSelectedIndexStartDate] = React.useState(parseDate('2023-01-01'))
-  const [selectedIndexEndDate, setSelectedIndexEndDate] = React.useState(parseDate(today))
-
   // const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["open_interest_all", "producer_merchant_net", "swap_position_net", "managed_money_net", "other_reportables_net", "total_reportables_net", "non_reportables_net", "specs_net"])
   // const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Open Interest All", "Producer Merchant Net", "Swap Position Net", "Managed Money Net", "Other Reportables Net", "Total Reportables Net", "Non Reportables Net", "Specs Net"])
   const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(['specs_net'])
@@ -944,9 +712,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [cottonSalesPropertiesArray, setCottonSalesPropertiesArray] = React.useState(['october_sales', 'december_sales', 'march_sales', 'may_sales', 'july_sales'])
   const [cottonPurchasesPropertiesArray, setCottonPurchasesPropertiesArray] = React.useState(['october_purchases', 'december_purchases', 'march_purchases', 'may_purchases', 'july_purchases'])
   const [cottonNamesArray, setCottonNamesArray] = React.useState(['October', 'December', 'March', 'May', 'July'])
-
-  const [indexPropertiesArray, setIndexPropertiesArray] = React.useState(['a_index', 'ice_highest_open_interest_17_months'])
-  const [indexNamesArray, setIndexNamesArray] = React.useState(['A-Index', 'Ice Highest'])
 
   const [supplyAndDemandPropertiesArray, setSupplyAndDemandPropertiesArray] = React.useState(['production_usda'])
   const [supplyAndDemandNamesArray, setSupplyAndDemandNamesArray] = React.useState(['Production USDA'])
@@ -993,7 +758,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   Rhoetus arcusque; in coma nosti fratrem ipse abstulerat fassurae satyri: nil dextra corripitur saetae, expositum sententia scelus. Latentia sua progenuit nam enim lyramque amori post, Ilithyiam datis per vestris ferrugine quorum, admirantibus. Novos iter ut: ego omnes, campis memini.
   
   `
-  const [contractParameter, setContractParameter] = React.useState('close')
 
   React.useEffect(() => {
     const script = document.createElement('script')
@@ -1016,34 +780,9 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   const [selectedCostType, setSelectedCostType] = React.useState('FOB')
 
   const [clientCottonContractsData, setClientCottonContractsData] = React.useState({ ctz23: [], cth24: [], ctk24: [], ctn24: [], ctz24: [] })
-  const [clientAIndexData, setClientAIndexData] = React.useState([])
+
   const [clientUSExportSalesData, setClientUSExportSalesData] = React.useState([])
   const [clientCottonOnCallData, setClientCottonOnCallData] = React.useState([])
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Make the API call using the fetch method
-        const response = await fetch('/api/get-a-index-data')
-
-        // Check if the request was successful
-        if (response.ok) {
-          // Parse the JSON data from the response
-          const result = await response.json()
-
-          // Update the state with the fetched data
-          setClientAIndexData(result)
-        } else {
-          console.error(`API request failed with status ${response.status}`)
-        }
-      } catch (error) {
-        console.error(`An error occurred while fetching data: ${error}`)
-      }
-    }
-
-    // Call the fetchData function
-    fetchData()
-  }, [])
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -1147,530 +886,81 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             </div>
 
             <LatestMarketReport
+              currentLang={currentLang}
               conclusionData={conclusionData}
               cottonReportURLData={cottonReportURLData}
-              currentLang={currentLang}
             />
 
             <CTZ23
-              setSelectedCottonContractsStartDate={setSelectedCottonContractsStartDate}
-              selectedCottonContractsStartDate={selectedCottonContractsStartDate}
-              formatter={formatter}
-              setSelectedCottonContractsEndDate={setSelectedCottonContractsEndDate}
-              selectedCottonContractsEndDate={selectedCottonContractsEndDate}
-              contractParameter={contractParameter}
-              setContractParameter={setContractParameter}
-              commentsData={commentsData}
               session={session}
-              calculateSpread={calculateSpread}
+              formatter={formatter}
               contractData={contractData}
+              commentsData={commentsData}
             />
 
             <DomesticPrices
-              setSelectedIndexStartDate={setSelectedIndexStartDate}
-              selectedIndexStartDate={selectedIndexStartDate}
-              formatter={formatter}
-              setSelectedIndexEndDate={setSelectedIndexEndDate}
-              selectedIndexEndDate={selectedIndexEndDate}
-              setIndexPropertiesArray={setIndexPropertiesArray}
-              setIndexNamesArray={setIndexNamesArray}
-              getAIndexData={getAIndexData}
-              clientAIndexData={clientAIndexData}
-              indexPropertiesArray={indexPropertiesArray}
-              indexNamesArray={indexNamesArray}
-              commentsData={commentsData}
               session={session}
+              formatter={formatter}
+              commentsData={commentsData}
             />
+
             {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
               <TVChartContainer {...defaultWidgetProps} />
             </div> */}
-            <WeeklySurvey
+
+            <WeeklySentimentSurvey
+              setCurrentStage={setCurrentStage}
               session={session}
-              todaysDate={todaysDate}
               currentStage={currentStage}
-              handleSentimentFormSubmit={handleSentimentFormSubmit}
-              transformSurveyData={transformSurveyData}
-              sentimentData={sentimentData}
-              sentimentError_Message={sentimentError_Message}
-              sentimentWarning_Message={sentimentWarning_Message}
-              sentimentSubmitted={sentimentSubmitted}
-              sentimentWarningSubmit={sentimentWarningSubmit}
-              sentimentSubmitting={sentimentSubmitting}
-              averageMarketSentiment={averageMarketSentiment}
-              oneWeekAgo={oneWeekAgo}
               goPrevious={goPrevious}
               goNext={goNext}
               stages={stages}
-            ></WeeklySurvey>
-            <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8">
-              <div className="flex justify-around gap-8">
-                <div className="relative w-full text-center font-semibold text-xl">
-                  <InfoButton text={'Find a summarised list of events which have happened over the past weeks.  '} />
-                  Recent Events
-                </div>
-                <div className="relative w-full text-center font-semibold text-xl">
-                  <InfoButton text={'Find a list of future considerations for the cotton industry, divided into short and long term. '} />
-                  Future Considerations
-                </div>
-              </div>
-              <div className="flex justify-around gap-x-8">
-                <div className="flex flex-col w-full justify-start items-start gap-x-8 gap-y-4 mt-4">
-                  {/* {JSON.parse(snapshotsData).map((snapshot) => (
-                  <div>
-                    {snapshot.title_of_snapshot_strategy}
-                  </div>
-                ))} */}
-                  {JSON.parse(snapshotsData).filter((object: any, index: number) => object.news_type == 'Recent Events').filter((object: any, index: number) => index < 8).map((snapshot, index) => (
-                    <>
-                      {index == 0 && (
-                        <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-2 cursor-pointer flex gap-4" onClick={() => setSnapshotPopup(snapshot)}>
-                          <img className="w-[150px] h-[150px] aspect-square object-cover rounded-lg" src={snapshot?.image_of_snapshot_strategy != '' ? snapshot?.image_of_snapshot_strategy : '/macrovesta_news_default_picture.jpg'} />
-                          <div className="flex flex-col w-full">
-                            <div className="grid grid-cols-[auto_75px]">
-                              <div className="font-semibold">
-                                {snapshot.title_of_snapshot_strategy}
-                              </div>
-                              <div className="w-[75px]">
-                                {parseDateString(snapshot.date_of_snapshot_strategy)}
-                              </div>
-                            </div>
-                            <div className="text-sm pt-2">{snapshot.text_of_snapshot_strategy.length > 200 ? `${snapshot.text_of_snapshot_strategy.slice(0, 200)}...` : snapshot.text_of_snapshot_strategy}</div>
-                          </div>
-                        </div>
-                      )}
-                      {index != 0 && (
-                        <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
-                          {snapshot.title_of_snapshot_strategy}
-                        </div>
-                      )}
-                    </>
-                  ))}
-                  {snapshotPopup != null && (
-                    <div className='absolute modal left-0 top-0 z-40'>
-                      <div className=' fixed grid place-content-center inset-0 z-40'>
-                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                          <img className="w-3/4" src={snapshotPopup.image_of_snapshot_strategy} />
-                          <div className="my-4 font-semibold text-lg">
-                            {snapshotPopup.title_of_snapshot_strategy}
-                          </div>
-                          <div className="-mt-4 mb-2">
-                            {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
-                          </div>
-                          <div className="">
-                            {snapshotPopup.text_of_snapshot_strategy}
-                          </div>
-                        </div>
-                        <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col w-full justify-start items-start gap-x-8 gap-y-4 mt-4">
-                  {/* {JSON.parse(snapshotsData).map((snapshot) => (
-                  <div>
-                    {snapshot.title_of_snapshot_strategy}
-                  </div>
-                ))} */}
-                  {JSON.parse(snapshotsData).filter((object: any, index: number) => (object.news_type == 'Short Term' || object.news_type == 'Long Term')).filter((object: any, index: number) => index < 8).sort((a, b) => { if (a.news_type < b.news_type) return 1; if (a.news_type > b.news_type) return -1; return 0 }).map((snapshot, index) => (
-                    // <div className="border flex justify-between hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full h-fit py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
-                    //   <div>
-                    //     {snapshot.title_of_snapshot_strategy}
-                    //   </div>
-                    //   <div className="min-w-[80px]">
-                    //     {snapshot.news_type}
-                    //   </div>
-                    // </div>
-                    <>
-                      {index == 0 && (
-                        <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-2 cursor-pointer flex gap-4" onClick={() => setSnapshotPopup(snapshot)}>
-                          <img className="w-[150px] h-[150px] aspect-square object-cover rounded-lg" src={snapshot?.image_of_snapshot_strategy != '' ? snapshot?.image_of_snapshot_strategy : '/macrovesta_news_default_picture.jpg'} />
-                          <div className="flex flex-col w-full">
-                            <div className="grid grid-cols-[auto_75px]">
-                              <div className="font-semibold">
-                                {snapshot.title_of_snapshot_strategy}
-                              </div>
-                              <div className="w-[75px]">
-                                {parseDateString(snapshot.date_of_snapshot_strategy)}
-                              </div>
-                            </div>
-                            <div className="text-sm pt-2">{snapshot.text_of_snapshot_strategy.length > 200 ? `${snapshot.text_of_snapshot_strategy.slice(0, 200)}...` : snapshot.text_of_snapshot_strategy}</div>
-                          </div>
-                        </div>
-                      )}
-                      {index != 0 && (
-                        <div className="border grid grid-cols-[auto_100px] hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setSnapshotPopup(snapshot)}>
-                          <div>
-                            {snapshot.title_of_snapshot_strategy}
-                          </div>
-                          <div>
-                            {snapshot.news_type}
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  ))}
-                  {snapshotPopup != null && (
-                    <div className='absolute modal left-0 top-0 z-40'>
-                      <div className=' fixed grid place-content-center inset-0 z-40'>
-                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                          <img className="w-3/4" src={snapshotPopup.image_of_snapshot_strategy} />
-                          <div className="my-4 font-semibold text-lg">
-                            {snapshotPopup.title_of_snapshot_strategy}
-                          </div>
-                          <div className="-mt-4 mb-2">
-                            {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
-                          </div>
-                          <div className="">
-                            {snapshotPopup.text_of_snapshot_strategy}
-                          </div>
-                        </div>
-                        <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              {(session?.role == 'partner' || session?.role == 'admin') && (
-                <div className="flex justify-center">
-                  <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenSnapshotForm(true)}>
-                    Add 30 Seconds Snapshot
-                  </div>
-                </div>
-              )}
-              {openSnapshotForm && (
-                <div className='absolute modal left-0 top-0 z-40'>
-                  <div className=' fixed grid place-content-center inset-0 z-40'>
-                    <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                      <div className="my-4 font-semibold text-lg">
-                        Add 30 Seconds Snapshot
-                      </div>
-                      <div className="w-full">
-                        <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleSnapshotFormSubmit}>
-                          <div className="mb-4">
-                            <div className="mb-4">
-                              <SingleSelectDropdown
-                                options={[{ name: 'Recent Events', value: 'Recent Events' }, { name: 'Short Term Consideration', value: 'Short Term' }, { name: 'Long Term Consideration', value: 'Long Term' }]}
-                                label="snapshot_type"
-                                variable="name"
-                                colour="bg-deep_blue"
-                                onSelectionChange={(e) => setSelectedNewsType(e.value)}
-                                placeholder="Select Snapshot Type"
-                                searchPlaceholder="Search Types"
-                                includeLabel={false}
-                              />
-                            </div>
-                            <label
-                              htmlFor="image"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Image (optional)
-                            </label>
-                            <input
-                              type="text"
-                              id="image"
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                              placeholder="Enter a url to an image e.g. https://picsum.photos/200"
-                            />
-                          </div>
-                          <div className="mb-4">
-                            <label
-                              htmlFor="title"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Title
-                            </label>
-                            <input
-                              type="text"
-                              id="title"
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                              placeholder="Enter title"
-                            />
-                          </div>
-                          <div className="mb-4">
-                            <label
-                              htmlFor="text"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Text
-                            </label>
-                            <textarea id="text" placeholder="Enter text" name="text" rows={4} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
-                          </div>
+              sentimentData={JSON.parse(initialSentimentData)}
+            />
 
-                          <div className="col-span-2 flex justify-center">
-                            {/* <button
-                                type="submit"
-                                className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
-                              >
-                                Submit
-                              </button> */}
-                            <FormSubmit errorMessage={snapshotError_Message} warningMessage={snapshotWarning_Message} submitted={snapshotSubmitted} submitting={snapshotSubmitting} warningSubmit={snapshotWarningSubmit} />
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                    <div onClick={() => setOpenSnapshotForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                  </div>
-                </div>
-              )}
-              WeeklySurvey</div>
+            <RecentEvents
+              snapshotsData={snapshotsData}
+              session={session}
+              openSnapshotForm={openSnapshotForm}
+              setOpenSnapshotForm={setOpenSnapshotForm}
+            />
 
-            <div className="grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  ">
-              <div className="col-span-2 flex pl-12 items-center justify-left gap-2 w-full">
-                <div className="mr-2">
-                  Select Cost Type:
-                </div>
-                <div className={`${selectedCostType == 'FOB' ? ' bg-deep_blue text-white shadow-md' : 'bg-white text-black shadow-center-md'} w-fit  px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200`} onClick={() => setSelectedCostType('FOB')}>
-                  FOB
-                </div>
-                <div className={`${selectedCostType == 'CNF' ? ' bg-deep_blue text-white shadow-md' : 'bg-white text-black shadow-center-md'} w-fit  px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200`} onClick={() => setSelectedCostType('CNF')}>
-                  CNF
-                </div>
-              </div>
-              <div className="relative flex flex-col items-center">
-                {/* <div className='absolute top-2 right-2 remove-me group' >
-
-                  <img className=' w-[15px] h-[15px] self-center opacity-100 group-hover:hidden' width="15" height="15" src={"/i_G_SQ.png"}></img>
-                  <img className=' w-[15px] h-[15px] self-center opacity-100 hidden group-hover:block' width="15" height="15" src={"/i.png"}></img>
-                  <div className="z-50 pointer-events-none absolute flex flex-col justify-end left-1/2 w-[300px] h-[600px] -translate-x-full -translate-y-[615px] invisible group-hover:visible origin-bottom-right scale-0 group-hover:scale-100 transition-all duration-300 ">
-                    <div className="shadow-center-2xl flex flex-col items-center px-4 pt-2 pb-4 rounded-2xl bg-deep_blue text-white text-center text-xs">
-                      <img className="opacity-70" width="30px" src="/i_White.png" />
-                      <div className="mt-2">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
-                <InfoButton text={'Find the most update FOB & CNF costs for different origins. For CNF we are always considering the same origin and same destination (main far east ports). '} />
-                <div className="text-center font-semibold text-xl">Current Basis Cost</div>
-                <GroupedBarChart data={basisBarChartData(JSON.parse(basisData).filter((basis) => basis.cost_type == selectedCostType))} />
-              </div>
-              <div className="relative flex flex-col items-center">
-                <InfoButton text={'Find the historical basis cost for both FOB and CNF. '} />
-                <div className="-mb-2 text-center font-semibold text-xl">Historical Basis Cost</div>
-                <LineGraph decimalPlaces={0} verticalTooltip={true} data={transformData(JSON.parse(basisData).filter((basis) => (basis.country == basisCountry) && (basis.cost_type == selectedCostType)))} xValue="time" yValue="value" monthsTicks={6} />
-              </div>
-              <div className="col-span-2 grid grid-cols-2 mb-4">
-                <div className="grid place-content-center">
-                  {(session?.role == 'partner' || session?.role == 'admin') && (
-                    <div className="bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenBasisCostForm(true)}>
-                      Add Basis Cost Estimate
-                    </div>
-                  )}
-                  {openBasisCostForm && (
-                    <div className='absolute modal left-0 top-0 z-40'>
-                      <div className=' fixed grid place-content-center inset-0 z-40'>
-                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                          <div className="my-4 font-semibold text-lg">
-                            Add Basis Cost Estimate
-                          </div>
-                          <div className="w-full">
-                            <div className="flex flex-col gap-4">
-                              <SingleSelectDropdown
-                                options={[{ country: 'Brazil' }, { country: 'USA' }, { country: 'WAF' }, { country: 'Australia' }]}
-                                label="Country"
-                                variable="country"
-                                colour="bg-deep_blue"
-                                onSelectionChange={(e) => setSelectedCountry(e.country)}
-                                placeholder="Select Country"
-                                searchPlaceholder="Search Countries"
-                                includeLabel={false}
-                              />
-                              <SingleSelectDropdown
-                                options={[{ value: 'FOB' }, { value: 'CNF' }]}
-                                label="cost_type"
-                                variable="value"
-                                colour="bg-deep_blue"
-                                onSelectionChange={(e) => setSelectedFormCostType(e.value)}
-                                placeholder="Select cost type"
-                                searchPlaceholder="Search cost types"
-                                includeLabel={false}
-                              />
-                            </div>
-                            <form className="mt-4 mb-4  grid grid-cols-2 gap-x-4 w-full" onSubmit={handleBasisFormSubmit}>
-                              <div className="mb-4">
-                                <label
-                                  htmlFor="ctz23"
-                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                                >
-                                  CTZ23 Basis Estimate
-                                </label>
-                                <input
-                                  type="number"
-                                  id="ctz23"
-                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                  placeholder="Enter your estimate"
-                                />
-                              </div>
-                              <div className="mb-4">
-                                <label
-                                  htmlFor="ctz24"
-                                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                                >
-                                  CTZ24 Basis Estimate
-                                </label>
-                                <input
-                                  type="number"
-                                  id="ctz24"
-                                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                                  placeholder="Enter your estimate"
-                                />
-                              </div>
-
-                              <div className="col-span-2 flex justify-center">
-                                {/* <button
-                                type="submit"
-                                className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
-                              >
-                                Submit
-                              </button> */}
-                                <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                        <div onClick={() => setOpenBasisCostForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="flex justify-center">
-                  <div className="w-[200px]">
-                    <SingleSelectDropdown
-                      options={[{ country: 'Brazil' }, { country: 'USA' }, { country: 'WAF' }, { country: 'Australia' }]}
-                      label="Country"
-                      variable="country"
-                      colour="bg-deep_blue"
-                      onSelectionChange={(e) => setBasisCountry(e.country)}
-                      placeholder="Select Country"
-                      searchPlaceholder="Search Countries"
-                      includeLabel={false}
-                      defaultValue="Brazil"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-span-1">
-                <Comments styling="mt-2 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'Recent Basis')} session={session} section="Recent Basis" />
-              </div>
-              <div className="col-span-1">
-                <Comments styling="mt-2 px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'Historical Basis')} session={session} section="Historical Basis" />
-              </div>
-            </div>
+            <BasisCosts
+              selectedCostType={selectedCostType}
+              setSelectedCostType={setSelectedCostType}
+              session={session}
+              setOpenBasisCostForm={setOpenBasisCostForm}
+              transformData={transformData}
+              basisData={basisData}
+              basisCountry={basisCountry}
+              openBasisCostForm={openBasisCostForm}
+              setSelectedCountry={setSelectedCountry}
+              setSelectedFormCostType={setSelectedFormCostType}
+              handleBasisFormSubmit={handleBasisFormSubmit}
+              error_Message={error_Message}
+              warning_Message={warning_Message}
+              submitted={submitted}
+              submitting={submitting}
+              warningSubmit={warningSubmit}
+              setBasisCountry={setBasisCountry}
+              commentsData={commentsData}
+            />
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
-              <div className="relative flex flex-col col-span-1 bg-[#ffffff] p-4 rounded-xl shadow-lg">
-                <div className="relative grid grid-cols-2">
-                  <InfoButton text={`Weekly exports, accumulated exports, net sales, and outstanding sales for the current marketing year and net sales and outstanding sales for next marketing year are available for cotton since 1990.
-U.S Export Sales Report is released every Thursday and highlights data as of the week before, also ending on Thursday. 
-`} />
-                  <div className="col-span-2 text-center text-xl font-semibold mb-4">
-                    US Exports Sales
-                  </div>
-                  <div className="col-span-2 grid grid-cols-2 w-full gap-x-4 px-8">
-                    <div className="mb-4 w-full">
-                      <DateField label='Start Date' setDate={setSelectedStartDate} date={selectedStartDate} formatter={formatter} />
-                    </div>
-                    <div className="mb-4 w-full">
-                      <DateField label='Start Date' setDate={setSelectedEndDate} date={selectedEndDate} formatter={formatter} />
-                    </div>
-
-                    {/* <div className="mb-4 w-full">
-
-                      <SingleSelectDropdown
-                        options={[{ name: "Week" }, { name: "Year" }]}
-                        label="Week or Year"
-                        variable="name"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setCommitmentWeekOrYear(e.name)}
-                        placeholder="Select Week or Year"
-                        searchPlaceholder="Search Options"
-                        includeLabel={false}
-                        defaultValue="Week"
-                      />
-                    </div>
-                    {commitmentWeekOrYear == "Year" && (
-                      <>
-                        <div className="mb-4 w-full">
-
-                          <SingleSelectDropdown
-                            options={getUniqueOptions(JSON.parse(commitmentData), "calendar_year")}
-                            label="Year"
-                            variable="value"
-                            colour="bg-deep_blue"
-                            onSelectionChange={(e) => setCommitmentYear(parseInt(e.value))}
-                            placeholder="Select a specific year"
-                            searchPlaceholder="Search Options"
-                            includeLabel={false}
-                            defaultValue="2010"
-                          />
-                        </div>
-                      </>
-                    )}
-                    {commitmentWeekOrYear == "Week" && (
-                      <>
-                        <div className="mb-4 w-full">
-
-                          <SingleSelectDropdown
-                            options={getUniqueOptions(JSON.parse(commitmentData), "week")}
-                            label="Week"
-                            variable="value"
-                            colour="bg-deep_blue"
-                            onSelectionChange={(e) => setCommitmentWeek(parseInt(e.value))}
-                            placeholder="Select a specific week"
-                            searchPlaceholder="Search Options"
-                            includeLabel={false}
-                            defaultValue="1"
-                          />
-                        </div>
-                      </>
-                    )} */}
-                    <div className="col-span-2 mb-4 w-full">
-
-                      <MultipleSelectDropdown
-                        options={[{ property: 'weekly_exports', name: 'Weekly Exports' }, { property: 'accumulated_exports', name: 'Accumulated Exports' }, { property: 'net_sales', name: 'Net Sales' }, { property: 'next_marketing_year_net_sales', name: 'Next Marketing Year Net Sales' }, { property: 'outstanding_sales', name: 'Outstanding Sales' }, { property: 'next_marketing_year_outstanding_sales', name: 'Next Marketing Year Outstanding Sales' }]}
-                        variable="name"
-                        colour="bg-deep_blue"
-                        label="Variables"
-                        onSelectionChange={(e) => { if (e.length > 0) { setExportPropertiesArray(e.map((selection) => selection.property)); setExportNamesArray(e.map((selection) => selection.name)) } }}
-                        // onSelectionChange={(e) => { setCommitmentPropertiesArray(["open_interest_all"]); setCommitmentNamesArray(["Open Interest All"]) }}
-                        placeholder="Select Variables"
-                        searchPlaceholder="Search Variables"
-                        includeLabel={false}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-2 flex flex-col items-center w-full">
-                    <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
-                    <div className="mb-4 w-full">
-
-                      {/* <LineGraph verticalTooltip={true} data={getUSExportSalesData(JSON.parse(exportSalesData).filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), exportPropertiesArray, exportNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" /> */}
-                      <LineGraph decimalPlaces={0} verticalTooltip={true} data={getUSExportSalesData(clientUSExportSalesData.filter((data) => data.week_ending < selectedEndDate && data.week_ending > selectedStartDate), exportPropertiesArray, exportNamesArray)} xValue="x" yValue="y" xAxisTitle="Week" />
-                    </div>
-                    {/* {commitmentWeekOrYear == "Year" && (
-                      <>
-                        <div className="mt-6 -mb-2 font-semibold">US Export Sales by Week</div>
-                        <div className="mb-16 w-full">
-
-                          <LineGraph data={getUSExportSalesWeekData(JSON.parse(exportSalesData).filter((data) => parseInt(data.calendar_year) == commitmentYear), commitmentPropertiesArray, commitmentNamesArray)} xDomain2={52} xAxisTitle="Week" />
-                        </div>
-                      </>
-                    )}
-                    {commitmentWeekOrYear == "Week" && (
-                      <>
-                        <div className="mt-6 -mb-2 font-semibold">US Export Sales by Year</div>
-                        <div className="mb-16 w-full">
-
-                          <LineGraphNotTime data={getUSExportSalesSeasonData(JSON.parse(exportSalesData).filter((data) => parseInt(data.week) == commitmentWeek), commitmentPropertiesArray, commitmentNamesArray)} xDomain1={2009} xDomain2={2023} xAxisTitle="Year" />
-                        </div>
-                      </>
-                    )} */}
-                  </div>
-                </div>
-                <Comments styling="px-8" comments={JSON.parse(commentsData).filter((comment) => comment.section == 'Export Sales')} session={session} section="Export Sales" commentLength={800} />
-              </div>
-              {/* <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
-                <img src="/Charts_Under_Construction_Half_width.png" />
-              </div> */}
+              <USExportSales
+                setSelectedStartDate={setSelectedStartDate}
+                selectedStartDate={selectedStartDate}
+                formatter={formatter}
+                setSelectedEndDate={setSelectedEndDate}
+                selectedEndDate={selectedEndDate}
+                setExportPropertiesArray={setExportPropertiesArray}
+                setExportNamesArray={setExportNamesArray}
+                getUSExportSalesData={getUSExportSalesData}
+                clientUSExportSalesData={clientUSExportSalesData}
+                exportPropertiesArray={exportPropertiesArray}
+                exportNamesArray={exportNamesArray}
+                commentsData={commentsData}
+                session={session}
+              />
               <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg">
                 <div className="relative text-center font-semibold text-xl mb-4">
                   <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
@@ -1833,7 +1123,7 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
                     </div>
                   </div>
                 )}
-              </div>
+                </div>
             </div>
             {/* <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>

@@ -1,11 +1,127 @@
-import React from 'react'
+import React, { useState } from 'react'
 import InfoButton from './infoButton'
 import FormSubmit from './formSubmit'
 import BullishBearishDonut from './bullishBearishDonut'
 import SemiCircleDial from './semiCircleDial'
 import LineGraph from './lineGraph'
+import { transformSurveyData, averageMarketSentiment } from '~/utils/calculateUtils'
+import { oneWeekAgo } from '~/utils/dateUtils'
 
-const WeeklySurvey = ({ session, todaysDate, currentStage, handleSentimentFormSubmit, transformSurveyData, sentimentData, sentimentError_Message, sentimentWarning_Message, sentimentSubmitted, sentimentWarningSubmit, sentimentSubmitting, averageMarketSentiment, oneWeekAgo, goPrevious, goNext, stages }) => {
+const WeeklySentimentSurvey = ({ session, currentStage, sentimentData, goPrevious, goNext, stages, setCurrentStage }) => {
+  const todaysDate = new Date()
+
+  const [sentimentErrorMessage, setSentimentErrorMessage] = useState('')
+  const [sentimentSubmitted, setSentimentSubmitted] = useState(false)
+  const [sentimentSubmitting, setSentimentSubmitting] = useState(false)
+  const [sentimentWarningMessage, setSentimentWarningMessage] = useState('')
+  const [sentimentWarningSubmit, setSentimentWarningSubmit] = useState(false)
+
+  const handleSentimentFormSubmit = async (e) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault()
+    setSentimentSubmitting(true)
+
+    const bullish_or_bearish = e.target.bullishbearish.value
+    const high = e.target.high.value
+    const low = e.target.low.value
+    const intraday_average_points = e.target.intraday.value
+    const open_interest = e.target.open_interest.value
+    let errorMessage = ''
+    const warningMessage = ''
+
+    // if (bullishBearish != null && bullishBearish != "Select an Option") {
+    //   bullish_or_bearish = bullishBearish;
+    // } else {
+    //   errorMessage += "Please select bullish or bearish. ";
+    // }
+
+    if (bullish_or_bearish == null || bullish_or_bearish == '') {
+      errorMessage += 'Please enter Estimate for market feeling. '
+    }
+    if (high == null || high === '') {
+      errorMessage += 'Please enter Estimate for high. '
+    }
+    if (low == null || low === '') {
+      errorMessage += 'Please enter Estimate for low. '
+    }
+    if (intraday_average_points == null || intraday_average_points === '') {
+      errorMessage += 'Please enter Estimate for intraday average in points. '
+    }
+    if (open_interest == null || open_interest === '') {
+      errorMessage += 'Please enter Estimate for open interest. '
+    }
+
+    if (warningMessage !== '') {
+      setSentimentWarningMessage(warningMessage)
+      // throw new Error(errorMessage)
+    } else {
+      if (sentimentWarningMessage !== '') {
+        setSentimentWarningMessage('')
+      }
+    }
+
+    if (errorMessage !== '') {
+      setSentimentErrorMessage(errorMessage)
+      setSentimentWarningSubmit(false)
+      setSentimentSubmitting(false)
+    } else {
+      if (sentimentErrorMessage !== '') {
+        setSentimentErrorMessage('')
+      }
+
+      if (sentimentWarningSubmit === false && warningMessage !== '') {
+        setSentimentWarningSubmit(true)
+        setSentimentSubmitting(false)
+      } else {
+        // Get data from the form.
+        const data = {
+          bullish_or_bearish: bullish_or_bearish == '0' ? 'Neutral' : parseInt(bullish_or_bearish) < 0 ? 'Bearish' : 'Bullish',
+          bullish_or_bearish_value: bullish_or_bearish,
+          high,
+          low,
+          intraday_average_points,
+          open_interest,
+          email: session?.user.email,
+          user: session?.user?.name
+        }
+
+        console.log(data)
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data)
+
+        // API endpoint where we send form data.
+        const endpoint = '/api/add-sentiment-survey-results'
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: 'POST',
+          // Tell the server we're sending JSON.
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        }
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options)
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => {
+          setSentimentSubmitted(true)
+          setSentimentSubmitting(false)
+          setCurrentStage(1)
+          // setSentimentData([...sentimentData, { record_id: "dummyid", bullish_or_bearish, high, low, intraday_average_points, open_interest }])
+        })
+        // setSubmitted(true); setSubmitting(false)
+        // console.log(result);
+      }
+    }
+  }
+
   return (
     <>
       {/* ((session?.submittedSurvey == true) || ((todaysDate.getDay() == 0) || (todaysDate.getDay() == 1))) */}
@@ -138,7 +254,7 @@ const WeeklySurvey = ({ session, todaysDate, currentStage, handleSentimentFormSu
           >
             Submit
           </button> */}
-                    <FormSubmit errorMessage={sentimentError_Message} warningMessage={sentimentWarning_Message} submitted={sentimentSubmitted} submitting={sentimentSubmitting} warningSubmit={sentimentWarningSubmit} />
+                    <FormSubmit errorMessage={sentimentErrorMessage} warningMessage={sentimentWarningMessage} submitted={sentimentSubmitted} submitting={sentimentSubmitting} warningSubmit={sentimentWarningSubmit} />
                   </div>
                 </form>
               </div>
@@ -224,4 +340,4 @@ const WeeklySurvey = ({ session, todaysDate, currentStage, handleSentimentFormSu
   )
 }
 
-export default WeeklySurvey
+export default WeeklySentimentSurvey

@@ -2,11 +2,18 @@ import DateField from './dateField'
 import InfoButton from './infoButton'
 import LineGraph from './lineGraph'
 import Comments from './comments'
+import { useState } from 'react'
 import { Tabs, Tab, Select, SelectItem } from '@nextui-org/react'
+import { parseDate } from '@internationalized/date'
+import { getTodayDate, getOneYearAgoDate } from '~/utils/dateUtils'
+import { calculateSpread } from '~/utils/calculateUtils'
 
-const CTZ23 = ({ setSelectedCottonContractsStartDate, selectedCottonContractsStartDate, formatter, setSelectedCottonContractsEndDate, selectedCottonContractsEndDate, contractParameter, setContractParameter, commentsData, session, calculateSpread, contractData }) => {
+const CTZ23 = ({ formatter, commentsData, session, contractData }) => {
   // TODO: Fetch data when button is clicked, only initial data is required for show initial component (+ performance)
   // TODO: Try to structure and parse data before component receive it. Component must receive data simple as posible.
+  const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = useState(parseDate(getOneYearAgoDate()))
+  const [selectedCottonContractsEndDate, setSelectedCottonContractsEndDate] = useState(parseDate(getTodayDate()))
+  const [contractParameter, setContractParameter] = useState('close')
 
   function getCommentsForValue (value) {
     const commentsMapping = {
@@ -95,45 +102,6 @@ const CTZ23 = ({ setSelectedCottonContractsStartDate, selectedCottonContractsSta
             </Tabs>
           </div>
         </div>
-
-        {/* Initial Spread */}
-        {/* {currentChart === 'CTZ23' && (
-          <div className='relative flex flex-col col-span-2 items-center'>
-            <InfoButton text='This section analyses technically what has happened to the front month of cotton as well as relevant futures spreads over the past week.' />
-            <div className='mt-6 -mb-2 font-semibold'>CTZ23</div>
-            <LineGraph verticalTooltip data={contractParameter != null ? [{ name: 'CTZ23', data: JSON.parse(CTZ23).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), noCircles: true, noHover: true }] : []} monthsTicks={6} xValue='datetime' yValue={contractParameter} graphWidth={1000} graphHeight={400} />
-            <Comments styling='mt-8 px-8' comments={JSON.parse(commentsData).filter((comment) => comment.section === 'Current Contract')} session={session} section='Current Contract' commentLength={800} />
-          </div>
-        )} */}
-        {/*
-        <div className='relative flex flex-col items-center'>
-          <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
-          <div className='mt-6 -mb-2 font-semibold'>CTZ23 / CTZ24 Spread</div>
-          <LineGraph verticalTooltip data={calculateSpread(JSON.parse(CTZ23).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(contractData.CTZ24).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), 'CTZ23 / CTZ24 Spread')} />
-          <Comments styling='mt-8 px-8' comments={JSON.parse(commentsData).filter((comment) => comment.section === 'Fourth Spread')} session={session} section='Fourth Spread' />
-        </div> */}
-
-        {/* <div className='relative flex flex-col items-center'>
-          <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
-          <div className='mt-6 -mb-2 font-semibold'>CTZ23 / CTN24 Spread</div>
-          <LineGraph verticalTooltip data={calculateSpread(JSON.parse(CTZ23).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(contractData.CTN24).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), 'CTZ23 / CTN24 Spread')} />
-          <Comments styling='mt-8 px-8' comments={JSON.parse(commentsData).filter((comment) => comment.section === 'Third Spread')} session={session} section='Third Spread' />
-        </div> */}
-
-        {/* <div className='relative flex flex-col items-center'>
-          <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
-          <div className='mt-6 -mb-2 font-semibold'>CTZ23 / CTK24 Spread</div>
-          <LineGraph verticalTooltip data={calculateSpread(JSON.parse(CTZ23).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(contractData.CTK24).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), 'CTZ23 / CTK24 Spread')} monthsTicks={6} />
-          <Comments styling='mt-8 px-8' comments={JSON.parse(commentsData).filter((comment) => comment.section === 'Second Spread')} session={session} section='Second Spread' />
-        </div> */}
-
-        {/* <div className='relative flex flex-col items-center'>
-          <InfoButton text={`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`} />
-          <div className='mt-6 -mb-2 font-semibold'>CTZ23 / CTH24 Spread</div>
-          <LineGraph verticalTooltip data={calculateSpread(JSON.parse(CTZ23).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), JSON.parse(contractData.CTH24).filter((data) => data.datetime < selectedCottonContractsEndDate && data.datetime > selectedCottonContractsStartDate), 'CTZ23 / CTH24 Spread')} monthsTicks={6} />
-          <Comments styling='mt-8 px-8' comments={JSON.parse(commentsData).filter((comment) => comment.section === 'Nearby Spread')} session={session} section='Nearby Spread' />
-        </div> */}
-
       </div>
     </>
   )

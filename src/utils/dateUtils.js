@@ -59,3 +59,26 @@ export function getWeek (date, startDay) {
 export const today = new Date() // Current date
 
 export const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+export function getTodayDate () {
+  const temp = new Date()
+  const dd = String(temp.getDate()).padStart(2, '0')
+  const mm = String(temp.getMonth() + 1).padStart(2, '0') // January is 0!
+  const yyyy = temp.getFullYear()
+  temp.setSeconds(0)
+  const today = `${yyyy}-${mm}-${dd}`
+
+  return today
+}
+
+export function getOneYearAgoDate () {
+  const temp = new Date()
+  temp.setFullYear(temp.getFullYear() - 1)
+
+  const year2 = temp.getFullYear()
+  const month2 = (temp.getMonth() + 1).toString().padStart(2, '0') // add leading zero if necessary
+  const day2 = temp.getDate().toString().padStart(2, '0') // add leading zero if necessary
+
+  const dateOneYearAgo = `${year2}-${month2}-${day2}`
+  return dateOneYearAgo
+}

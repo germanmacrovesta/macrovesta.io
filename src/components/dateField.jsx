@@ -46,7 +46,7 @@ export default function DateField ({ setDate, date, label, formatter, yearOption
             <Button onClick={toggleMenu} variant='light'>
               {date && (
                 <>
-                  {formatter.format(date.toDate(getLocalTimeZone()))}
+                  {/* {formatter.format(date.toDate(getLocalTimeZone()))} */}
                   {/* {JSON.stringify(new Date(Date.UTC(2023, 3, 25, 12, 0, 0)))} */}
                   {/* {getLocalTimeZone()} */}
                   {/* {JSON.stringify(date.toDate("Europe/London"))} */}
@@ -64,7 +64,6 @@ export default function DateField ({ setDate, date, label, formatter, yearOption
                   onChange={setDate}
                   yearOptions={yearOptions}
                 />
-
               </div>
             )}
           </div>

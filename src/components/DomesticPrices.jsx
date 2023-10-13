@@ -1,14 +1,47 @@
-import React from 'react'
 import DateField from './dateField'
 import InfoButton from './infoButton'
 import MultipleSelectDropdown from './multipleSelectDropdown'
 import LineGraph from './lineGraph'
 import Comments from './comments'
+import { useState, useEffect } from 'react'
+import { parseDate } from '@internationalized/date'
+import { getTodayDate } from '~/utils/dateUtils'
+import { getAIndexData } from '~/utils/getDataUtils'
 
-const DomesticPrices = ({ setSelectedIndexStartDate, selectedIndexStartDate, formatter, setSelectedIndexEndDate, selectedIndexEndDate, setIndexPropertiesArray, setIndexNamesArray, getAIndexData, clientAIndexData, indexPropertiesArray, indexNamesArray, commentsData, session }) => {
+const DomesticPrices = ({ formatter, commentsData, session }) => {
+  const [selectedIndexStartDate, setSelectedIndexStartDate] = useState(parseDate('2023-01-01'))
+  const [selectedIndexEndDate, setSelectedIndexEndDate] = useState(parseDate(getTodayDate()))
+  const [indexPropertiesArray, setIndexPropertiesArray] = useState(['a_index', 'ice_highest_open_interest_17_months'])
+  const [indexNamesArray, setIndexNamesArray] = useState(['A-Index', 'Ice Highest'])
+  const [clientAIndexData, setClientAIndexData] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Make the API call using the fetch method
+        const response = await fetch('/api/get-a-index-data')
+
+        // Check if the request was successful
+        if (response.ok) {
+          // Parse the JSON data from the response
+          const result = await response.json()
+
+          // Update the state with the fetched data
+          setClientAIndexData(result)
+        } else {
+          console.error(`API request failed with status ${response.status}`)
+        }
+      } catch (error) {
+        console.error(`An error occurred while fetching data: ${error}`)
+      }
+    }
+
+    // Call the fetchData function
+    fetchData()
+  }, [])
+
   return (
     <div className='relative flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8'>
-
       <div className='relative grid grid-cols-2'>
         <InfoButton text='In this section, you can use the multi-select dropdown menu to pick which markets you would like to compare. At the moment, the markets available are MCX (Indian), CEPEA (Brazilian), CC-Index (China), and ICE (American). The A-INDEX is intended to be representative of the level of offering prices on the international raw cotton market. It is an average of the cheapest five quotations from a selection of the principal upland cottons traded internationally.' />
         <div className='col-span-2 text-center text-xl font-semibold mb-4'>
