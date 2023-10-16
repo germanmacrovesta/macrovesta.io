@@ -6,11 +6,11 @@ import { parseDateString } from '~/utils/dateUtils'
 import { Select, SelectItem, Pagination } from '@nextui-org/react'
 import Image from 'next/image'
 
-// Component only must obtain recentevents data, must split outsideComponent
+// Component only must obtain FutureConsiderations data, must split outsideComponent
 // JSON.parse(snapshotsData).filter(object => object.news_type === 'Recent Events'
 
-const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapshotForm }) => {
-  // RecentEvents, Future and modal30SecsSnapshot
+const FutureConsiderations = ({ snapshotsData, session, setOpenSnapshotForm, openSnapshotForm }) => {
+  // FutureConsiderations, Future and modal30SecsSnapshot
   const [snapshotPopup, setSnapshotPopup] = useState(null)
   const [snapshotErrorMessage, setSnapshotErrorMessage] = useState('')
   const [snapshotSubmitted, setSnapshotSubmitted] = useState(false)
@@ -20,7 +20,8 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
   const [selectedNewsType, setSelectedNewsType] = useState('')
 
   const [filters, setFilters] = useState({
-    impact: 'High',
+    impact: 'Low',
+    term: 'Short Term',
     show: 3
   })
 
@@ -28,12 +29,17 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
 
   useEffect(() => {
     const applyFilters = () => {
-      // TODO: Data 'RecentEvents' must be filtered before getting on component
-      let filteredResult = JSON.parse(snapshotsData).filter(object => object.news_type === 'Recent Events')
-      const { impact, show } = filters
+      // TODO: Data 'FutureConsiderations' must be filtered before getting on component
+      let filteredResult = JSON.parse(snapshotsData).filter(object => object.news_type === 'Short Term' || object.news_type === 'Long Term')
 
-      if (impact !== 'All') {
+      const { impact, show, term } = filters
+
+      if (impact !== '') {
         filteredResult = filteredResult.filter(object => object.impact === impact)
+      }
+
+      if (term !== '') {
+        filteredResult = filteredResult.filter(object => object.news_type === term)
       }
 
       // TODO: Filter by 7 last days, 20 days...
@@ -47,7 +53,8 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
   }, [filters])
 
   const impactOptions = [{ name: 'High Impact', parameter: 'High' }, { name: 'Low impact', parameter: 'Low' }]
-  const showOptions = [{ name: '3', parameter: '3' }, { name: '6', parameter: '6' }, { name: '10', parameter: '10' }]
+  const showOptions = [{ name: '3', parameter: '3' }, { name: '10', parameter: '10' }, { name: '20', parameter: '20' }]
+  const termOptions = [{ name: 'Short Term', parameter: 'Short Term' }, { name: 'Long Term', parameter: 'Long Term' }]
 
   const handleSnapshotFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
@@ -144,7 +151,7 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
     <div className='flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg m-8'>
       <div className='flex relative items-center justify-between px-1'>
         <h2 className='font-semibold text-2xl relative'>
-          Recent Events
+          Future Considerations
           {/* <InfoButton text='Find a summarised list of events which have happened over the past weeks.  ' /> */}
         </h2>
         <div className='flex gap-4 w-[50%]'>
@@ -163,10 +170,25 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
               </SelectItem>
             ))}
           </Select>
+          <Select
+            radius='md'
+            label='Term'
+            className='max-w-sm'
+            onChange={(e) => setFilters({ ...filters, term: e.target.value })}
+            size='sm'
+            variant='underlined'
+            defaultSelectedKeys={['Short Term']}
+          >
+            {termOptions.map((option) => (
+              <SelectItem key={option.parameter} value={option.parameter}>
+                {option.name}
+              </SelectItem>
+            ))}
+          </Select>
 
           <Select
             radius='md'
-            label='Show per page'
+            label='Show'
             className='max-w-xs'
             onChange={(e) => setFilters({ ...filters, show: e.target.value })}
             size='sm'
@@ -182,7 +204,6 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
         </div>
 
       </div>
-
       <div className='grid grid-cols-2 grid-rows-1 gap-4 mt-4'>
         {!filteredData || filteredData === []
           ? ('OPS')
@@ -211,28 +232,27 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
               </div>
             </div>
           ))}
-      </div>
 
-      {snapshotPopup !== null && (
-        <div className='absolute modal left-0 top-0 z-40'>
-          <div className=' fixed grid place-content-center inset-0 z-40'>
-            <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-              <img className='w-3/4' src={snapshotPopup.image_of_snapshot_strategy} />
-              <div className='my-4 font-semibold text-lg'>
-                {snapshotPopup.title_of_snapshot_strategy}
+        {snapshotPopup !== null && (
+          <div className='absolute modal left-0 top-0 z-40'>
+            <div className=' fixed grid place-content-center inset-0 z-40'>
+              <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                <img className='w-3/4' src={snapshotPopup.image_of_snapshot_strategy} />
+                <div className='my-4 font-semibold text-lg'>
+                  {snapshotPopup.title_of_snapshot_strategy}
+                </div>
+                <div className='-mt-4 mb-2'>
+                  {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
+                </div>
+                <div className=''>
+                  {snapshotPopup.text_of_snapshot_strategy}
+                </div>
               </div>
-              <div className='-mt-4 mb-2'>
-                {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
-              </div>
-              <div className=''>
-                {snapshotPopup.text_of_snapshot_strategy}
-              </div>
+              <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10' />
             </div>
-            <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10' />
           </div>
-        </div>
-      )}
-
+        )}
+      </div>
       <div className='flex items-center justify-between mt-4'>
         {(session?.role === 'partner' || session?.role === 'admin') && (
           <div className='flex justify-center'>
@@ -244,6 +264,29 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
         <Pagination total={10} initialPage={1} classNames={{ cursor: 'bg-deep_blue' }} />
       </div>
 
+      {/* <div className='flex flex-col w-full justify-start items-start gap-x-8 gap-y-4 mt-4'>
+        {snapshotPopup != null && (
+          <div className='absolute modal left-0 top-0 z-40'>
+            <div className=' fixed grid place-content-center inset-0 z-40'>
+              <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                <img className='w-3/4' src={snapshotPopup.image_of_snapshot_strategy} />
+                <div className='my-4 font-semibold text-lg'>
+                  {snapshotPopup.title_of_snapshot_strategy}
+                </div>
+                <div className='-mt-4 mb-2'>
+                  {parseDateString(snapshotPopup.date_of_snapshot_strategy)}
+                </div>
+                <div className=''>
+                  {snapshotPopup.text_of_snapshot_strategy}
+                </div>
+              </div>
+              <div onClick={() => setSnapshotPopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10' />
+            </div>
+          </div>
+        )}
+      </div> */}
+
+      {/* 30 Seconds Snapshot button (Modal) */}
       {openSnapshotForm && (
         <div className='absolute modal left-0 top-0 z-40'>
           <div className=' fixed grid place-content-center inset-0 z-40'>
@@ -323,4 +366,4 @@ const RecentEvents = ({ snapshotsData, session, setOpenSnapshotForm, openSnapsho
   )
 }
 
-export default RecentEvents
+export default FutureConsiderations

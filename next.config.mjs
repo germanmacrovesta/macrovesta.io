@@ -2,7 +2,7 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
  * This is especially useful for Docker builds.
  */
-!process.env.SKIP_ENV_VALIDATION && (await import("./src/env.mjs"));
+!process.env.SKIP_ENV_VALIDATION && (await import('./src/env.mjs'))
 
 // const headers = [
 //   "Accept", "Accept-Version", "Content-Length",
@@ -13,7 +13,9 @@
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: false,
-
+  images: {
+    domains: ['assets.example.com', 'mcusercontent.com', 'localhost:3000']
+  },
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
    * must comment the below `i18n` config out.
@@ -27,11 +29,11 @@ const config = {
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true
   },
   typescript: {
-    ignoreBuildErrors: true,
-  },
+    ignoreBuildErrors: true
+  }
   // env: {
   //   ALLOWED_NEXT_AUTH_URLS:
   //     ["https://(.+\\.|)domain.com/?", "https://(.+\\.|)someotherdomain.com/?"], ALLOWED_HEADERS:
@@ -62,5 +64,5 @@ const config = {
   //     },
   //   ];
   // }
-};
-export default config;
+}
+export default config

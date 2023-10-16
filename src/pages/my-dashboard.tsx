@@ -47,7 +47,7 @@ const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   autosize: true
 }
 
-function getCurrentMonth () {
+function getCurrentMonth() {
   // Create a new Date object
   const date = new Date()
 
@@ -98,7 +98,7 @@ const parseDateString = (dateString) => {
   }
 }
 
-function getWeekNumber (d) {
+function getWeekNumber(d) {
   // Copy date so don't modify original
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
   // Set to nearest Thursday: current date + 4 - current day number
@@ -130,9 +130,9 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
   const { data: session } = useSession()
   console.log('session', session)
   console.log('session.submittedSurvey', session?.submittedSurvey)
-
   const todaysDate = new Date()
 
+  const sentimentData = JSON.parse(initialSentimentData)
   const baseUrlArray = url.split('/')
   const urlArray: any = []
   baseUrlArray.forEach((urlCrumb) => {
@@ -278,7 +278,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
 
   const [marketplacePopup, setMarketplacePopup] = React.useState(null)
 
-  function calculateSpread (arr1, arr2, name) {
+  function calculateSpread(arr1, arr2, name) {
     // Transform arrays into maps for easy lookup
     const map1 = new Map(arr1.map(item => [item.datetime, item.close]))
     const map2 = new Map(arr2.map(item => [item.datetime, item.close]))
@@ -451,7 +451,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
     return sentimentData.length > 0 ? total / data.length : 0
   }
 
-  function transformSurveyData (inputArray, propertyUsed, precision = 2) {
+  function transformSurveyData(inputArray, propertyUsed, precision = 2) {
     const outputArray = []
     const averages = {}
     // const combinedSeries = {
@@ -797,7 +797,7 @@ const MyDashboard: NextPage = ({ templateData, monthlyIndexData, seasonalIndexDa
     return result
   }
 
-  function transformData (input) {
+  function transformData(input) {
     const contract1Data = { name: 'CTZ23', data: [], noCircles: true }
     const contract2Data = { name: 'CTZ24', data: [], noCircles: true }
     input.forEach((item) => {

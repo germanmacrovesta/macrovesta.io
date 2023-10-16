@@ -55,6 +55,7 @@ import WeeklySentimentSurvey from '~/components/WeeklySentimentSurvey'
 import RecentEvents from '~/components/RecentEvents'
 import BasisCosts from '~/components/BasisCosts'
 import USExportSales from '~/components/USExportSales'
+import FutureConsiderations from '~/components/FutureConsiderations'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: 'AAPL',
@@ -925,6 +926,13 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
               setOpenSnapshotForm={setOpenSnapshotForm}
             />
 
+            <FutureConsiderations
+              snapshotsData={snapshotsData}
+              session={session}
+              openSnapshotForm={openSnapshotForm}
+              setOpenSnapshotForm={setOpenSnapshotForm}
+            />
+
             <BasisCosts
               selectedCostType={selectedCostType}
               setSelectedCostType={setSelectedCostType}
@@ -1123,7 +1131,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
                     </div>
                   </div>
                 )}
-                </div>
+              </div>
             </div>
             {/* <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
               <div className="text-xl font-semibold text-center pt-4">Future Contracts Study</div>
