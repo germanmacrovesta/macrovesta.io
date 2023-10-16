@@ -82,3 +82,23 @@ export function getOneYearAgoDate () {
   const dateOneYearAgo = `${year2}-${month2}-${day2}`
   return dateOneYearAgo
 }
+
+export function getDateSixMothAgo () {
+  const temp2 = new Date() // get the current date
+  temp2.setMonth(temp2.getMonth() - 6) // subtract 6 months
+
+  // format the date as yyyy-mm-dd
+  const year = temp2.getFullYear()
+  let month = (temp2.getMonth() + 1).toString() // JavaScript months are 0-based, so we add 1
+  let day = (temp2.getDate()).toString()
+
+  // ensure month and day are 2 digits
+  if (parseInt(month) < 10) {
+    month = '0' + month
+  }
+  if (parseInt(day) < 10) {
+    day = '0' + day
+  }
+
+  return `${year}-${month}-${day}`
+}

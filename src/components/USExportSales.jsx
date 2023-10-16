@@ -1,11 +1,45 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 import InfoButton from './infoButton'
 import DateField from './dateField'
 import MultipleSelectDropdown from './multipleSelectDropdown'
 import LineGraph from './lineGraph'
 import Comments from './comments'
+import { parseDate } from '@internationalized/date'
+import { getDateSixMothAgo, getTodayDate } from '~/utils/dateUtils'
+import { getUSExportSalesData } from '~/utils/getDataUtils'
 
-const USExportSales = ({ setSelectedStartDate, selectedStartDate, formatter, setSelectedEndDate, selectedEndDate, setExportPropertiesArray, setExportNamesArray, getUSExportSalesData, clientUSExportSalesData, exportPropertiesArray, exportNamesArray, commentsData, session }) => {
+const USExportSales = ({ formatter, commentsData, session }) => {
+  const [selectedStartDate, setSelectedStartDate] = useState(parseDate(getDateSixMothAgo()))
+  const [selectedEndDate, setSelectedEndDate] = useState(parseDate(getTodayDate()))
+  const [exportPropertiesArray, setExportPropertiesArray] = useState(['net_sales', 'next_marketing_year_net_sales'])
+  const [exportNamesArray, setExportNamesArray] = useState(['Net Sales', 'Next Marketing Year Net Sales'])
+  const [clientUSExportSalesData, setClientUSExportSalesData] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Make the API call using the fetch method
+        const response = await fetch('/api/get-us-export-sales-data')
+
+        // Check if the request was successful
+        if (response.ok) {
+          // Parse the JSON data from the response
+          const result = await response.json()
+
+          // Update the state with the fetched data
+          setClientUSExportSalesData(result)
+        } else {
+          console.error(`API request failed with status ${response.status}`)
+        }
+      } catch (error) {
+        console.error(`An error occurred while fetching data: ${error}`)
+      }
+    }
+
+    // Call the fetchData function
+    fetchData()
+  }, [])
+
   return (
     <>
       <div className='relative flex flex-col col-span-1 bg-[#ffffff] p-4 rounded-xl shadow-lg'>

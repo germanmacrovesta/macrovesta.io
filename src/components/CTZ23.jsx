@@ -61,6 +61,7 @@ const CTZ23 = ({ formatter, commentsData, session, contractData }) => {
                         className='max-w-xs absolute right-10'
                         onChange={(e) => setContractParameter(e.target.value)}
                         size='sm'
+                        defaultSelectedKeys={['close']}
                       >
                         {dropdownOptions.map((option) => (
                           <SelectItem key={option.parameter} value={option.parameter}>

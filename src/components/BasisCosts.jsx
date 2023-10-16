@@ -1,14 +1,118 @@
-import React from 'react'
+import { useState } from 'react'
 import InfoButton from './infoButton'
 import GroupedBarChart from './groupedBarChart'
-import { basisBarChartData } from '~/utils/calculateUtils'
+import { basisBarChartData, transformData } from '~/utils/calculateUtils'
 import LineGraph from './lineGraph'
 import SingleSelectDropdown from './singleSelectDropdown'
 import FormSubmit from './formSubmit'
 import Comments from './comments'
 
-const BasisCosts = ({ selectedCostType, setSelectedCostType, session, setOpenBasisCostForm, transformData, basisData, basisCountry, openBasisCostForm, setSelectedCountry, setSelectedFormCostType, handleBasisFormSubmit, error_Message, warning_Message, submitted, submitting, warningSubmit, setBasisCountry, commentsData }) => {
+const BasisCosts = ({ session, basisData, commentsData }) => {
+  const [selectedCostType, setSelectedCostType] = useState('FOB')
+  const [selectedCountry, setSelectedCountry] = useState(undefined)
+  const [selectedFormCostType, setSelectedFormCostType] = useState(undefined)
+  const [basisCountry, setBasisCountry] = useState('Brazil')
+  const [openBasisCostForm, setOpenBasisCostForm] = useState(false)
 
+  const [error_Message, setError_Message] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [warning_Message, setWarning_Message] = useState('')
+  const [warningSubmit, setWarningSubmit] = useState(false)
+
+  const handleBasisFormSubmit = async (e) => {
+    // Stop the form from submitting and refreshing the page.
+    e.preventDefault()
+    setSubmitting(true)
+
+    let country = ''
+    let cost_type = ''
+    const contractOneBasis = e.target.ctz23.value
+    const contractTwoBasis = e.target.ctz24.value
+    let errorMessage = ''
+    const warningMessage = ''
+
+    if (selectedCountry != null && selectedCountry != 'Select Country') {
+      country = selectedCountry
+    } else {
+      errorMessage += 'Please select a Country. '
+    }
+
+    if (selectedFormCostType != null && selectedFormCostType != 'Select cost type') {
+      cost_type = selectedFormCostType
+    } else {
+      errorMessage += 'Please select a cost type. '
+    }
+
+    if (contractOneBasis == null || contractOneBasis == '') {
+      errorMessage += 'Please enter Estimate for CTZ23. '
+    }
+    if (contractTwoBasis == null || contractTwoBasis == '') {
+      errorMessage += 'Please enter Estimate for CTZ24. '
+    }
+
+    if (warningMessage !== '') {
+      setWarning_Message(warningMessage)
+      // throw new Error(errorMessage)
+    } else {
+      if (warning_Message != '') {
+        setWarning_Message('')
+      }
+    }
+
+    if (errorMessage != '') {
+      setError_Message(errorMessage)
+      setWarningSubmit(false)
+      setSubmitting(false)
+    } else {
+      if (error_Message != '') {
+        setError_Message('')
+      }
+
+      if (warningSubmit == false && warningMessage != '') {
+        setWarningSubmit(true)
+        setSubmitting(false)
+      } else {
+        // Get data from the form.
+        const data = {
+          country,
+          contractOneBasis,
+          contractTwoBasis,
+          user: session?.user?.name,
+          cost_type
+        }
+
+        console.log(data)
+
+        // Send the data to the server in JSON format.
+        const JSONdata = JSON.stringify(data)
+
+        // API endpoint where we send form data.
+        const endpoint = '/api/add-basis-cost-estimate'
+
+        // Form the request for sending data to the server.
+        const options = {
+          // The method is POST because we are sending data.
+          method: 'POST',
+          // Tell the server we're sending JSON.
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          // Body of the request is the JSON data we created above.
+          body: JSONdata
+        }
+
+        // Send the form data to our forms API on Vercel and get a response.
+        const response = await fetch(endpoint, options)
+
+        // Get the response data from server as JSON.
+        // If server returns the name submitted, that means the form works.
+        const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) })
+        // setSubmitted(true); setSubmitting(false)
+        // console.log(result);
+      }
+    }
+  }
   return (
     <div className='grid grid-cols-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8  '>
       <div className='col-span-2 flex pl-12 items-center justify-left gap-2 w-full'>

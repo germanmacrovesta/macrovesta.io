@@ -47,7 +47,7 @@ export default function DateField ({ setDate, date, label, formatter, yearOption
               {date && (
                 <>
                   {/* {formatter.format(date.toDate(getLocalTimeZone()))} */}
-                  {/* {JSON.stringify(new Date(Date.UTC(2023, 3, 25, 12, 0, 0)))} */}
+                  {JSON.stringify(new Date(Date.UTC(2023, 3, 25, 12, 0, 0)))}
                   {/* {getLocalTimeZone()} */}
                   {/* {JSON.stringify(date.toDate("Europe/London"))} */}
                   {/* {JSON.stringify(new Date())} */}

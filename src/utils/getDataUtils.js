@@ -192,3 +192,13 @@ export function getStudyData (s1, s2, s3) {
   }
   return array
 }
+export function getUniqueOptions (data, property) {
+  const uniqueValues = data.reduce((acc, obj) => {
+    return acc.includes(obj[property]) ? acc : [...acc, obj[property]]
+  }, [])
+  const options = []
+  uniqueValues.forEach((value) => {
+    options.push({ value: String(value) })
+  })
+  return options.sort((a, b) => a.value - b.value)
+}
