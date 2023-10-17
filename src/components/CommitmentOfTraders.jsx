@@ -3,10 +3,10 @@ import InfoButton from './infoButton'
 import SingleSelectDropdown from './singleSelectDropdown'
 import MultipleSelectDropdown from './multipleSelectDropdown'
 import LineGraphNotTime from './lineGraphNotTime'
-import { getCommitmentOfTradersWeekData, getCommitmentOfTradersSeasonData } from '~/utils/getDataUtils'
+import { getCommitmentOfTradersWeekData, getCommitmentOfTradersSeasonData, getUniqueOptions } from '~/utils/getDataUtils'
 import Comments from './comments'
 
-const CommitmentOfTraders = ({ getUniqueOptions, commitmentData, commentsData, session }) => {
+const CommitmentOfTraders = ({ commitmentData, commentsData, session }) => {
   const [commitmentWeek, setCommitmentWeek] = useState(1)
   const [commitmentYear, setCommitmentYear] = useState(2023)
   const [commitmentWeekOrYear, setCommitmentWeekOrYear] = useState('Year')

@@ -1,6 +1,5 @@
 import { type NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import { prisma } from '../server/db'
 import Sidebar from '../components/sidebar'
 import Breadcrumbs from '../components/breadcrumbs'
@@ -8,46 +7,23 @@ import TabMenu from '../components/tabmenu'
 import { useRouter } from 'next/router'
 import { TabMenuArray } from '../components/tabMenuArray'
 import React from 'react'
-import SingleSelectDropdown from '../components/singleSelectDropdown'
 import { TVChartContainer } from '../components/TVChartContainer'
 import type {
   ChartingLibraryWidgetOptions,
   ResolutionString
 } from '../../public/static/charting_library/charting_library'
 import GroupedBarChart from '../components/groupedBarChart'
-import LineGraph from '../components/lineGraph'
-import LineGraphNotTime from '../components/lineGraphNotTime'
 import FormSubmit from '../components/formSubmit'
 import ReactMarkdown from 'react-markdown'
 import { render } from 'react-dom'
 import BullishBearishDonut from '../components/bullishBearishDonut'
 import { useSession, getSession } from 'next-auth/react'
-import Comments from '../components/comments'
-import IndexDial from '../components/indexDial'
-import SemiCircleDial from '../components/semiCircleDial'
-import MultipleSelectDropdown from '../components/multipleSelectDropdown'
-import DateField from '../components/dateField'
 import { useDateFormatter, useLocale } from 'react-aria'
-
 import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
 import useWeglotLang from '../components/useWeglotLang'
-import InfoButton from '../components/infoButton'
 import MonthlyIndex from '~/components/MonthlyIndex'
-import {
-  getCottonOnCallWeekData,
-  getCottonOnCallSeasonData,
-  getCommitmentOfTradersWeekData,
-  getCommitmentOfTradersSeasonData,
-  getSupplyAndDemandData,
-  getUSExportSalesData,
-  getUSExportSalesWeekData,
-  getUSExportSalesSeasonData,
-  getSeasonData,
-  getStudyData,
-  getUniqueOptions
-} from '../utils/getDataUtils'
-import { calculateSpread, transformData, basisBarChartData, averageFutureContract, averageMarketSentiment, groupAndStringifyContracts, formatAndStringifyBasisData, transformSurveyData } from '../utils/calculateUtils'
-import { getCurrentMonth, parseDateString, getWeekNumber, addFullYear, getWeek, oneWeekAgo } from '../utils/dateUtils'
+import { groupAndStringifyContracts, formatAndStringifyBasisData } from '../utils/calculateUtils'
+import { getCurrentMonth, oneWeekAgo } from '../utils/dateUtils'
 import SeasonalIndex from '~/components/SeasonalIndex'
 import LatestMarketReport from '~/components/LatestMarketReport'
 import CTZ23 from '~/components/CTZ23'
@@ -61,66 +37,87 @@ import InCountryNews from '~/components/InCountryNews'
 import CottonOnCall from '~/components/CottonOnCall'
 import CommitmentOfTraders from '~/components/CommitmentOfTraders'
 import SupplyAndDemmand from '~/components/SupplyAndDemmand'
+import FutureContractsStudy from '~/components/FutureContractsStudy'
+import V4 from '~/components/V4'
+import LearnMore from '~/components/LearnMore'
 
-const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
-  symbol: 'AAPL',
-  interval: '1D' as ResolutionString,
-  library_path: '/static/charting_library/',
-  locale: 'en',
-  charts_storage_url: 'https://saveload.tradingview.com',
-  charts_storage_api_version: '1.1',
-  client_id: 'tradingview.com',
-  user_id: 'public_user_id',
-  fullscreen: false,
-  autosize: true
-}
+// const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
+//   symbol: 'AAPL',
+//   interval: '1D' as ResolutionString,
+//   library_path: '/static/charting_library/',
+//   locale: 'en',
+//   charts_storage_url: 'https://saveload.tradingview.com',
+//   charts_storage_api_version: '1.1',
+//   client_id: 'tradingview.com',
+//   user_id: 'public_user_id',
+//   fullscreen: false,
+//   autosize: true
+// }
 
-const selectAppropriateImage = (inv, value) => {
-  let imagesrc = ''
-  if (inv == 'Y') {
-    if (value < 15) {
-      imagesrc = '/Index_Neutral.jpg'
-    } else if (value < 50) {
-      imagesrc = '/Index_Inverse_Likely.jpg'
-    } else {
-      imagesrc = '/Index_Inverse_High.jpg'
-    }
-  } else {
-    if (value < 15) {
-      imagesrc = '/Index_Neutral.jpg'
-    } else if (value < 50) {
-      imagesrc = '/Index_Non_Likely.jpg'
-    } else {
-      imagesrc = '/Index_Non_High.jpg'
-    }
-  }
-  return (
-    <img className="w-[400px]" src={imagesrc} />
-  )
-}
+// const selectAppropriateImage = (inv, value) => {
+//   let imagesrc = ''
+//   if (inv === 'Y') {
+//     if (value < 15) {
+//       imagesrc = '/Index_Neutral.jpg'
+//     } else if (value < 50) {
+//       imagesrc = '/Index_Inverse_Likely.jpg'
+//     } else {
+//       imagesrc = '/Index_Inverse_High.jpg'
+//     }
+//   } else {
+//     if (value < 15) {
+//       imagesrc = '/Index_Neutral.jpg'
+//     } else if (value < 50) {
+//       imagesrc = '/Index_Non_Likely.jpg'
+//     } else {
+//       imagesrc = '/Index_Non_High.jpg'
+//     }
+//   }
+//   return (
+//     <img className="w-[400px]" src={imagesrc} />
+//   )
+// }
 
-const renderers = {
-  h1: ({ node, ...props }) => <h1 {...props} />,
-  h2: ({ node, ...props }) => <h2 {...props} />,
-  h3: ({ node, ...props }) => <h3 {...props} />,
-  h4: ({ node, ...props }) => <h4 {...props} />,
-  h5: ({ node, ...props }) => <h5 {...props} />,
-  h6: ({ node, ...props }) => <h6 {...props} />
-}
+// const renderers = {
+//   h1: ({ node, ...props }) => <h1 {...props} />,
+//   h2: ({ node, ...props }) => <h2 {...props} />,
+//   h3: ({ node, ...props }) => <h3 {...props} />,
+//   h4: ({ node, ...props }) => <h4 {...props} />,
+//   h5: ({ node, ...props }) => <h5 {...props} />,
+//   h6: ({ node, ...props }) => <h6 {...props} />
+// }
+
 // TODO: Use <Image></Image> from next instead <img> - Better performance.
+// TODO: The data that will arrive at the Home page from the server needs to be typed here.Type it when we are sure of the final form in which the data will arrive.
 
-const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, contractData, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }) => {
+interface HomeProps {
+  monthlyIndexData: unknown;
+  seasonalIndexData: unknown;
+  snapshotsData: unknown;
+  countryNewsData: unknown;
+  seasonsData: unknown;
+  basisData: unknown;
+  initialSentimentData: unknown;
+  contractData: unknown;
+  futureContractsStudyData: unknown;
+  commentsData: unknown;
+  commitmentData: unknown;
+  supplyAndDemandData: unknown;
+  cottonReportURLData: unknown;
+  conclusionData: unknown;
+}
+
+const Home: NextPage<HomeProps> = ({ monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, contractData, futureContractsStudyData, commentsData, commitmentData, supplyAndDemandData, cottonReportURLData, conclusionData }) => {
   const router = useRouter()
   const url = router.pathname
 
   const currentLang = useWeglotLang()
 
   const { data: session } = useSession()
-  console.log('session', session)
-  console.log('session.submittedSurvey', session?.submittedSurvey)
 
   const baseUrlArray = url.split('/')
   const urlArray: any = []
+
   baseUrlArray.forEach((urlCrumb) => {
     if (urlCrumb.startsWith('[')) {
       urlArray.push(router.query[`${urlCrumb.slice(1, -1)}`])
@@ -128,8 +125,10 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       urlArray.push(urlCrumb)
     }
   })
+
   let root = ''
   let urlPath = ''
+
   const splitUrl = (urlcrumbs: any, number: any) => {
     for (let i = 1; i < urlcrumbs.length; i++) {
       if (i < number) {
@@ -141,91 +140,67 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       }
     }
   }
+
   splitUrl(urlArray, 1)
 
-  const [degrees, setDegrees] = React.useState(90)
+  // const [degrees, setDegrees] = React.useState(90)
 
-  const [season1, setSeason1] = React.useState('')
-  const [season2, setSeason2] = React.useState('')
-  const [season3, setSeason3] = React.useState('')
+  // React.useEffect(() => {
+  //   setDegrees(90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month === 'Y' ? 1 : -1))
+  // }, [monthlyIndexData])
 
-  const [contract1, setContract1] = React.useState('')
-  const [contract2, setContract2] = React.useState('')
-  const [contract3, setContract3] = React.useState('')
+  // const data = [
+  //   { country: 'Brazil', CTZ23: 10, CTZ24: 20 },
+  //   { country: 'USA', CTZ23: 30, CTZ24: 40 },
+  //   { country: 'WAF', CTZ23: 20, CTZ24: 40 },
+  //   { country: 'Australia', CTZ23: 30, CTZ24: 50 }
+  //   // ...
+  // ]
 
-  React.useEffect(() => {
-    setSeason1(JSON.parse(seasonsData)[2]?.season ?? '')
-    setSeason2(JSON.parse(seasonsData)[1]?.season ?? '')
-    setSeason3(JSON.parse(seasonsData)[0]?.season ?? '')
-    // setContract1(JSON.parse(seasonsData)[2]?.season ?? '')
-    // setContract2(JSON.parse(seasonsData)[1]?.season ?? '')
-    // setContract3(JSON.parse(seasonsData)[0]?.season ?? '')
-  }, [seasonsData])
+  // const linedata = [
+  //   {
+  //     name: 'Series 1',
+  //     data: [
+  //       { time: '2023-01-01T00:00:00Z', value: 12 },
+  //       { time: '2023-01-08T00:00:00Z', value: 12 },
+  //       { time: '2023-02-01T00:00:00Z', value: 22 },
+  //       { time: '2023-02-08T00:00:00Z', value: 22 },
+  //       { time: '2023-03-01T00:00:00Z', value: 21 },
+  //       { time: '2023-04-01T00:00:00Z', value: 23 },
+  //       { time: '2025-01-01T00:00:00Z', value: 26 }
+  //       // more data...
+  //     ]
+  //   },
+  //   {
+  //     name: 'Series 2',
+  //     data: [
+  //       { time: '2023-01-01T00:00:00Z', value: 15 },
+  //       { time: '2023-01-08T00:00:00Z', value: 15 },
+  //       { time: '2023-02-01T00:00:00Z', value: 18 },
+  //       { time: '2023-02-08T00:00:00Z', value: 18 },
+  //       { time: '2023-03-01T00:00:00Z', value: 11 },
+  //       { time: '2023-04-01T00:00:00Z', value: 13 },
+  //       { time: '2025-01-01T00:00:00Z', value: 16 }
+  //       // more data...
+  //     ]
+  //   }
+  //   // more series...
+  // ]
 
-  React.useEffect(() => {
-    setContract1(JSON.parse(futureContractsStudyData)[2]?.year ?? '')
-    setContract2(JSON.parse(futureContractsStudyData)[1]?.year ?? '')
-    setContract3(JSON.parse(futureContractsStudyData)[0]?.year ?? '')
-  }, [futureContractsStudyData])
+  // const [bullishBearish, setBullishBearish] = React.useState(undefined)
 
-  React.useEffect(() => {
-    setDegrees(90 - (parseFloat(JSON.parse(monthlyIndexData).probability_rate) / 100 * 90) * (JSON.parse(monthlyIndexData).inverse_month == 'Y' ? 1 : -1))
-  }, [monthlyIndexData])
+  // interface CountryData {
+  //   country: string;
+  //   CTZ23: number;
+  //   CTZ24: number;
+  // }
 
-  const data = [
-    { country: 'Brazil', CTZ23: 10, CTZ24: 20 },
-    { country: 'USA', CTZ23: 30, CTZ24: 40 },
-    { country: 'WAF', CTZ23: 20, CTZ24: 40 },
-    { country: 'Australia', CTZ23: 30, CTZ24: 50 }
-    // ...
-  ]
-
-  const linedata = [
-    {
-      name: 'Series 1',
-      data: [
-        { time: '2023-01-01T00:00:00Z', value: 12 },
-        { time: '2023-01-08T00:00:00Z', value: 12 },
-        { time: '2023-02-01T00:00:00Z', value: 22 },
-        { time: '2023-02-08T00:00:00Z', value: 22 },
-        { time: '2023-03-01T00:00:00Z', value: 21 },
-        { time: '2023-04-01T00:00:00Z', value: 23 },
-        { time: '2025-01-01T00:00:00Z', value: 26 }
-        // more data...
-      ]
-    },
-    {
-      name: 'Series 2',
-      data: [
-        { time: '2023-01-01T00:00:00Z', value: 15 },
-        { time: '2023-01-08T00:00:00Z', value: 15 },
-        { time: '2023-02-01T00:00:00Z', value: 18 },
-        { time: '2023-02-08T00:00:00Z', value: 18 },
-        { time: '2023-03-01T00:00:00Z', value: 11 },
-        { time: '2023-04-01T00:00:00Z', value: 13 },
-        { time: '2025-01-01T00:00:00Z', value: 16 }
-        // more data...
-      ]
-    }
-    // more series...
-  ]
-
-  const [openSnapshotForm, setOpenSnapshotForm] = React.useState(false)
-
-  const [bullishBearish, setBullishBearish] = React.useState(undefined)
-
-  interface CountryData {
-    country: string;
-    CTZ23: number;
-    CTZ24: number;
-  }
-
-  type formattedBasis = {
-    country: string;
-    date_of_basis_report: string;
-    CTZ23: number;
-    CTZ24: number;
-  }[]
+  // type formattedBasis = {
+  //   country: string;
+  //   date_of_basis_report: string;
+  //   CTZ23: number;
+  //   CTZ24: number;
+  // }[]
 
   // function transformData(input) {
   //   // Create a container for the new data structure
@@ -424,40 +399,25 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   //   return [producer_merchant_net, open_interest_all, swap_position_net, managed_money_net, other_reportables_net, total_reportables_net, non_reportables_net, specs_net]
   // }
 
-  console.log('Basis Data', JSON.parse(basisData).filter((basis) => basis.country == 'Brazil'))
-  console.log('Line Data', transformData(JSON.parse(basisData).filter((basis) => basis.country == 'Brazil')))
-  console.log('basis', JSON.parse(basisData))
+  // const [salesWeekOrYear, setSalesWeekOrYear] = React.useState('Week')
+  // const [salesYear, setSalesYear] = React.useState('0102')
+  // const [salesWeek, setSalesWeek] = React.useState(1)
 
-  const [salesWeekOrYear, setSalesWeekOrYear] = React.useState('Week')
-  const [salesYear, setSalesYear] = React.useState('0102')
-  const [salesWeek, setSalesWeek] = React.useState(1)
+  // const [purchasesWeekOrYear, setPurchasesWeekOrYear] = React.useState('Week')
+  // const [purchasesYear, setPurchasesYear] = React.useState('0102')
+  // const [purchasesWeek, setPurchasesWeek] = React.useState(1)
 
-  const [purchasesWeekOrYear, setPurchasesWeekOrYear] = React.useState('Week')
-  const [purchasesYear, setPurchasesYear] = React.useState('0102')
-  const [purchasesWeek, setPurchasesWeek] = React.useState(1)
+  // const [totalOnCallWeekOrYear, setTotalOnCallWeekOrYear] = React.useState('Week')
+  // const [totalOnCallYear, setTotalOnCallYear] = React.useState('0102')
+  // const [totalOnCallWeek, setTotalOnCallWeek] = React.useState(1)
 
-  const [totalOnCallWeekOrYear, setTotalOnCallWeekOrYear] = React.useState('Week')
-  const [totalOnCallYear, setTotalOnCallYear] = React.useState('0102')
-  const [totalOnCallWeek, setTotalOnCallWeek] = React.useState(1)
+  // const [UOCWeekOrYear, setUOCWeekOrYear] = React.useState('Week')
+  // const [UOCYear, setUOCYear] = React.useState('0102')
+  // const [UOCWeek, setUOCWeek] = React.useState(1)
 
-  const [UOCWeekOrYear, setUOCWeekOrYear] = React.useState('Week')
-  const [UOCYear, setUOCYear] = React.useState('0102')
-  const [UOCWeek, setUOCWeek] = React.useState(1)
-
-  const [exportSalesWeekOrYear, setExportSalesWeekOrYear] = React.useState('Week')
-  const [exportSalesYear, setExportSalesYear] = React.useState(2010)
-  const [exportSalesWeek, setExportSalesWeek] = React.useState(1)
-
-  const locale = useLocale()
-
-  const options = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }
-
-  const formatter = new Intl.DateTimeFormat(locale, options)
+  // const [exportSalesWeekOrYear, setExportSalesWeekOrYear] = React.useState('Week')
+  // const [exportSalesYear, setExportSalesYear] = React.useState(2010)
+  // const [exportSalesWeek, setExportSalesWeek] = React.useState(1)
 
   // const [selectedSupplyAndDemandStartDate, setSelectedSupplyAndDemandStartDate] = React.useState(parseDate(dateSixMonthsAgo));
   // const [selectedSupplyAndDemandEndDate, setSelectedSupplyAndDemandEndDate] = React.useState(parseDate(today));
@@ -465,36 +425,21 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   // const [commitmentPropertiesArray, setCommitmentPropertiesArray] = React.useState(["open_interest_all", "producer_merchant_net", "swap_position_net", "managed_money_net", "other_reportables_net", "total_reportables_net", "non_reportables_net", "specs_net"])
   // const [commitmentNamesArray, setCommitmentNamesArray] = React.useState(["Open Interest All", "Producer Merchant Net", "Swap Position Net", "Managed Money Net", "Other Reportables Net", "Total Reportables Net", "Non Reportables Net", "Specs Net"])
 
-  const [currentStage, setCurrentStage] = React.useState(0)
+  // const markdown = `# Ira media medius induit deum
 
-  const goNext = () => {
-    if (currentStage < stages.length - 1) {
-      setCurrentStage(currentStage + 1)
-    }
-  }
+  // ## Exaudire enim ad sit
 
-  const goPrevious = () => {
-    if (currentStage > 0) {
-      setCurrentStage(currentStage - 1)
-    }
-  }
+  // Lorem markdownum colores, se gravatum flet vulnera: dum in, onusque parvumque geminata quoque. Expositum valentes nobis capax opes rapidas quas. Iudicis miserande prius ea iubet cupidine? Inde sua amo latis amantis: Hiberis sinus fervet fecit ex ullis circumfluit furor turbida, mox inque, infera? Nec lumina maneret: patrios etiamnum modum et modo generum quamvis in verbis, si, hic rerum.
 
-  const stages = [1, 2]
+  // > Inhibente proceresque morata paelice, precor veri; umeris Tereu sic constitit in harenosae ut diva est, hoc. Cruore cremat, quam cornua verba. In forte defluit valuisse gaudens faciem: luctisono et vulnere, tuo ordine navigii. Agenore fuso sidera; sacra exit: est modo, ibi saxa aetate domitis enim.
 
-  const markdown = `# Ira media medius induit deum
+  // ## Protinus clara
 
-  ## Exaudire enim ad sit
-  
-  Lorem markdownum colores, se gravatum flet vulnera: dum in, onusque parvumque geminata quoque. Expositum valentes nobis capax opes rapidas quas. Iudicis miserande prius ea iubet cupidine? Inde sua amo latis amantis: Hiberis sinus fervet fecit ex ullis circumfluit furor turbida, mox inque, infera? Nec lumina maneret: patrios etiamnum modum et modo generum quamvis in verbis, si, hic rerum.
-  
-  > Inhibente proceresque morata paelice, precor veri; umeris Tereu sic constitit in harenosae ut diva est, hoc. Cruore cremat, quam cornua verba. In forte defluit valuisse gaudens faciem: luctisono et vulnere, tuo ordine navigii. Agenore fuso sidera; sacra exit: est modo, ibi saxa aetate domitis enim.
-  
-  ## Protinus clara
-  
-  Rhoetus arcusque; in coma nosti fratrem ipse abstulerat fassurae satyri: nil dextra corripitur saetae, expositum sententia scelus. Latentia sua progenuit nam enim lyramque amori post, Ilithyiam datis per vestris ferrugine quorum, admirantibus. Novos iter ut: ego omnes, campis memini.
-  
-  `
+  // Rhoetus arcusque; in coma nosti fratrem ipse abstulerat fassurae satyri: nil dextra corripitur saetae, expositum sententia scelus. Latentia sua progenuit nam enim lyramque amori post, Ilithyiam datis per vestris ferrugine quorum, admirantibus. Novos iter ut: ego omnes, campis memini.
 
+  // `
+
+  // Weglot Initialize
   React.useEffect(() => {
     const script = document.createElement('script')
     script.src = 'https://cdn.weglot.com/weglot.min.js'
@@ -512,37 +457,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
       document.body.removeChild(script)
     }
   }, [])
-
-  const [clientCottonContractsData, setClientCottonContractsData] = React.useState({ ctz23: [], cth24: [], ctk24: [], ctn24: [], ctz24: [] })
-
-  const [clientCottonOnCallData, setClientCottonOnCallData] = React.useState([])
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Make the API call using the fetch method
-        const response = await fetch('/api/get-cotton-on-call-data')
-
-        // Check if the request was successful
-        if (response.ok) {
-          // Parse the JSON data from the response
-          const result = await response.json()
-
-          // Update the state with the fetched data
-          setClientCottonOnCallData(result)
-        } else {
-          console.error(`API request failed with status ${response.status}`)
-        }
-      } catch (error) {
-        console.error(`An error occurred while fetching data: ${error}`)
-      }
-    }
-
-    // Call the fetchData function
-    fetchData()
-  }, [])
-
-  const [countryNewsFormCountry, setCountryNewsFormCountry] = React.useState('')
 
   return (
     <>
@@ -600,14 +514,12 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
             <CTZ23
               session={session}
-              formatter={formatter}
               contractData={contractData}
               commentsData={commentsData}
             />
 
             <DomesticPrices
               session={session}
-              formatter={formatter}
               commentsData={commentsData}
             />
 
@@ -616,27 +528,18 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
             </div> */}
 
             <WeeklySentimentSurvey
-              setCurrentStage={setCurrentStage}
               session={session}
-              currentStage={currentStage}
-              goPrevious={goPrevious}
-              goNext={goNext}
-              stages={stages}
               sentimentData={JSON.parse(initialSentimentData)}
             />
 
             <RecentEvents
-              snapshotsData={snapshotsData}
               session={session}
-              openSnapshotForm={openSnapshotForm}
-              setOpenSnapshotForm={setOpenSnapshotForm}
+              snapshotsData={snapshotsData}
             />
 
             <FutureConsiderations
               snapshotsData={snapshotsData}
               session={session}
-              openSnapshotForm={openSnapshotForm}
-              setOpenSnapshotForm={setOpenSnapshotForm}
             />
 
             <BasisCosts
@@ -647,21 +550,17 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
             <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-8">
               <USExportSales
-                formatter={formatter}
                 commentsData={commentsData}
                 session={session}
               />
 
               <InCountryNews
-                setCountryNewsFormCountry={setCountryNewsFormCountry}
                 session={session}
                 countryNewsData={countryNewsData}
               />
             </div>
 
             <CottonOnCall
-              getUniqueOptions={getUniqueOptions}
-              clientCottonOnCallData={clientCottonOnCallData}
               commentsData={commentsData}
               session={session}
             />
@@ -677,237 +576,25 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
 
             <CommitmentOfTraders
               commitmentData={commitmentData}
-              getUniqueOptions={getUniqueOptions}
               commentsData={commentsData}
               session={session}
             />
 
             <SupplyAndDemmand
               supplyAndDemandData={supplyAndDemandData}
-              getUniqueOptions={getUniqueOptions}
               commentsData={commentsData}
               session={session}
             />
 
-            <div className="flex flex-col bg-[#ffffff] items-center p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
-              <div className="relative w-full text-center text-xl font-semibold mt-4">
-                <InfoButton text={'A historical look into the December futures contract. '} />
-                Future Contracts Study
-              </div>
-              {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
-              <LineGraphNotTime verticalTooltip={false} xDomain1={0} xDomain2={12} data={(contract1 && contract2 && contract3) ? getStudyData(JSON.parse(futureContractsStudyData).find((contract) => contract.year === contract1), JSON.parse(futureContractsStudyData).find((contract) => contract.year == contract2), JSON.parse(futureContractsStudyData).find((contract) => contract.year === contract3)) : []} graphWidth={1000} graphHeight={600} />
-              sS</div>
-            <div className="text-center text-2xl mt-4">Please Select the Seasons you want to compare</div>
-            <div className="grid grid-cols-3 justify-center gap-8 mx-8 mt-4 text-xl">
-              <div className="flex flex-col">
-                <SingleSelectDropdown
-                  options={JSON.parse(futureContractsStudyData)}
-                  label="Contract"
-                  variable="year"
-                  onSelectionChange={(e) => setContract1(e.year)}
-                  placeholder="Select Contract"
-                  searchPlaceholder="Search Contracts"
-                  includeLabel={false}
-                  defaultValue={contract1}
-                />
-                {/* <div className="text-center mt-4 mb-2 font-semibold">Season 1</div> */}
-                {/* <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
-                  <div>Low Price: {JSON.parse(seasonsData).find((season) => season.season == season1)?.low_price}</div>
-                  <div>High Price: {JSON.parse(seasonsData).find((season) => season.season == season1)?.high_price}</div>
-                  <div>Date of Low: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season1)?.date_of_low)}</div>
-                  <div>Date of High: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season1)?.date_of_high)}</div>
-                  <div>Month of Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.month_of_low}</div>
-                  <div>Month of High: {JSON.parse(seasonsData).find((season) => season.season == season1)?.month_of_high}</div>
-                  <div>Week of Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.calendar_week_of_low}</div>
-                  <div>Week of High: {JSON.parse(seasonsData).find((season) => season.season == season1)?.calendar_week_of_high}</div>
-                  <div>Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.range_between_high_low}</div>
-                  <div>Rank of Price Range: {JSON.parse(seasonsData).find((season) => season.season == season1)?.rank_of_price_range}</div>
-                  <div>Percentage Rate to Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.percentage_rate_to_low}</div>
-                  <div>Day Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.day_range_between_high_low}</div>
-                  <div>Rank between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.rank_between_high_low}</div>
-                  <div>Inverse Season: {JSON.parse(seasonsData).find((season) => season.season == season1)?.inverse_season}</div>
-                </div> */}
-              </div>
-              <div className="flex flex-col">
-                <SingleSelectDropdown
-                  options={JSON.parse(futureContractsStudyData)}
-                  label="Season"
-                  variable="year"
-                  colour="bg-deep_blue"
-                  onSelectionChange={(e) => setContract2(e.year)}
-                  placeholder="Select Season"
-                  searchPlaceholder="Search Contracts"
-                  includeLabel={false}
-                  defaultValue={contract2}
-                />
-                {/* <div className="text-center mt-4 mb-2 font-semibold">Season 2</div> */}
-                {/* <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
-                  <div>Low Price: {JSON.parse(seasonsData).find((season) => season.season == season2)?.low_price}</div>
-                  <div>High Price: {JSON.parse(seasonsData).find((season) => season.season == season2)?.high_price}</div>
-                  <div>Date of Low: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season2)?.date_of_low)}</div>
-                  <div>Date of High: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season2)?.date_of_high)}</div>
-                  <div>Month of Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.month_of_low}</div>
-                  <div>Month of High: {JSON.parse(seasonsData).find((season) => season.season == season2)?.month_of_high}</div>
-                  <div>Week of Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.calendar_week_of_low}</div>
-                  <div>Week of High: {JSON.parse(seasonsData).find((season) => season.season == season2)?.calendar_week_of_high}</div>
-                  <div>Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.range_between_high_low}</div>
-                  <div>Rank of Price Range: {JSON.parse(seasonsData).find((season) => season.season == season2)?.rank_of_price_range}</div>
-                  <div>Percentage Rate to Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.percentage_rate_to_low}</div>
-                  <div>Day Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.day_range_between_high_low}</div>
-                  <div>Rank between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.rank_between_high_low}</div>
-                  <div>Inverse Season: {JSON.parse(seasonsData).find((season) => season.season == season2)?.inverse_season}</div>
-                </div> */}
-              </div>
-              <div className="flex flex-col">
-                <SingleSelectDropdown
-                  options={JSON.parse(futureContractsStudyData)}
-                  label="Contract"
-                  variable="year"
-                  colour="bg-turquoise"
-                  onSelectionChange={(e) => setContract3(e.year)}
-                  placeholder="Select Contract"
-                  searchPlaceholder="Search Contracts"
-                  includeLabel={false}
-                  defaultValue={contract3}
-                />
-                {/* <div className="text-center mt-4 mb-2 font-semibold">Season 3</div> */}
-                {/* <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
-                  <div>Low Price: {JSON.parse(seasonsData).find((season) => season.season == season3)?.low_price}</div>
-                  <div>High Price: {JSON.parse(seasonsData).find((season) => season.season == season3)?.high_price}</div>
-                  <div>Date of Low: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season3)?.date_of_low)}</div>
-                  <div>Date of High: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season3)?.date_of_high)}</div>
-                  <div>Month of Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.month_of_low}</div>
-                  <div>Month of High: {JSON.parse(seasonsData).find((season) => season.season == season3)?.month_of_high}</div>
-                  <div>Week of Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.calendar_week_of_low}</div>
-                  <div>Week of High: {JSON.parse(seasonsData).find((season) => season.season == season3)?.calendar_week_of_high}</div>
-                  <div>Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.range_between_high_low}</div>
-                  <div>Rank of Price Range: {JSON.parse(seasonsData).find((season) => season.season == season3)?.rank_of_price_range}</div>
-                  <div>Percentage Rate to Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.percentage_rate_to_low}</div>
-                  <div>Day Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.day_range_between_high_low}</div>
-                  <div>Rank between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.rank_between_high_low}</div>
-                  <div>Inverse Season: {JSON.parse(seasonsData).find((season) => season.season == season3)?.inverse_season}</div>
-                </div> */}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-x-8 m-8">
-              <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4">
-                <div>Average High (1970-2023): {(averageFutureContract(JSON.parse(futureContractsStudyData), 'high')).toFixed(2)}</div>
-                <div>Average Low (1970-2023): {(averageFutureContract(JSON.parse(futureContractsStudyData), 'low')).toFixed(2)}</div>
-                <div>Average Price Range (1970-2023): {(averageFutureContract(JSON.parse(futureContractsStudyData), 'price_range_between_high_and_low')).toFixed(2)}</div>
-                <div>Average High (2000-2023): {(averageFutureContract(JSON.parse(futureContractsStudyData), 'high')).toFixed(2)}</div>
-                <div>Average Low (2000-2023): {(averageFutureContract(JSON.parse(futureContractsStudyData), 'low')).toFixed(2)}</div>
-                <div>Average Price Range (2000-2023): {(averageFutureContract(JSON.parse(futureContractsStudyData), 'price_range_between_high_and_low')).toFixed(2)}</div>
-              </div>
-            </div>
-            <div className="flex flex-col items-center bg-[#ffffff] p-4 rounded-xl shadow-lg mx-8 mt-4 pb-12">
-              <div className="relative w-full text-center text-xl font-semibold mt-4">
-                <InfoButton text={'A historical look into different seasons where you can analyse them side-to-side. '} />
-                V4
-              </div>
-              {/* <img src="/Charts_Under_Construction_Wide.png" /> */}
-              <LineGraphNotTime verticalTooltip={false} data={(season1 && season2 && season3) ? getSeasonData(JSON.parse(seasonsData).find((season) => season.season == season1), JSON.parse(seasonsData).find((season) => season.season == season2), JSON.parse(seasonsData).find((season) => season.season == season3)) : []} graphWidth={1000} graphHeight={600} />
-            </div>
-            <div className="text-center text-2xl mt-4">Please Select the Seasons you want to compare</div>
-            <div className="grid grid-cols-3 justify-center gap-8 mx-8 mt-4 text-xl">
-              <div className="flex flex-col">
-                <SingleSelectDropdown
-                  options={JSON.parse(seasonsData)}
-                  label="Season"
-                  variable="season"
-                  onSelectionChange={(e) => setSeason1(e.season)}
-                  placeholder="Select Season"
-                  searchPlaceholder="Search Seasons"
-                  includeLabel={false}
-                  defaultValue={season1}
-                />
-                {/* <div className="text-center mt-4 mb-2 font-semibold">Season 1</div> */}
-                <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
-                  <div>Low Price: {JSON.parse(seasonsData).find((season) => season.season == season1)?.low_price}</div>
-                  <div>High Price: {JSON.parse(seasonsData).find((season) => season.season == season1)?.high_price}</div>
-                  <div>Date of Low: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season1)?.date_of_low)}</div>
-                  <div>Date of High: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season1)?.date_of_high)}</div>
-                  <div>Month of Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.month_of_low}</div>
-                  <div>Month of High: {JSON.parse(seasonsData).find((season) => season.season == season1)?.month_of_high}</div>
-                  <div>Week of Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.calendar_week_of_low}</div>
-                  <div>Week of High: {JSON.parse(seasonsData).find((season) => season.season == season1)?.calendar_week_of_high}</div>
-                  <div>Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.range_between_high_low}</div>
-                  <div>Rank of Price Range: {JSON.parse(seasonsData).find((season) => season.season == season1)?.rank_of_price_range}</div>
-                  <div>Percentage Rate to Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.percentage_rate_to_low}</div>
-                  <div>Day Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.day_range_between_high_low}</div>
-                  <div>Rank between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season1)?.rank_between_high_low}</div>
-                  <div>Inverse Season: {JSON.parse(seasonsData).find((season) => season.season == season1)?.inverse_season}</div>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <SingleSelectDropdown
-                  options={JSON.parse(seasonsData)}
-                  label="Season"
-                  variable="season"
-                  colour="bg-deep_blue"
-                  onSelectionChange={(e) => setSeason2(e.season)}
-                  placeholder="Select Season"
-                  searchPlaceholder="Search Seasons"
-                  includeLabel={false}
-                  defaultValue={season2}
-                />
-                {/* <div className="text-center mt-4 mb-2 font-semibold">Season 2</div> */}
-                <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
-                  <div>Low Price: {JSON.parse(seasonsData).find((season) => season.season == season2)?.low_price}</div>
-                  <div>High Price: {JSON.parse(seasonsData).find((season) => season.season == season2)?.high_price}</div>
-                  <div>Date of Low: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season2)?.date_of_low)}</div>
-                  <div>Date of High: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season2)?.date_of_high)}</div>
-                  <div>Month of Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.month_of_low}</div>
-                  <div>Month of High: {JSON.parse(seasonsData).find((season) => season.season == season2)?.month_of_high}</div>
-                  <div>Week of Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.calendar_week_of_low}</div>
-                  <div>Week of High: {JSON.parse(seasonsData).find((season) => season.season == season2)?.calendar_week_of_high}</div>
-                  <div>Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.range_between_high_low}</div>
-                  <div>Rank of Price Range: {JSON.parse(seasonsData).find((season) => season.season == season2)?.rank_of_price_range}</div>
-                  <div>Percentage Rate to Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.percentage_rate_to_low}</div>
-                  <div>Day Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.day_range_between_high_low}</div>
-                  <div>Rank between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season2)?.rank_between_high_low}</div>
-                  <div>Inverse Season: {JSON.parse(seasonsData).find((season) => season.season == season2)?.inverse_season}</div>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <SingleSelectDropdown
-                  options={JSON.parse(seasonsData)}
-                  label="Season"
-                  variable="season"
-                  colour="bg-turquoise"
-                  onSelectionChange={(e) => setSeason3(e.season)}
-                  placeholder="Select Season"
-                  searchPlaceholder="Search Seasons"
-                  includeLabel={false}
-                  defaultValue={season3}
-                />
-                {/* <div className="text-center mt-4 mb-2 font-semibold">Season 3</div> */}
-                <div className="flex flex-col gap-1 bg-[#ffffff] shadow-center-lg text-black rounded-xl px-8 py-4 mt-8">
-                  <div>Low Price: {JSON.parse(seasonsData).find((season) => season.season == season3)?.low_price}</div>
-                  <div>High Price: {JSON.parse(seasonsData).find((season) => season.season == season3)?.high_price}</div>
-                  <div>Date of Low: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season3)?.date_of_low)}</div>
-                  <div>Date of High: {parseDateString(JSON.parse(seasonsData).find((season) => season.season == season3)?.date_of_high)}</div>
-                  <div>Month of Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.month_of_low}</div>
-                  <div>Month of High: {JSON.parse(seasonsData).find((season) => season.season == season3)?.month_of_high}</div>
-                  <div>Week of Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.calendar_week_of_low}</div>
-                  <div>Week of High: {JSON.parse(seasonsData).find((season) => season.season == season3)?.calendar_week_of_high}</div>
-                  <div>Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.range_between_high_low}</div>
-                  <div>Rank of Price Range: {JSON.parse(seasonsData).find((season) => season.season == season3)?.rank_of_price_range}</div>
-                  <div>Percentage Rate to Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.percentage_rate_to_low}</div>
-                  <div>Day Range between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.day_range_between_high_low}</div>
-                  <div>Rank between High and Low: {JSON.parse(seasonsData).find((season) => season.season == season3)?.rank_between_high_low}</div>
-                  <div>Inverse Season: {JSON.parse(seasonsData).find((season) => season.season == season3)?.inverse_season}</div>
-                </div>
-              </div>
-            </div>
-            <div className="text-xl text-center mt-8">Learn More with Macrovesta</div>
-            <div className="grid grid-cols-1 xl:grid-cols-2 m-8 gap-24 text-lg">
-              <Link href={{ pathname: 'https://eapconsult.com/dashboard/' }} >
-                <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg text-center">Learning Dash</div>
-              </Link>
-              <Link href={{ pathname: 'https://eapconsult.com/market-reports-2/' }} >
-                <div className="flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg text-center">Market Reports</div>
-              </Link>
-            </div>
+            <FutureContractsStudy
+              futureContractsStudyData={futureContractsStudyData}
+            />
+
+            <V4
+              seasonsData={seasonsData}
+            />
+
+            <LearnMore />
           </div>
         </div>
       </main >
@@ -969,21 +656,21 @@ export const getServerSideProps = async (context: any) => {
   const commentsData = JSON.stringify(comments)
   // const onCall = await prisma?.cotton_on_call.findMany({})
   // const cottonOnCallData = JSON.stringify(onCall)
-  const cottonOnCallData = JSON.stringify({ variable: 'hello world' })
+  // const cottonOnCallData = JSON.stringify({ variable: 'hello world' })
   const commitmentData = JSON.stringify(commitment)
   // const exportdata = await prisma?.us_export_sales.findMany({})
   // const exportSalesData = JSON.stringify(exportdata)
-  const exportSalesData = JSON.stringify({ variable: 'hello world' })
+  // const exportSalesData = JSON.stringify({ variable: 'hello world' })
   const supplyAndDemandData = JSON.stringify(supplydemand)
   const cottonReportURLData = JSON.stringify(cottonreport)
   const conclusionData = JSON.stringify(conclusion)
   // const aIndex = await prisma?.a_index.findMany({})
   // const aIndexData = JSON.stringify(aIndex)
-  const aIndexData = JSON.stringify({ variable: 'hello world' })
+  // const aIndexData = JSON.stringify({ variable: 'hello world' })
   // console.log(monthlyIndexData)
 
   return {
-    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, contractData, futureContractsStudyData, commentsData, cottonOnCallData, commitmentData, exportSalesData, supplyAndDemandData, cottonReportURLData, conclusionData, aIndexData }
+    props: { monthlyIndexData, seasonalIndexData, snapshotsData, countryNewsData, seasonsData, basisData, initialSentimentData, contractData, futureContractsStudyData, commentsData, commitmentData, supplyAndDemandData, cottonReportURLData, conclusionData }
   }
 }
 

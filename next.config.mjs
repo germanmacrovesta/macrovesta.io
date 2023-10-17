@@ -14,7 +14,7 @@
 const config = {
   reactStrictMode: false,
   images: {
-    domains: ['assets.example.com', 'mcusercontent.com', 'localhost:3000']
+    domains: ['assets.example.com', 'mcusercontent.com', 'localhost:3000', 'www.investopedia.com', 'imgs.mongabay.com']
   },
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you

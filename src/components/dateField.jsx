@@ -3,7 +3,18 @@ import Calendar from '../components/calendar'
 import { parseDate, getLocalTimeZone, today, isWeekend } from '@internationalized/date'
 import { useDateFormatter, useLocale } from 'react-aria'
 import { Button } from '@nextui-org/react'
-export default function DateField ({ setDate, date, label, formatter, yearOptions = [-43, 1] }) {
+
+export default function DateField ({ setDate, date, label, yearOptions = [-43, 1] }) {
+  // Use default formatter in case that prop doesnt exist
+  const locale = useLocale()
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }
+  const formatter = new Intl.DateTimeFormat(locale, options)
+
   const [isOpen, setIsOpen] = useState(false)
   const [selected, setSelected] = useState(null)
 

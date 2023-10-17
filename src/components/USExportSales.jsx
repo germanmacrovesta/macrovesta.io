@@ -8,7 +8,7 @@ import { parseDate } from '@internationalized/date'
 import { getDateSixMothAgo, getTodayDate } from '~/utils/dateUtils'
 import { getUSExportSalesData } from '~/utils/getDataUtils'
 
-const USExportSales = ({ formatter, commentsData, session }) => {
+const USExportSales = ({ commentsData, session }) => {
   const [selectedStartDate, setSelectedStartDate] = useState(parseDate(getDateSixMothAgo()))
   const [selectedEndDate, setSelectedEndDate] = useState(parseDate(getTodayDate()))
   const [exportPropertiesArray, setExportPropertiesArray] = useState(['net_sales', 'next_marketing_year_net_sales'])
@@ -53,10 +53,10 @@ U.S Export Sales Report is released every Thursday and highlights data as of the
           </div>
           <div className='col-span-2 grid grid-cols-2 w-full gap-x-4 px-8'>
             <div className='mb-4 w-full'>
-              <DateField label='Start Date' setDate={setSelectedStartDate} date={selectedStartDate} formatter={formatter} />
+              <DateField label='Start Date' setDate={setSelectedStartDate} date={selectedStartDate} />
             </div>
             <div className='mb-4 w-full'>
-              <DateField label='Start Date' setDate={setSelectedEndDate} date={selectedEndDate} formatter={formatter} />
+              <DateField label='Start Date' setDate={setSelectedEndDate} date={selectedEndDate} />
             </div>
 
             {/* <div className="mb-4 w-full">

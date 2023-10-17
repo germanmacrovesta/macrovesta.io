@@ -7,7 +7,7 @@ import LineGraph from './lineGraph'
 import { transformSurveyData, averageMarketSentiment } from '~/utils/calculateUtils'
 import { oneWeekAgo } from '~/utils/dateUtils'
 
-const WeeklySentimentSurvey = ({ session, currentStage, sentimentData, goPrevious, goNext, stages, setCurrentStage }) => {
+const WeeklySentimentSurvey = ({ session, sentimentData }) => {
   const todaysDate = new Date()
 
   const [sentimentErrorMessage, setSentimentErrorMessage] = useState('')
@@ -15,7 +15,21 @@ const WeeklySentimentSurvey = ({ session, currentStage, sentimentData, goPreviou
   const [sentimentSubmitting, setSentimentSubmitting] = useState(false)
   const [sentimentWarningMessage, setSentimentWarningMessage] = useState('')
   const [sentimentWarningSubmit, setSentimentWarningSubmit] = useState(false)
+  const [currentStage, setCurrentStage] = useState(0)
 
+  const goNext = () => {
+    if (currentStage < stages.length - 1) {
+      setCurrentStage(currentStage + 1)
+    }
+  }
+
+  const goPrevious = () => {
+    if (currentStage > 0) {
+      setCurrentStage(currentStage - 1)
+    }
+  }
+
+  const stages = [1, 2]
   const handleSentimentFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
     e.preventDefault()

@@ -1,19 +1,47 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import InfoButton from './infoButton'
 import MultipleSelectDropdown from './multipleSelectDropdown'
 import SingleSelectDropdown from './singleSelectDropdown'
 import LineGraph from './lineGraph'
 import LineGraphNotTime from './lineGraphNotTime'
-import { getCottonOnCallSeasonData, getCottonOnCallWeekData } from '~/utils/getDataUtils'
+import { getCottonOnCallSeasonData, getCottonOnCallWeekData, getUniqueOptions } from '~/utils/getDataUtils'
 import Comments from './comments'
 
-const CottonOnCall = ({ getUniqueOptions, clientCottonOnCallData, commentsData, session }) => {
+const CottonOnCall = ({ commentsData, session }) => {
   const [Week, setWeek] = useState(1)
   const [Year, setYear] = useState('2324')
   const [WeekOrYear, setWeekOrYear] = useState('Year')
   const [cottonNamesArray, setCottonNamesArray] = useState(['October', 'December', 'March', 'May', 'July'])
   const [cottonSalesPropertiesArray, setCottonSalesPropertiesArray] = useState(['october_sales', 'december_sales', 'march_sales', 'may_sales', 'july_sales'])
   const [cottonPurchasesPropertiesArray, setCottonPurchasesPropertiesArray] = useState(['october_purchases', 'december_purchases', 'march_purchases', 'may_purchases', 'july_purchases'])
+
+  const [clientCottonOnCallData, setClientCottonOnCallData] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Make the API call using the fetch method
+        const response = await fetch('/api/get-cotton-on-call-data')
+
+        // Check if the request was successful
+        if (response.ok) {
+          // Parse the JSON data from the response
+          const result = await response.json()
+
+          // Update the state with the fetched data
+          setClientCottonOnCallData(result)
+        } else {
+          console.error(`API request failed with status ${response.status}`)
+        }
+      } catch (error) {
+        console.error(`An error occurred while fetching data: ${error}`)
+      }
+    }
+
+    // Call the fetchData function
+    fetchData()
+  }, [])
+
   return (
     <div className='flex flex-col col-span-2 bg-[#ffffff] p-4 rounded-xl shadow-lg m-8'>
 

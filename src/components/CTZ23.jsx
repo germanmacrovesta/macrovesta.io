@@ -8,7 +8,7 @@ import { parseDate } from '@internationalized/date'
 import { getTodayDate, getOneYearAgoDate } from '~/utils/dateUtils'
 import { calculateSpread } from '~/utils/calculateUtils'
 
-const CTZ23 = ({ formatter, commentsData, session, contractData }) => {
+const CTZ23 = ({ commentsData, session, contractData }) => {
   // TODO: Fetch data when button is clicked, only initial data is required for show initial component (+ performance)
   // TODO: Try to structure and parse data before component receive it. Component must receive data simple as posible.
   const [selectedCottonContractsStartDate, setSelectedCottonContractsStartDate] = useState(parseDate(getOneYearAgoDate()))
@@ -43,9 +43,9 @@ const CTZ23 = ({ formatter, commentsData, session, contractData }) => {
           <div className='flex flex-col flex-1 relative'>
 
             <div className='flex absolute items-center ml-10'>
-              <DateField yearOptions={[-2, 0]} label='Start Date' setDate={setSelectedCottonContractsStartDate} date={selectedCottonContractsStartDate} formatter={formatter} />
+              <DateField yearOptions={[-2, 0]} label='Start Date' setDate={setSelectedCottonContractsStartDate} date={selectedCottonContractsStartDate} />
               <p className='px-2'>to</p>
-              <DateField yearOptions={[-2, 0]} label='Start Date' setDate={setSelectedCottonContractsEndDate} date={selectedCottonContractsEndDate} formatter={formatter} />
+              <DateField yearOptions={[-2, 0]} label='Start Date' setDate={setSelectedCottonContractsEndDate} date={selectedCottonContractsEndDate} />
             </div>
 
             <Tabs aria-label='Dynamic tabs' items={tabs} classNames={{ base: 'absolute right-10', panel: 'mt-10' }}>

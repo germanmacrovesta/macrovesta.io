@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import SingleSelectDropdown from './singleSelectDropdown'
 import MultipleSelectDropdown from './multipleSelectDropdown'
 import InfoButton from './infoButton'
-import { getSupplyAndDemandData } from '~/utils/getDataUtils'
+import { getSupplyAndDemandData, getUniqueOptions } from '~/utils/getDataUtils'
 import LineGraph from './lineGraph'
 import Comments from './comments'
 
-const SupplyAndDemmand = ({ supplyAndDemandData, getUniqueOptions, commentsData, session }) => {
+const SupplyAndDemmand = ({ supplyAndDemandData, commentsData, session }) => {
   const [selectedSupplyAndDemandStartDate, setSelectedSupplyAndDemandStartDate] = useState(new Date('2000-01-01').toISOString())
   const [selectedSupplyAndDemandEndDate, setSelectedSupplyAndDemandEndDate] = useState(new Date('2023-12-31').toISOString())
   const [selectedSupplyAndDemandSeason, setSelectedSupplyAndDemandSeason] = useState('20/21')

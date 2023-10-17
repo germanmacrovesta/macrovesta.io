@@ -8,7 +8,7 @@ import { parseDate } from '@internationalized/date'
 import { getTodayDate } from '~/utils/dateUtils'
 import { getAIndexData } from '~/utils/getDataUtils'
 
-const DomesticPrices = ({ formatter, commentsData, session }) => {
+const DomesticPrices = ({ commentsData, session }) => {
   const [selectedIndexStartDate, setSelectedIndexStartDate] = useState(parseDate('2023-01-01'))
   const [selectedIndexEndDate, setSelectedIndexEndDate] = useState(parseDate(getTodayDate()))
   const [indexPropertiesArray, setIndexPropertiesArray] = useState(['a_index', 'ice_highest_open_interest_17_months'])
@@ -49,10 +49,10 @@ const DomesticPrices = ({ formatter, commentsData, session }) => {
         </div>
         <div className='col-span-2 grid grid-cols-2 w-full gap-x-4 px-8'>
           <div className='mb-4 w-full'>
-            <DateField yearOptions={[-28, 0]} label='Start Date' setDate={setSelectedIndexStartDate} date={selectedIndexStartDate} formatter={formatter} />
+            <DateField yearOptions={[-28, 0]} label='Start Date' setDate={setSelectedIndexStartDate} date={selectedIndexStartDate} />
           </div>
           <div className='mb-4 w-full'>
-            <DateField yearOptions={[-28, 0]} label='Start Date' setDate={setSelectedIndexEndDate} date={selectedIndexEndDate} formatter={formatter} />
+            <DateField yearOptions={[-28, 0]} label='Start Date' setDate={setSelectedIndexEndDate} date={selectedIndexEndDate} />
           </div>
 
           {/* <div className="mb-4 w-full">

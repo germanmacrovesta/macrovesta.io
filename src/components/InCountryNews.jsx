@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import InfoButton from './infoButton'
-import SingleSelectDropdown from './singleSelectDropdown'
 import FormSubmit from './formSubmit'
 import { parseDateString } from '~/utils/dateUtils'
+import Image from 'next/image'
+import { Select, SelectItem, Pagination } from '@nextui-org/react'
 
-const InCountryNews = ({ countryNewsData, session, setCountryNewsFormCountry }) => {
-  const [countryNewsFilter, setCountryNewsFilter] = useState('All Countries')
+const InCountryNews = ({ countryNewsData, session }) => {
   const [countryNewsPopup, setCountryNewsPopup] = useState(null)
   const [openCountryNewsForm, setOpenCountryNewsForm] = useState(false)
   const [countryNewsError_Message, setCountryNewsError_Message] = useState('')
@@ -13,6 +13,22 @@ const InCountryNews = ({ countryNewsData, session, setCountryNewsFormCountry }) 
   const [countryNewsSubmitting, setCountryNewsSubmitting] = useState(false)
   const [countryNewsWarning_Message, setCountryNewsWarning_Message] = useState('')
   const [countryNewsWarningSubmit, setCountryNewsWarningSubmit] = useState(false)
+  const [countryNewsFormCountry, setCountryNewsFormCountry] = useState('')
+
+  const [currentPage, setCurrentPage] = useState(1)
+  const [filteredData, setFilteredData] = useState(JSON.parse(countryNewsData))
+  const [itemsToDisplay, setItemsToDisplay] = useState(filteredData)
+
+  const [filters, setFilters] = useState({
+    country: 'All Countries'
+  })
+
+  // When currentPage change:
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * 4
+    const endIndex = startIndex + 4
+    setItemsToDisplay(filteredData.slice(startIndex, endIndex))
+  }, [currentPage])
 
   const handleCountryNewsFormSubmit = async (e) => {
     // Stop the form from submitting and refreshing the page.
@@ -102,53 +118,88 @@ const InCountryNews = ({ countryNewsData, session, setCountryNewsFormCountry }) 
       }
     }
   }
+
+  const countryOptions = [{ country: 'All Countries' }, { country: 'Brazil' }, { country: 'USA' }, { country: 'Bangladesh' }, { country: 'Australia' }, { country: 'Pakistan' }, { country: 'Vietnam' }, { country: 'India' }, { country: 'China' }, { country: 'Thailand' }, { country: 'Turkey' }, { country: 'Spain' }, { country: 'UK' }, { country: 'West Africa' }, { country: 'Indonesia' }, { country: 'Greece' }, { country: 'Other' }]
+
+  // When filters are applied
+  useEffect(() => {
+    const applyFilters = () => {
+      let filteredResult = JSON.parse(countryNewsData)
+      const { country } = filters
+
+      if (country !== '' && country !== 'All Countries') {
+        filteredResult = filteredResult.filter(object => object.country === country)
+      }
+
+      setFilteredData(filteredResult)
+      console.log(filteredResult)
+
+      // Recalculate pagination
+      const startIndex = (currentPage - 1) * 4
+      const endIndex = startIndex + 4
+
+      setCurrentPage(1)
+      setItemsToDisplay(filteredResult.slice(startIndex, endIndex))
+      console.log(filteredData.slice(startIndex, endIndex))
+    }
+
+    applyFilters()
+  }, [filters])
+
   return (
     <div className='relative flex flex-col bg-[#ffffff] p-4 rounded-xl shadow-lg'>
       <div className='relative text-center font-semibold text-xl mb-4'>
         <InfoButton text={'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'} />
         In Country News
       </div>
-      <div className=''>
-        <SingleSelectDropdown
-          options={[{ country: 'All Countries' }, { country: 'Brazil' }, { country: 'USA' }, { country: 'Bangladesh' }, { country: 'Australia' }, { country: 'Pakistan' }, { country: 'Vietnam' }, { country: 'India' }, { country: 'China' }, { country: 'Thailand' }, { country: 'Turkey' }, { country: 'Spain' }, { country: 'UK' }, { country: 'West Africa' }, { country: 'Indonesia' }, { country: 'Greece' }, { country: 'Other' }]}
-          label='Country'
-          variable='country'
-          colour='bg-deep_blue'
-          onSelectionChange={(e) => setCountryNewsFilter(e.country)}
-          placeholder='Select Country'
-          searchPlaceholder='Search Countries'
-          includeLabel={false}
-          defaultValue='All Countries'
+      <div className='flex items-center justify-between'>
+        <Pagination
+          total={Math.ceil(filteredData.length / 4)}
+          page={currentPage}
+          onChange={setCurrentPage}
+          classNames={{ cursor: 'bg-deep_blue' }}
         />
+        <Select
+          radius='md'
+          label='Country'
+          className='max-w-xs'
+          onChange={(e) => setFilters({ ...filters, country: e.target.value })}
+          size='sm'
+          placeholder='Default: All Countries'
+          variant='underlined'
+          defaultSelectedKeys={['All Countries']}
+        >
+          {countryOptions.map((option) => (
+            <SelectItem key={option.country} value={option.country}>
+              {option.country}
+            </SelectItem>
+          ))}
+        </Select>
+
       </div>
+
       <div className='flex flex-col justify-around items-start gap-4 mt-4'>
-        {JSON.parse(countryNewsData).filter((object) => countryNewsFilter !== 'Select Country' && countryNewsFilter != 'All Countries' ? object?.country === countryNewsFilter : true).filter((object, index) => index < 10).map((news, index) => (
-        // <div className="border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setCountryNewsPopup(news)}>
-        //   {news.title_of_in_country_news}
-        // </div>
-          <>
-            {index === 0 && (
-              <div className='border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-2 cursor-pointer flex gap-4' onClick={() => setCountryNewsPopup(news)}>
-                <img className='w-[150px] h-[150px] aspect-square object-cover rounded-lg' src={news?.image_of_in_country_news !== '' ? news?.image_of_in_country_news : '/macrovesta_news_default_picture.jpg'} />
-                <div className='flex flex-col w-full'>
-                  <div className='grid grid-cols-[auto_75px]'>
-                    <div className='font-semibold'>
-                      {news.title_of_in_country_news}
-                    </div>
-                    <div className='w-[75px]'>
-                      {parseDateString(news.date_of_in_country_news)}
-                    </div>
-                  </div>
-                  <div className='text-sm pt-2'>{news.text_of_in_country_news.length > 200 ? `${news.text_of_in_country_news.slice(0, 200)}...` : news.text_of_in_country_news}</div>
+        {itemsToDisplay.map((news, index) => (
+          <div key={index} className='border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-2 cursor-pointer flex gap-4' onClick={() => setCountryNewsPopup(news)}>
+            <Image
+              src={news?.image_of_in_country_news !== '' ? news?.image_of_in_country_news : '/macrovesta_news_default_picture.jpg'}
+              className='w-[150px] h-[150px] aspect-square object-cover rounded-lg'
+              alt='Picture of the author'
+              height={720}
+              width={1280}
+            />
+            <div className='flex flex-col w-full'>
+              <div className='grid grid-cols-[auto_75px]'>
+                <div className='font-semibold'>
+                  {news.title_of_in_country_news}
+                </div>
+                <div className='w-[75px]'>
+                  {parseDateString(news.date_of_in_country_news)}
                 </div>
               </div>
-            )}
-            {index !== 0 && (
-              <div className='border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer' onClick={() => setCountryNewsPopup(news)}>
-                {news.title_of_in_country_news}
-              </div>
-            )}
-          </>
+              <div className='text-sm pt-2'>{news.text_of_in_country_news.length > 200 ? `${news.text_of_in_country_news.slice(0, 200)}...` : news.text_of_in_country_news}</div>
+            </div>
+          </div>
         ))}
         {countryNewsPopup != null && (
           <div className='absolute modal left-0 top-0 z-40'>
@@ -183,6 +234,7 @@ const InCountryNews = ({ countryNewsData, session, setCountryNewsFormCountry }) 
         )}
 
       </div>
+
       {(session?.role === 'partner' || session?.role === 'admin') && (
         <div className='flex justify-center'>
           <div className='bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200' onClick={() => setOpenCountryNewsForm(true)}>
