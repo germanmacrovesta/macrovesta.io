@@ -537,7 +537,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
 
         // Send the form data to our forms API on Vercel and get a response.
         const response = await fetch(endpoint, options)
-
+        console.log(response)
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
         const result = await response.json().then(() => { setFixedSubmitted(true); setFixedSubmitting(false) })

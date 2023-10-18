@@ -1,7 +1,7 @@
 export default function FormSubmit (props) {
   return (
     <>
-      <div className='flex flex-col items-center w-full'>
+      <div className='flex flex-col items-center'>
         {props.submitted !== undefined && props.submitted === true && (
           <div className='w-[600px] grid place-content-center'>
             <div>

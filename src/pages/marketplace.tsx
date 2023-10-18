@@ -32,6 +32,7 @@ import { parseDate } from '@internationalized/date'
 import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
 import useWeglotLang from '../components/useWeglotLang'
 import InfoButton from '../components/infoButton'
+import { Button } from '@nextui-org/react'
 
 const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   symbol: 'AAPL',
@@ -46,7 +47,7 @@ const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   autosize: true
 }
 
-function getCurrentMonth () {
+function getCurrentMonth() {
   // Create a new Date object
   const date = new Date()
 
@@ -97,7 +98,7 @@ const parseDateString = (dateString) => {
   }
 }
 
-function getWeekNumber (d) {
+function getWeekNumber(d) {
   // Copy date so don't modify original
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
   // Set to nearest Thursday: current date + 4 - current day number
@@ -275,6 +276,44 @@ const Home: NextPage = ({ upcomingData, marketplaceData }) => {
 
   const [marketplacePopup, setMarketplacePopup] = React.useState(null)
 
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+
+    const product = e.target.product?.value
+    const stockTonnes = e.target.stock.value
+    const description = e.target.description.value
+    const priceUSD = e.target.price?.value
+
+    try {
+      const data = {
+        product,
+        stock_tonnes: stockTonnes,
+        price_usd: priceUSD,
+        description,
+        added_by: session?.user?.name
+      }
+      console.log(data)
+
+      const JSONdata = JSON.stringify(data)
+      const endpoint = '/api/add-product'
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSONdata
+      }
+
+      // Send the form data to our forms API on Vercel and get a response.
+      const response = await fetch(endpoint, options)
+      console.log(response)
+      const result = await response.json()
+      console.log(result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <>
       <Head>
@@ -322,6 +361,65 @@ const Home: NextPage = ({ upcomingData, marketplaceData }) => {
                   </div>
                 ))}
               </div>
+
+              <form onSubmit={handleSubmit} className='mt-20 w-[50%] border rounded-lg p-4 shadow-md'>
+                <h1 className='mb-5 font-bold'>Add new product</h1>
+                <label
+                  htmlFor="cents_per_pound3"
+                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                >
+                  Product name
+                </label>
+                <input
+                  type="text"
+                  id="product"
+                  required
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter the product name"
+                />
+                <label
+                  htmlFor="cents_per_pound3"
+                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                >
+                  Stock in tonnes
+                </label>
+                <input
+                  type="number"
+                  id="stock"
+                  required
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter the product stock"
+                />
+                <label
+                  htmlFor="cents_per_pound3"
+                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                >
+                  Description
+                </label>
+                <input
+                  type="text"
+                  id="description"
+                  required
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter the product description"
+                />
+                <label
+                  htmlFor="cents_per_pound3"
+                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                >
+                  Price in USD
+                </label>
+                <input
+                  type="text"
+                  id="price"
+                  required
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter the product Price"
+                />
+                <Button type='submit' variant='bordered' className='mt-5' >Add a product!</Button>
+
+              </form>
+
               {marketplacePopup != null && (
                 <div className='absolute modal left-0 top-0 z-40'>
                   <div className=' fixed grid place-content-center inset-0 z-40'>
@@ -363,6 +461,7 @@ const Home: NextPage = ({ upcomingData, marketplaceData }) => {
     </>
   )
 }
+
 // some random shit added by Vic
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
@@ -383,7 +482,7 @@ export const getServerSideProps = async (context: any) => {
   const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
 
   const marketplace = await prisma?.marketplace.findMany({})
-
+  console.log(marketplace)
   const marketplaceData = JSON.stringify(marketplace)
 
   // console.log(monthlyIndexData)

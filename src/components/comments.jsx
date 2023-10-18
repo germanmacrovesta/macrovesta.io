@@ -100,10 +100,11 @@ const Comments = ({
 
         // Send the form data to our forms API on Vercel and get a response.
         const response = await fetch(endpoint, options)
-
+        console.log(response)
         // Get the response data from server as JSON.
         // If server returns the name submitted, that means the form works.
         const result = await response.json().then(() => { setSubmitted(true); setSubmitting(false) })
+        console.log(result)
         // setSubmitted(true); setSubmitting(false)
         // console.log(result);
       }
@@ -111,88 +112,88 @@ const Comments = ({
   }
 
   return (
-        <>
-            {componentComments.length > 0 && (
+    <>
+      {componentComments.length > 0 && (
 
-                <div className={`grid grid-cols-[110px_auto_110px] w-full ${styling}`}>
-                    {commentNumber == 0 && (
-                        <div className='invisible'>hidden</div>
-                    )}
-                    {commentNumber > 0 && (
-                        <div className='flex items-start'>
-                            <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setCommentNumber(commentNumber - 1)}>Previous</button>
-                        </div>
-                    )}
-                    <div className='flex flex-col items-center'>
-                        <div className='text-center font-semibold'>
-                            {componentComments[commentNumber]?.added_by}
-                        </div>
-                        <div className='text-center text-sm'>
-                            {parseDateString(componentComments[commentNumber]?.date_of_comment)}
-                        </div>
+        <div className={`grid grid-cols-[110px_auto_110px] w-full ${styling}`}>
+          {commentNumber == 0 && (
+                <div className='invisible'>hidden</div>
+              )}
+          {commentNumber > 0 && (
+                <div className='flex items-start'>
+                    <button className='bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200' onClick={() => setCommentNumber(commentNumber - 1)}>Previous</button>
+                  </div>
+              )}
+          <div className='flex flex-col items-center'>
+                <div className='text-center font-semibold'>
+                    {componentComments[commentNumber]?.added_by}
+                  </div>
+                <div className='text-center text-sm'>
+                    {parseDateString(componentComments[commentNumber]?.date_of_comment)}
+                  </div>
+              </div>
+          {commentNumber == componentComments.length - 1 && (
+                <div className='invisible'>hidden</div>
+              )}
+          {commentNumber < (componentComments.length - 1) && (
+                <div className='flex items-start'>
+                    <button className='bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200' onClick={() => setCommentNumber(commentNumber + 1)}>Next</button>
+                  </div>
+              )}
+          <div className='col-span-3 mt-4 text-center'>
+                {componentComments[commentNumber]?.comment}
+              </div>
+        </div>
+      )}
+      {session?.role == 'admin' && componentComments.length > 0 && (
+        <div className='flex justify-center'>
+          <div className='bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200' onClick={() => setOpenForm(true)}>
+                Add Comment
                     </div>
-                    {commentNumber == componentComments.length - 1 && (
-                        <div className='invisible'>hidden</div>
-                    )}
-                    {commentNumber < (componentComments.length - 1) && (
-                        <div className='flex items-start'>
-                            <button className="bg-deep_blue w-[100px] text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setCommentNumber(commentNumber + 1)}>Next</button>
-                        </div>
-                    )}
-                    <div className='col-span-3 mt-4 text-center'>
-                        {componentComments[commentNumber]?.comment}
+        </div>
+      )}
+      {session?.role == 'admin' && componentComments.length <= 0 && (
+        <div className={`flex justify-center ${styling}`}>
+          <div className='bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200' onClick={() => setOpenForm(true)}>
+                Add Comment
                     </div>
-                </div>
-            )}
-            {session?.role == 'admin' && componentComments.length > 0 && (
-                <div className={'flex justify-center'}>
-                    <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenForm(true)}>
+        </div>
+      )}
+      {openForm && (
+        <div className='absolute modal left-0 top-0 z-40'>
+          <div className=' fixed grid place-content-center inset-0 z-40'>
+                <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
+                    <div className='my-4 font-semibold text-lg'>
                         Add Comment
-                    </div>
-                </div>
-            )}
-            {session?.role == 'admin' && componentComments.length <= 0 && (
-                <div className={`flex justify-center ${styling}`}>
-                    <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenForm(true)}>
-                        Add Comment
-                    </div>
-                </div>
-            )}
-            {openForm && (
-                <div className='absolute modal left-0 top-0 z-40'>
-                    <div className=' fixed grid place-content-center inset-0 z-40'>
-                        <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                            <div className="my-4 font-semibold text-lg">
-                                Add Comment
                             </div>
-                            <div className="w-full">
-                                <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleFormSubmit}>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="comment"
-                                            className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                                        >
-                                            Comment
+                    <div className='w-full'>
+                        <form className='mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full' onSubmit={handleFormSubmit}>
+                            <div className='mb-4'>
+                                <label
+                                    htmlFor='comment'
+                                    className='block text-gray-700 text-sm font-bold mb-2 pl-3'
+                                  >
+                                    Comment
                                         </label>
-                                        <textarea id="comment" placeholder="Enter comment" name="comment" rows={4} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
-                                    </div>
-                                    <div className="col-span-2 flex justify-center">
-                                        {/* <button
+                                <textarea id='comment' placeholder='Enter comment' name='comment' rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
+                              </div>
+                            <div className='col-span-2 flex justify-center'>
+                                {/* <button
                         type="submit"
                         className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
                       >
                         Submit
                       </button> */}
-                                        <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div onClick={() => setOpenForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                    </div>
-                </div>
-            )}
-        </>
+                                <FormSubmit errorMessage={error_Message} warningMessage={warning_Message} submitted={submitted} submitting={submitting} warningSubmit={warningSubmit} />
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+                <div onClick={() => setOpenForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10' />
+              </div>
+        </div>
+      )}
+    </>
   )
 }
 
