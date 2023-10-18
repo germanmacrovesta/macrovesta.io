@@ -223,3 +223,32 @@ export function formatAndStringifyBasisData (data) {
     cost_type: basis.cost_type
   })))
 }
+
+export function splitUrl (pathname, query, number) {
+  const baseUrlArray = pathname.split('/')
+  const urlArray = []
+
+  baseUrlArray.forEach((urlCrumb) => {
+    if (urlCrumb.startsWith('[')) {
+      urlArray.push(query[`${urlCrumb.slice(1, -1)}`])
+    } else {
+      urlArray.push(urlCrumb)
+    }
+  })
+
+  let root = ''
+  let urlPath = ''
+
+  for (let i = 1; i < urlArray.length; i++) {
+    if (i < number) {
+      root += '/'
+      root += urlArray[i]
+      console.log(root)
+    } else {
+      urlPath += '/'
+      urlPath += urlArray[i]
+    }
+  }
+
+  return urlPath
+}

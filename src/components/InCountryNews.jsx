@@ -154,7 +154,7 @@ const InCountryNews = ({ countryNewsData, session }) => {
       </div>
       <div className='flex items-center justify-between'>
         <Pagination
-          total={Math.ceil(filteredData.length / 4)}
+          total={filteredData.length > 0 ? Math.ceil(filteredData.length / 4) : 1}
           page={currentPage}
           onChange={setCurrentPage}
           classNames={{ cursor: 'bg-deep_blue' }}
@@ -179,28 +179,31 @@ const InCountryNews = ({ countryNewsData, session }) => {
       </div>
 
       <div className='flex flex-col justify-around items-start gap-4 mt-4'>
-        {itemsToDisplay.map((news, index) => (
-          <div key={index} className='border hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-2 cursor-pointer flex gap-4' onClick={() => setCountryNewsPopup(news)}>
-            <Image
-              src={news?.image_of_in_country_news !== '' ? news?.image_of_in_country_news : '/macrovesta_news_default_picture.jpg'}
-              className='w-[150px] h-[150px] aspect-square object-cover rounded-lg'
-              alt='Picture of the author'
-              height={720}
-              width={1280}
-            />
-            <div className='flex flex-col w-full'>
-              <div className='grid grid-cols-[auto_75px]'>
-                <div className='font-semibold'>
-                  {news.title_of_in_country_news}
+        {itemsToDisplay.length > 0
+          ? itemsToDisplay.map((news, index) => (
+            <div key={index} className='border hover:scale-[102%] transition-transform duration-300 shadow-lg rounded-lg w-full py-2 px-2 cursor-pointer flex gap-4' onClick={() => setCountryNewsPopup(news)}>
+              <Image
+                src={news?.image_of_in_country_news !== '' ? news?.image_of_in_country_news : '/macrovesta_news_default_picture.jpg'}
+                className='w-[150px] h-[150px] aspect-square object-cover rounded-lg'
+                alt='Picture of the author'
+                height={720}
+                width={1280}
+              />
+              <div className='flex flex-col w-full'>
+                <div className='grid grid-cols-[auto_75px]'>
+                  <div className='font-semibold'>
+                    {news.title_of_in_country_news}
+                  </div>
+                  <div className='w-[75px]'>
+                    {parseDateString(news.date_of_in_country_news)}
+                  </div>
                 </div>
-                <div className='w-[75px]'>
-                  {parseDateString(news.date_of_in_country_news)}
-                </div>
+                <div className='text-sm pt-2'>{news.text_of_in_country_news.length > 200 ? `${news.text_of_in_country_news.slice(0, 200)}...` : news.text_of_in_country_news}</div>
               </div>
-              <div className='text-sm pt-2'>{news.text_of_in_country_news.length > 200 ? `${news.text_of_in_country_news.slice(0, 200)}...` : news.text_of_in_country_news}</div>
             </div>
-          </div>
-        ))}
+          )
+          )
+          : (<p className='w-full text-center p-4 shadow-lg border rounded-lg'>No news for now!</p>)}
         {countryNewsPopup != null && (
           <div className='absolute modal left-0 top-0 z-40'>
             <div className=' fixed grid place-content-center inset-0 z-40'>

@@ -59,8 +59,9 @@ const CTZ23 = ({ commentsData, session, contractData }) => {
                         radius='md'
                         label='Select a parameter'
                         className='max-w-xs absolute right-10'
-                        onChange={(e) => setContractParameter(e.target.value)}
+                        onChange={(e) => setContractParameter(e.target.value || 'close')}
                         size='sm'
+                        placeholder='Default: close'
                         defaultSelectedKeys={['close']}
                       >
                         {dropdownOptions.map((option) => (

@@ -236,6 +236,7 @@ const RecentEvents = ({ snapshotsData, session }) => {
       </div>
 
       <div className='flex items-center justify-between mt-4'>
+        {/* Button Modal - Open Form */}
         {(session?.role === 'partner' || session?.role === 'admin') && (
           <div className='flex justify-center'>
             <div className='bg-deep_blue w-fit text-white px-4 py-2 rounded-xl cursor-pointer hover:scale-105 duration-200' onClick={() => setOpenSnapshotForm(true)}>
@@ -250,6 +251,8 @@ const RecentEvents = ({ snapshotsData, session }) => {
           classNames={{ cursor: 'bg-deep_blue' }}
         />
       </div>
+
+      {/* Modal - Show info on each item click */}
       {snapshotPopup !== null && (
         <div className='absolute modal left-0 top-0 z-40'>
           <div className=' fixed grid place-content-center inset-0 z-40'>
@@ -269,6 +272,8 @@ const RecentEvents = ({ snapshotsData, session }) => {
           </div>
         </div>
       )}
+
+      {/* Modal form on item click */}
       {openSnapshotForm && (
         <div className='absolute modal left-0 top-0 z-40'>
           <div className=' fixed grid place-content-center inset-0 z-40'>

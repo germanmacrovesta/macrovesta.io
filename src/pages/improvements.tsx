@@ -15,93 +15,7 @@ import FormSubmit from '../components/formSubmit'
 import { useSession, getSession } from 'next-auth/react'
 import useWeglotLang from '../components/useWeglotLang'
 import InfoButton from '../components/infoButton'
-
-const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
-  symbol: 'AAPL',
-  interval: '1D' as ResolutionString,
-  library_path: '/static/charting_library/',
-  locale: 'en',
-  charts_storage_url: 'https://saveload.tradingview.com',
-  charts_storage_api_version: '1.1',
-  client_id: 'tradingview.com',
-  user_id: 'public_user_id',
-  fullscreen: false,
-  autosize: true
-}
-
-function getCurrentMonth () {
-  // Create a new Date object
-  const date = new Date()
-
-  // Create an array of month names
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December']
-
-  // Get the month number from the Date object and use it to get the month name
-  const monthName = monthNames[date.getMonth()]
-
-  return monthName
-}
-
-const selectAppropriateImage = (inv, value) => {
-  let imagesrc = ''
-  if (inv == 'Y') {
-    if (value < 15) {
-      imagesrc = '/Index_Neutral.jpg'
-    } else if (value < 50) {
-      imagesrc = '/Index_Inverse_Likely.jpg'
-    } else {
-      imagesrc = '/Index_Inverse_High.jpg'
-    }
-  } else {
-    if (value < 15) {
-      imagesrc = '/Index_Neutral.jpg'
-    } else if (value < 50) {
-      imagesrc = '/Index_Non_Likely.jpg'
-    } else {
-      imagesrc = '/Index_Non_High.jpg'
-    }
-  }
-  return (
-    <img className="w-[400px]" src={imagesrc} />
-  )
-}
-
-const parseDateString = (dateString) => {
-  const date = new Date(dateString)
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = String(date.getFullYear()).slice(-2)
-
-  if (isNaN(date)) {
-    return undefined
-  } else {
-    return `${day}-${month}-${year}`
-  }
-}
-
-function getWeekNumber (d) {
-  // Copy date so don't modify original
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
-  // Set to nearest Thursday: current date + 4 - current day number
-  // Make Sunday's day number 7
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
-  // Get first day of year
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  // Calculate full weeks to nearest Thursday
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
-  // Return array of year and week number
-  return [d.getUTCFullYear(), weekNo]
-}
-
-const renderers = {
-  h1: ({ node, ...props }) => <h1 {...props} />,
-  h2: ({ node, ...props }) => <h2 {...props} />,
-  h3: ({ node, ...props }) => <h3 {...props} />,
-  h4: ({ node, ...props }) => <h4 {...props} />,
-  h5: ({ node, ...props }) => <h5 {...props} />,
-  h6: ({ node, ...props }) => <h6 {...props} />
-}
+import { parseDateString, getWeekNumber } from '~/utils/dateUtils'
 
 const Home: NextPage = ({ upcomingData }) => {
   const router = useRouter()
@@ -112,8 +26,6 @@ const Home: NextPage = ({ upcomingData }) => {
   const { data: session } = useSession()
   console.log('session', session)
   console.log('session.submittedSurvey', session?.submittedSurvey)
-
-  const todaysDate = new Date()
 
   const baseUrlArray = url.split('/')
   const urlArray: any = []
@@ -156,8 +68,6 @@ const Home: NextPage = ({ upcomingData }) => {
       document.body.removeChild(script)
     }
   }, [])
-
-  const [openSuggestionForm, setOpenSuggestionForm] = React.useState(false)
 
   const [selectedSuggestionType, setSelectedSuggestionType] = React.useState('')
 
@@ -305,12 +215,7 @@ const Home: NextPage = ({ upcomingData }) => {
               </ul>
 
             </div>
-            {/* <div className="bg-deep_blue w-fit text-white px-4 py-2 mt-4 rounded-xl cursor-pointer hover:scale-105 duration-200" onClick={() => setOpenSuggestionForm(true)}>
-              Add Suggestion
-            </div> */}
 
-            {/* <div className='absolute modal left-0 top-0 z-40'>
-                <div className=' fixed grid place-content-center inset-0 z-40'> */}
             <div className='relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg'>
               <div className="my-4 font-semibold text-lg text-center">
                 Add Suggestion
@@ -389,6 +294,7 @@ const Home: NextPage = ({ upcomingData }) => {
     </>
   )
 }
+
 // some random shit added by Vic
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
@@ -405,10 +311,6 @@ export const getServerSideProps = async (context: any) => {
   const upcoming = await prisma?.upcoming_changes.findMany({})
   const upcomingData = JSON.stringify(upcoming)
 
-  const today = new Date() // Current date
-  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-
-  // console.log(monthlyIndexData)
   return {
     props: { upcomingData }
   }

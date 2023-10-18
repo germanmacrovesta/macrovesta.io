@@ -32,93 +32,21 @@ import { parseDate } from '@internationalized/date'
 import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
 import useWeglotLang from '../components/useWeglotLang'
 import InfoButton from '../components/infoButton'
-
-const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
-  symbol: 'AAPL',
-  interval: '1D' as ResolutionString,
-  library_path: '/static/charting_library/',
-  locale: 'en',
-  charts_storage_url: 'https://saveload.tradingview.com',
-  charts_storage_api_version: '1.1',
-  client_id: 'tradingview.com',
-  user_id: 'public_user_id',
-  fullscreen: false,
-  autosize: true
-}
-
-function getCurrentMonth() {
-  // Create a new Date object
-  const date = new Date()
-
-  // Create an array of month names
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December']
-
-  // Get the month number from the Date object and use it to get the month name
-  const monthName = monthNames[date.getMonth()]
-
-  return monthName
-}
-
-const selectAppropriateImage = (inv, value) => {
-  let imagesrc = ''
-  if (inv == 'Y') {
-    if (value < 15) {
-      imagesrc = '/Index_Neutral.jpg'
-    } else if (value < 50) {
-      imagesrc = '/Index_Inverse_Likely.jpg'
-    } else {
-      imagesrc = '/Index_Inverse_High.jpg'
-    }
-  } else {
-    if (value < 15) {
-      imagesrc = '/Index_Neutral.jpg'
-    } else if (value < 50) {
-      imagesrc = '/Index_Non_Likely.jpg'
-    } else {
-      imagesrc = '/Index_Non_High.jpg'
-    }
-  }
-  return (
-    <img className="w-[400px]" src={imagesrc} />
-  )
-}
-
-const parseDateString = (dateString) => {
-  const date = new Date(dateString)
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = String(date.getFullYear()).slice(-2)
-
-  if (isNaN(date)) {
-    return undefined
-  } else {
-    return `${day}-${month}-${year}`
-  }
-}
-
-function getWeekNumber(d) {
-  // Copy date so don't modify original
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
-  // Set to nearest Thursday: current date + 4 - current day number
-  // Make Sunday's day number 7
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
-  // Get first day of year
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  // Calculate full weeks to nearest Thursday
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
-  // Return array of year and week number
-  return [d.getUTCFullYear(), weekNo]
-}
-
-const renderers = {
-  h1: ({ node, ...props }) => <h1 {...props} />,
-  h2: ({ node, ...props }) => <h2 {...props} />,
-  h3: ({ node, ...props }) => <h3 {...props} />,
-  h4: ({ node, ...props }) => <h4 {...props} />,
-  h5: ({ node, ...props }) => <h5 {...props} />,
-  h6: ({ node, ...props }) => <h6 {...props} />
-}
+import { getEstimatesData } from '~/utils/getDataUtils'
+import { parseDateString } from '~/utils/dateUtils'
+import PositionClientInfo from '~/components/PositionClientInfo'
+// const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
+//   symbol: 'AAPL',
+//   interval: '1D' as ResolutionString,
+//   library_path: '/static/charting_library/',
+//   locale: 'en',
+//   charts_storage_url: 'https://saveload.tradingview.com',
+//   charts_storage_api_version: '1.1',
+//   client_id: 'tradingview.com',
+//   user_id: 'public_user_id',
+//   fullscreen: false,
+//   autosize: true
+// }
 
 const Home: NextPage = ({ companyData, productionData, costData, commercialisationData, strategyLogData, fixedData, unfixedData, premiumCompaniesData }) => {
   const router = useRouter()
@@ -230,7 +158,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
     let errorMessage = ''
     const warningMessage = ''
 
-    if (production1 == null || production1 == '') {
+    if (production1 == null || production1 === '') {
       errorMessage += 'Please enter an estimate. '
     }
 
@@ -238,21 +166,21 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
       setProductionWarning_Message(warningMessage)
       // throw new Error(errorMessage)
     } else {
-      if (productionWarning_Message != '') {
+      if (productionWarning_Message !== '') {
         setProductionWarning_Message('')
       }
     }
 
-    if (errorMessage != '') {
+    if (errorMessage !== '') {
       setProductionError_Message(errorMessage)
       setProductionWarningSubmit(false)
       setProductionSubmitting(false)
     } else {
-      if (productionError_Message != '') {
+      if (productionError_Message !== '') {
         setProductionError_Message('')
       }
 
-      if (productionWarningSubmit == false && warningMessage != '') {
+      if (productionWarningSubmit === false && warningMessage != '') {
         setProductionWarningSubmit(true)
         setProductionSubmitting(false)
       } else {
@@ -619,73 +547,11 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
     }
   }
 
-  const getEstimatesData = (data, propertyArray, datasetNameArray) => {
-    const datasetArray = []
-    data.forEach((item) => {
-      propertyArray.forEach((property, index) => {
-        if (datasetArray.find((dataset) => dataset.name == datasetNameArray[index]) != undefined) {
-          const dataset = datasetArray.find((dataset) => dataset.name == datasetNameArray[index])
-          dataset.data.push({ x: item.date_created, y: parseInt(item[property]) })
-        } else {
-          const dataset = { name: datasetNameArray[index], data: [], noCircles: true }
-          dataset.data.push({ x: item.date_created, y: parseInt(item[property]) })
-          datasetArray.push(dataset)
-        }
-      })
-    })
-    return datasetArray
-  }
-
   const [selectedSeason, setSelectedSeason] = React.useState('22/23')
-
-  const data = [
-    { id: 1, name: 'John Doe', age: 30, email: 'john@example.com' },
-    { id: 2, name: 'Jane Smith', age: 25, email: 'jane@example.com' },
-    { id: 3, name: 'Bob Johnson', age: 35, email: 'bob@example.com' }
-  ]
 
   const [partiallyFixed, setPartiallyFixed] = React.useState(false)
   const [modifyingExistingContract, setModifyingExistingContract] = React.useState(false)
   const [modifyingContract, setModifyingContract] = React.useState(undefined)
-
-  const handleCompanyChange = async (e) => {
-    const data = {
-      new_company: e.name,
-      new_company_id: e.record_id,
-      email: session?.user.email,
-      user: session?.user?.name
-    }
-
-    console.log(data)
-
-    // Send the data to the server in JSON format.
-    const JSONdata = JSON.stringify(data)
-
-    // API endpoint where we send form data.
-    const endpoint = '/api/change-selected-company'
-
-    // Form the request for sending data to the server.
-    const options = {
-      // The method is POST because we are sending data.
-      method: 'POST',
-      // Tell the server we're sending JSON.
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      // Body of the request is the JSON data we created above.
-      body: JSONdata
-    }
-
-    // Send the form data to our forms API on Vercel and get a response.
-    const response = await fetch(endpoint, options)
-
-    // Get the response data from server as JSON.
-    // If server returns the name submitted, that means the form works.
-    const result = await response.json().then(() => {
-      router.reload()
-      // setSentimentData([...sentimentData, { record_id: "dummyid", bullish_or_bearish, high, low, intraday_average_points, open_interest }])
-    })
-  }
 
   return (
     <>
@@ -718,31 +584,18 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
             domain="macrovesta.ai"
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
           <div className="p-6 bg-slate-200">
-            <div className="rounded-lg px-4 py-2 bg-deep_blue text-white flex justify-between -mt-6">
-              <div className="flex flex-col">
-                <div>Client Name: {JSON.parse(companyData)?.name}</div>
-                <div>Client Manager Name: {JSON.parse(companyData)?.company_manager?.name}</div>
-                <div>Macrovesta Manager Name: {JSON.parse(companyData)?.macrovesta_manager?.name}</div>
-              </div>
-              <div className="w-[200px] self-center">
-                <SingleSelectDropdown
-                  options={JSON.parse(premiumCompaniesData)}
-                  label="Company"
-                  variable="name"
-                  colour="bg-white"
-                  textColour="text-black"
-                  onSelectionChange={handleCompanyChange}
-                  placeholder="Select Company"
-                  searchPlaceholder="Search Company"
-                  includeLabel={false}
-                  defaultValue={JSON.parse(companyData)?.name}
-                />
-              </div>
-            </div>
+
+            <PositionClientInfo
+              companyData={companyData}
+              premiumCompaniesData={premiumCompaniesData}
+              session={session}
+              router={router}
+            />
+
             {/* {JSON.parse(productionData).length}
             {JSON.parse(costData).length}
             {JSON.parse(commercialisationData).length} */}
-            {JSON.parse(companyData)?.type == 'producer' && (
+            {JSON.parse(companyData)?.type === 'producer' && (
               <>
                 <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
                   <div className="w-[200px] self-center">
@@ -763,14 +616,14 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                       <div className="mt-6 -mb-2 font-semibold text-center">Production {selectedSeason}</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ['production_estimate'], ['Production Estimate'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season === selectedSeason), ['production_estimate'], ['Production Estimate'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
                       </div>
                     </div>
                     <div>
                       <div className="mt-6 -mb-2 font-semibold text-center">Yield {selectedSeason}</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season == selectedSeason), ['yield_estimate'], ['Yield Estimate'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
+                        <LineGraph data={getEstimatesData(JSON.parse(productionData).filter((estimate) => estimate.season === selectedSeason), ['yield_estimate'], ['Yield Estimate'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Production" />
                       </div>
                     </div>
                   </div>
@@ -1049,7 +902,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                       <div className="mt-6 -mb-2 font-semibold text-center">Commercialisation {selectedSeason}</div>
                       <div className="mb-16 w-full">
 
-                        <LineGraph data={getEstimatesData(JSON.parse(commercialisationData).filter((estimate) => estimate.season == selectedSeason), ['percentage_sold'], ['Percentage'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Percentage Sold" />
+                        <LineGraph data={getEstimatesData(JSON.parse(commercialisationData).filter((estimate) => estimate.season === selectedSeason), ['percentage_sold'], ['Percentage'])} xValue="x" yValue="y" xAxisTitle="Time" yAxisTitle="Percentage Sold" />
                       </div>
                     </div>
                     {/* <div>
@@ -1170,7 +1023,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
                   </tbody>
                 </table>
               </div>
-              {JSON.parse(fixedData).length == 0 && (
+              {JSON.parse(fixedData).length === 0 && (
                 <div className="text-center w-full py-4">currently no unfixed cotton records</div>
               )}
               <div className="grid place-content-center">
@@ -1607,7 +1460,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
 
-  if (!session || (session?.type != 'producer' && session?.type != 'spinner' && session?.company_id != 'cllxqmywr0000zbdg10nqp2up')) {
+  if (!session || (session?.type !== 'producer' && session?.type !== 'spinner' && session?.company_id !== 'cllxqmywr0000zbdg10nqp2up')) {
     return {
       redirect: {
         permanent: false,
@@ -1618,7 +1471,7 @@ export const getServerSideProps = async (context: any) => {
 
   let company_id = session?.company_id
 
-  if (session?.company_id == 'cllxqmywr0000zbdg10nqp2up') {
+  if (session?.company_id === 'cllxqmywr0000zbdg10nqp2up') {
     company_id = session?.selected_company_id
   }
 
