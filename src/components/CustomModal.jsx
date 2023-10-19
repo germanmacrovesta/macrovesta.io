@@ -1,103 +1,105 @@
-import { useState } from 'react'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react'
+import { useEffect, useState } from 'react'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem } from '@nextui-org/react'
 import { parseDateString } from '~/utils/dateUtils'
 
-const CustomModal = ({ isOpen, onOpenChange, type, newsType, size = 'md', snapshotData }) => {
-  const [snapshotErrorMessage, setSnapshotErrorMessage] = useState('')
-  const [snapshotWarningMessage, setSnapshotWarningMessage] = useState('')
-  const [snapshotWarningSubmit, setSnapshotWarningSubmit] = useState(false)
+// TODO: Modal for FutureEvents, RecentEvents & InCountryNews. Have to split Validations and Submit into CHook or Functions
+const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapshotData, session }) => {
+  const [alert, setAlert] = useState('')
 
-  const typeOfSubmitOptions = [{ name: 'Recent Events', value: 'Recent Events' }, { name: 'Short Term Consideration', value: 'Short Term' }, { name: 'Long Term Consideration', value: 'Long Term' }]
+  // Clear any alert when modal open or close
+  useEffect(() => {
+    setAlert('')
+  }, [onOpenChange])
+
+  // Select Options
+  const impactSelect = [{ name: 'High Impact', parameter: 'High' }, { name: 'Low impact', parameter: 'Low' }]
+  const countrySelect = [{ country: 'Brazil' }, { country: 'USA' }, { country: 'Bangladesh' }, { country: 'Australia' }, { country: 'Pakistan' }, { country: 'Vietnam' }, { country: 'India' }, { country: 'China' }, { country: 'Thailand' }, { country: 'Turkey' }, { country: 'Spain' }, { country: 'UK' }, { country: 'West Africa' }, { country: 'Indonesia' }, { country: 'Greece' }, { country: 'Other' }]
+  const termSelect = [{ parameter: 'Long Term' }, { parameter: 'Short Term' }]
+
+  // Data to Display when modal is Info type
+  const title = snapshotData?.title_of_snapshot_strategy || snapshotData?.title_of_in_country_news
+  const text = snapshotData?.text_of_snapshot_strategy || snapshotData?.text_of_in_country_news
+  const date = snapshotData?.date_of_snapshot_strategy || snapshotData?.date_of_in_country_news
+  const image = snapshotData?.image_of_snapshot_strategy || snapshotData?.image_of_in_country_news
+  const countryData = snapshotData?.country
+
+  // Data to fill when modal is Form type
+  const [country, setCountry] = useState('UK')
+  const [impact, setImpact] = useState('Low')
+  const [term, setTerm] = useState('Short Term')
 
   const handleSnapshotFormSubmit = async (e) => {
-    // Stop the form from submitting and refreshing the page.
     e.preventDefault()
-    console.log('submiting')
-    setSnapshotSubmitting(true)
 
-    let news_type = ''
     const title = e.target.title.value
     const text = e.target.text.value
     const image = e.target.image.value
-    let errorMessage = ''
-    let warningMessage = ''
 
-    // TODO: Can be separated into Custom Hook validation
-    if (newsType !== null && newsType !== '') {
-      news_type = newsType
-    } else {
-      errorMessage += 'Please select a snapshot type. '
-    }
-    if (title == null || title === '') {
-      errorMessage += 'Please enter a title. '
-    }
-    if (text == null || text === '') {
-      errorMessage += 'Please enter a text. '
-    }
-    if (image == null || image === '') {
-      warningMessage += "You can add an image as well. If you don't want to just click confirm. "
+    if (section === null && section === '') {
+      setAlert('Error identifying section!')
+      return
     }
 
-    if (warningMessage !== '') {
-      setSnapshotWarningMessage(warningMessage)
-      // throw new Error(errorMessage)
-    } else {
-      if (snapshotWarningMessage !== '') {
-        setSnapshotWarningMessage('')
-      }
+    if (title === null || title === '') {
+      setAlert('Please enter a title. ')
+      return
     }
 
-    if (errorMessage !== '') {
-      setSnapshotErrorMessage(errorMessage)
-      setSnapshotWarningSubmit(false)
-      setSnapshotSubmitting(false)
-    } else {
-      if (snapshotErrorMessage !== '') {
-        setSnapshotErrorMessage('')
-      }
-
-      if (snapshotWarningSubmit === false && warningMessage !== '') {
-        setSnapshotWarningSubmit(true)
-        setSnapshotSubmitting(false)
-      } else {
-        // Get data from the form.
-        const data = {
-          title,
-          text,
-          image,
-          user: session?.user?.name,
-          news_type
-        }
-
-        console.log(data)
-        // TODO: SEND DATA
-        // Send the data to the server in JSON format.
-        const JSONdata = JSON.stringify(data)
-
-        // API endpoint where we send form data.
-        const endpoint = '/api/add-snapshot'
-
-        // Form the request for sending data to the server.
-        const options = {
-          // The method is POST because we are sending data.
-          method: 'POST',
-          // Tell the server we're sending JSON.
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          // Body of the request is the JSON data we created above.
-          body: JSONdata
-        }
-
-        // Send the form data to our forms API on Vercel and get a response.
-        const response = await fetch(endpoint, options)
-
-        // Get the response data from server as JSON.
-        // If server returns the name submitted, that means the form works.
-        const result = await response.json().then(() => { setSnapshotSubmitted(true); setSnapshotSubmitting(false) })
-        // setSnapshotSubmitted(true); setSnapshotSubmitting(false)
-      }
+    if (text === null || text === '') {
+      setAlert('Please enter a text.')
+      return
     }
+
+    if (country === null || text === '') {
+      setAlert('Please enter a country.')
+      return
+    }
+
+    if (section === 'Future Considerations' && term === '') {
+      setAlert('Please enter a term.')
+      return
+    }
+
+    setAlert('')
+
+    const data = {
+      title,
+      text,
+      image,
+      impact,
+      user: session?.user?.name,
+      ...(section === 'In Country News' && { country }),
+      ...(section === 'Recent Events' && { news_type: section }),
+      ...(section === 'Future Considerations' && { news_type: term })
+    }
+
+    // Send the data to the server in JSON format.
+    const JSONdata = JSON.stringify(data)
+
+    // API endpoint where we send form data.
+    const endpoint = section === 'In Country News' ? '/api/add-country-news' : '/api/add-snapshot'
+
+    // Form the request for sending data to the server.
+    const options = {
+      // The method is POST because we are sending data.
+      method: 'POST',
+      // Tell the server we're sending JSON.
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      // Body of the request is the JSON data we created above.
+      body: JSONdata
+    }
+
+    // Send the form data to our forms API on Vercel and get a response.
+    const response = await fetch(endpoint, options)
+    console.log(response)
+
+    // Get the response data from server as JSON.
+    // If server returns the name submitted, that means the form works.
+    const result = await response.json()
+
+    setAlert('Successfully added')
   }
 
   return (
@@ -113,26 +115,100 @@ const CustomModal = ({ isOpen, onOpenChange, type, newsType, size = 'md', snapsh
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className='flex flex-col gap-1'>Add Snapshot to {newsType}</ModalHeader>
+            <ModalHeader className='flex flex-col gap-1'>
+              {type === 'info' && (
+                <h2 className='text-center'>{section}</h2>
+              )}
+              {type === 'form' && (
+                <h2 className='text-center'>{section}</h2>
+              )}
+            </ModalHeader>
             <ModalBody>
               {type === 'info' && (
-                <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                  <img className='w-3/4' src={snapshotData.image_of_snapshot_strategy} />
+                <div className='flex flex-col items-center justify-center'>
+                  {section === 'In Country News' && (
+                    <h1>{countryData}</h1>
+                  )}
+                  <img className='w-3/4' src={image} />
                   <div className='my-4 font-semibold text-lg'>
-                    {snapshotData.title_of_snapshot_strategy}
+                    {title}
                   </div>
                   <div className='-mt-4 mb-2'>
-                    {parseDateString(snapshotData.date_of_snapshot_strategy)}
+                    {parseDateString(date)}
                   </div>
                   <div className=''>
-                    {snapshotData.text_of_snapshot_strategy}
+                    {text}
                   </div>
                 </div>
               )}
 
               {type === 'form' && (
+
                 <div className='w-full'>
-                  <form className='mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full' id='2' onSubmit={handleSnapshotFormSubmit}>
+                  {alert !== '' && (
+                    <p className={`${alert === 'Successfully added' ? 'bg-green-600' : 'bg-danger-600'} rounded-lg text-center  p-1 text-white animate-fade-up`}>{alert}</p>
+                  )}
+                  <form className='mt-4 flex flex-col gap-x-4 w-full' id='modal-form' onSubmit={handleSnapshotFormSubmit}>
+                    <div className='flex gap-4'>
+                      <Select
+                        radius='md'
+                        label='Select the impact'
+                        classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
+                        className='mb-4'
+                        size='md'
+                        onChange={(e) => setImpact(e.target.value || 'Low')}
+                        placeholder='Default: Low Impact'
+                        defaultSelectedKeys={['Low']}
+                        variant='bordered'
+                        labelPlacement='outside'
+                      >
+                        {impactSelect.map((option) => (
+                          <SelectItem key={option.parameter} value={option.parameter}>
+                            {option.name}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                      {section === 'Future Considerations' && (
+                        <Select
+                          radius='md'
+                          label='Select the term'
+                          classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
+                          className='mb-4'
+                          size='md'
+                          onChange={(e) => setTerm(e.target.value || 'Short Term')}
+                          placeholder='Default: UK'
+                          defaultSelectedKeys={['Short Term']}
+                          variant='bordered'
+                          labelPlacement='outside'
+                        >
+                          {termSelect.map((option) => (
+                            <SelectItem key={option.parameter} value={option.parameter}>
+                              {option.parameter}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    </div>
+                    {section === 'In Country News' && (
+                      <Select
+                        radius='md'
+                        label='Select a Country'
+                        classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
+                        className='mb-4'
+                        size='md'
+                        onChange={(e) => setCountry(e.target.value || 'UK')}
+                        placeholder='Default: UK'
+                        defaultSelectedKeys={['UK']}
+                        variant='bordered'
+                        labelPlacement='outside'
+                      >
+                        {countrySelect.map((option) => (
+                          <SelectItem key={option.country} value={option.country}>
+                            {option.country}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                    )}
                     <div className='mb-4'>
                       <label
                         htmlFor='image'
@@ -161,7 +237,7 @@ const CustomModal = ({ isOpen, onOpenChange, type, newsType, size = 'md', snapsh
                         placeholder='Enter title'
                       />
                     </div>
-                    <div className='mb-4'>
+                    <div>
                       <label
                         htmlFor='text'
                         className='block text-gray-700 text-sm font-bold mb-2 pl-3'
@@ -176,12 +252,18 @@ const CustomModal = ({ isOpen, onOpenChange, type, newsType, size = 'md', snapsh
               )}
 
             </ModalBody>
-            <ModalFooter>
-              <Button color='danger' variant='light' onPress={onClose}>
-                Close
-              </Button>
-              <button type='submit' form='2'>Submit</button>
-            </ModalFooter>
+            {type === 'form' && (
+              <ModalFooter>
+                <Button
+                  color='danger' variant='light' onPress={onClose}
+                >
+                  Close
+                </Button>
+                <Button className='bg-deep_blue text-white' type='submit' form='modal-form'>
+                  Submit
+                </Button>
+              </ModalFooter>
+            )}
           </>
         )}
       </ModalContent>

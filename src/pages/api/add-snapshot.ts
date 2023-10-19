@@ -12,6 +12,7 @@ const AddSnapshot = async (req: NextApiRequest, res: NextApiResponse) => {
         image_of_snapshot_strategy: req.body.image,
         date_of_snapshot_strategy: new Date(),
         news_type: req.body.news_type ?? '',
+        impact: req.body.impact,
         added_by: req.body.user
       }
     })

@@ -1,7 +1,4 @@
 import { useEffect, useState } from 'react'
-import InfoButton from './infoButton'
-import SingleSelectDropdown from './singleSelectDropdown'
-import FormSubmit from './formSubmit'
 import { parseDateString } from '~/utils/dateUtils'
 import { Select, SelectItem, Pagination, useDisclosure, Button } from '@nextui-org/react'
 import Image from 'next/image'
@@ -133,7 +130,7 @@ const RecentEvents = ({ snapshotsData, session }) => {
           ? ('OPS')
           : itemsToDisplay.map((snapshot, index) => (
             <div key={index} className={`${index === 0 && itemsToDisplay.length === 3 ? ' row-span-2' : ''}`}>
-              <div className='h-full border relative hover:scale-[102%] transition-transform duration-300 shadow-lg rounded-lg w-full cursor-pointer flex gap-2 overflow-hidden' onClick={() => handleOpenModal('show', 'Recent Events', snapshot)}>
+              <div className='h-full border relative hover:scale-[102%] transition-transform duration-300 shadow-lg rounded-lg w-full cursor-pointer flex gap-2 overflow-hidden' onClick={() => handleOpenModal('info', 'Recent Events', snapshot)}>
                 <Image
                   src={snapshot?.image_of_snapshot_strategy !== '' ? snapshot?.image_of_snapshot_strategy : '/macrovesta_news_default_picture.jpg'}
                   className={`${index === 0 && itemsToDisplay.length === 3 ? 'object-cover absolute' : 'w-[150px] h-[150px] aspect-square object-cover rounded-lg'}`}
@@ -177,11 +174,14 @@ const RecentEvents = ({ snapshotsData, session }) => {
           classNames={{ cursor: 'bg-deep_blue' }}
         />
       </div>
+
       <CustomModal
         onOpenChange={onOpenChange}
         isOpen={isOpen}
-        newsType={modalSection}
+        section={modalSection}
+        snapshotData={modalSnapshotdata}
         type={modalType}
+        session={session}
       />
     </div>
   )

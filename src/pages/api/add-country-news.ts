@@ -11,6 +11,7 @@ const AddSnapshot = async (req: NextApiRequest, res: NextApiResponse) => {
         title_of_in_country_news: req.body.title,
         text_of_in_country_news: req.body.text,
         image_of_in_country_news: req.body.image,
+        impact: req.body.impact,
         date_of_in_country_news: new Date(),
         added_by: req.body.user
       }
