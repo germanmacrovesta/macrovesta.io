@@ -102,6 +102,8 @@ model marketplace {
     stock_tonnes Decimal?
     price_usd    Decimal?
     description  String?
+    image_url    String?
+    category     String?
     added_by     String?
     date_created DateTime @default(now())
 }

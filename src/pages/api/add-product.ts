@@ -5,7 +5,6 @@ import { prisma } from '../../server/db'
 
 const AddProduct = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    console.log('HEY')
     console.log(req.body)
     await prisma?.marketplace.create({
       data: {
@@ -13,6 +12,8 @@ const AddProduct = async (req: NextApiRequest, res: NextApiResponse) => {
         stock_tonnes: req.body.stock_tonnes,
         price_usd: req.body.price_usd,
         description: req.body.description,
+        image_url: req.body.image_url,
+        category: req.body.category,
         added_by: req.body.added_by
       }
     })

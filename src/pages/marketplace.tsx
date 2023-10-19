@@ -1,127 +1,20 @@
 import { type NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import { prisma } from '../server/db'
 import Sidebar from '../components/sidebar'
 import Breadcrumbs from '../components/breadcrumbs'
-import TabMenu from '../components/tabmenu'
 import { useRouter } from 'next/router'
-import { TabMenuArray } from '../components/tabMenuArray'
 import React from 'react'
-import SingleSelectDropdown from '../components/singleSelectDropdown'
-import { TVChartContainer } from '../components/TVChartContainer'
 import type {
   ChartingLibraryWidgetOptions,
   ResolutionString
 } from '../../public/static/charting_library/charting_library'
-import GroupedBarChart from '../components/groupedBarChart'
-import LineGraph from '../components/lineGraph'
-import LineGraphNotTime from '../components/lineGraphNotTime'
-import FormSubmit from '../components/formSubmit'
-import ReactMarkdown from 'react-markdown'
-import { render } from 'react-dom'
-import BullishBearishDonut from '../components/bullishBearishDonut'
 import { useSession, getSession } from 'next-auth/react'
-import Comments from '../components/comments'
-import IndexDial from '../components/indexDial'
-import SemiCircleDial from '../components/semiCircleDial'
-import MultipleSelectDropdown from '../components/multipleSelectDropdown'
-import DateField from '../components/dateField'
-import { useDateFormatter, useLocale } from 'react-aria'
-import { parseDate } from '@internationalized/date'
-import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
 import useWeglotLang from '../components/useWeglotLang'
-import InfoButton from '../components/infoButton'
 import { Button } from '@nextui-org/react'
+import { parseDateString } from '~/utils/dateUtils'
 
-const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
-  symbol: 'AAPL',
-  interval: '1D' as ResolutionString,
-  library_path: '/static/charting_library/',
-  locale: 'en',
-  charts_storage_url: 'https://saveload.tradingview.com',
-  charts_storage_api_version: '1.1',
-  client_id: 'tradingview.com',
-  user_id: 'public_user_id',
-  fullscreen: false,
-  autosize: true
-}
-
-function getCurrentMonth() {
-  // Create a new Date object
-  const date = new Date()
-
-  // Create an array of month names
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December']
-
-  // Get the month number from the Date object and use it to get the month name
-  const monthName = monthNames[date.getMonth()]
-
-  return monthName
-}
-
-const selectAppropriateImage = (inv, value) => {
-  let imagesrc = ''
-  if (inv == 'Y') {
-    if (value < 15) {
-      imagesrc = '/Index_Neutral.jpg'
-    } else if (value < 50) {
-      imagesrc = '/Index_Inverse_Likely.jpg'
-    } else {
-      imagesrc = '/Index_Inverse_High.jpg'
-    }
-  } else {
-    if (value < 15) {
-      imagesrc = '/Index_Neutral.jpg'
-    } else if (value < 50) {
-      imagesrc = '/Index_Non_Likely.jpg'
-    } else {
-      imagesrc = '/Index_Non_High.jpg'
-    }
-  }
-  return (
-    <img className="w-[400px]" src={imagesrc} />
-  )
-}
-
-const parseDateString = (dateString) => {
-  const date = new Date(dateString)
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = String(date.getFullYear()).slice(-2)
-
-  if (isNaN(date)) {
-    return undefined
-  } else {
-    return `${day}-${month}-${year}`
-  }
-}
-
-function getWeekNumber(d) {
-  // Copy date so don't modify original
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
-  // Set to nearest Thursday: current date + 4 - current day number
-  // Make Sunday's day number 7
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
-  // Get first day of year
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  // Calculate full weeks to nearest Thursday
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
-  // Return array of year and week number
-  return [d.getUTCFullYear(), weekNo]
-}
-
-const renderers = {
-  h1: ({ node, ...props }) => <h1 {...props} />,
-  h2: ({ node, ...props }) => <h2 {...props} />,
-  h3: ({ node, ...props }) => <h3 {...props} />,
-  h4: ({ node, ...props }) => <h4 {...props} />,
-  h5: ({ node, ...props }) => <h5 {...props} />,
-  h6: ({ node, ...props }) => <h6 {...props} />
-}
-
-const Home: NextPage = ({ upcomingData, marketplaceData }) => {
+const Home: NextPage = ({ marketplaceData }) => {
   const router = useRouter()
   const url = router.pathname
 
@@ -283,6 +176,8 @@ const Home: NextPage = ({ upcomingData, marketplaceData }) => {
     const stockTonnes = e.target.stock.value
     const description = e.target.description.value
     const priceUSD = e.target.price?.value
+    const category = e.target.category?.value
+    const imageUrl = e.target.image?.value
 
     try {
       const data = {
@@ -290,6 +185,8 @@ const Home: NextPage = ({ upcomingData, marketplaceData }) => {
         stock_tonnes: stockTonnes,
         price_usd: priceUSD,
         description,
+        category,
+        image_url: imageUrl,
         added_by: session?.user?.name
       }
       console.log(data)
@@ -381,6 +278,32 @@ const Home: NextPage = ({ upcomingData, marketplaceData }) => {
                   htmlFor="cents_per_pound3"
                   className="block text-gray-700 text-sm font-bold mb-2 pl-3"
                 >
+                  Image Url
+                </label>
+                <input
+                  type="text"
+                  id="image"
+                  required
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter the image url"
+                />
+                <label
+                  htmlFor="cents_per_pound3"
+                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                >
+                  Category
+                </label>
+                <input
+                  type="text"
+                  id="category"
+                  required
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter the product category"
+                />
+                <label
+                  htmlFor="cents_per_pound3"
+                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+                >
                   Stock in tonnes
                 </label>
                 <input
@@ -466,7 +389,7 @@ const Home: NextPage = ({ upcomingData, marketplaceData }) => {
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
 
-  if (!session || session?.access_to_marketplace != true) {
+  if (!session || session?.access_to_marketplace !== true) {
     return {
       redirect: {
         permanent: false,
@@ -475,19 +398,11 @@ export const getServerSideProps = async (context: any) => {
     }
   }
 
-  const upcoming = await prisma?.upcoming_changes.findMany({})
-  const upcomingData = JSON.stringify(upcoming)
-
-  const today = new Date() // Current date
-  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-
   const marketplace = await prisma?.marketplace.findMany({})
-  console.log(marketplace)
   const marketplaceData = JSON.stringify(marketplace)
 
-  // console.log(monthlyIndexData)
   return {
-    props: { upcomingData, marketplaceData }
+    props: { marketplaceData }
   }
 }
 
