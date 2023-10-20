@@ -3,7 +3,7 @@ import { type Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import '~/styles/globals.css'
 import { Providers } from '~/providers'
-
+import { CustomModalProvider } from '~/context/ModalContext'
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps }
@@ -11,8 +11,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <Providers>
       <SessionProvider session={session}>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Roboto&display=swap" rel="stylesheet"></link>
-        <Component {...pageProps} />
+        <CustomModalProvider>
+          <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Roboto&display=swap" rel="stylesheet"></link>
+          <Component {...pageProps} />
+        </CustomModalProvider>
       </SessionProvider>
     </Providers>
   )

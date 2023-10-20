@@ -11,8 +11,8 @@ import type {
 } from '../../public/static/charting_library/charting_library'
 import { useSession, getSession } from 'next-auth/react'
 import useWeglotLang from '../components/useWeglotLang'
-import { Button } from '@nextui-org/react'
 import { parseDateString } from '~/utils/dateUtils'
+import { Card, CardFooter, CardBody, CardHeader, Image, Button } from '@nextui-org/react'
 
 const Home: NextPage = ({ marketplaceData }) => {
   const router = useRouter()
@@ -235,27 +235,40 @@ const Home: NextPage = ({ marketplaceData }) => {
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
           <header className="z-50 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={'Improvements'} urlPath={urlPath} user={session?.user.name} />
+            <Breadcrumbs title={'Marketplace'} urlPath={urlPath} user={session?.user.name} />
             {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
           </header>
           {/* <WeglotLanguageSwitcher
             domain="macrovesta.ai"
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
           <div className="p-6 bg-slate-200">
-            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
+            <div>
               <div className="text-lg font-semibold text-center mb-2">
-                Strategy Log
+                Marketplace
               </div>
-              <div className="flex flex-col gap-y-4">
-                {JSON.parse(marketplaceData).map((offer) => (
-                  <div className="border flex justify-between hover:bg-deep_blue hover:text-white transition-colors duration-300 shadow-lg rounded-lg w-full py-2 px-4 cursor-pointer" onClick={() => setMarketplacePopup(offer)}>
-                    <div>
-                      {offer?.product}
-                    </div>
-                    <div>
-                      {parseDateString(offer?.date_created)}
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2  gap-4 mx-auto ">
+                {JSON.parse(marketplaceData).map((offer: any) => (
+                  <Card className="py-4 hover:scale-105" key={offer.product}>
+                    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                      <p className="text-tiny uppercase font-bold">{offer.category}</p>
+                      <small className={`${offer.stock_tonnes > 10
+                        ? 'text-green-600'
+                        : offer.stock_tonnes > 5
+                          ? 'text-orange-600'
+                          : 'text-red-600'
+                        } text-default-500`}>Available Stock {offer.stock_tonnes}</small>
+                      <h4 className="font-bold text-large">{offer.product}</h4>
+                    </CardHeader>
+                    <CardBody className="overflow-visible py-2">
+                      <Image
+                        alt="Card background"
+                        className="object-cover rounded-xl"
+                        src={offer.image_url}
+                        width={270}
+                      />
+                    </CardBody>
+                  </Card>
+
                 ))}
               </div>
 
@@ -342,40 +355,6 @@ const Home: NextPage = ({ marketplaceData }) => {
                 <Button type='submit' variant='bordered' className='mt-5' >Add a product!</Button>
 
               </form>
-
-              {marketplacePopup != null && (
-                <div className='absolute modal left-0 top-0 z-40'>
-                  <div className=' fixed grid place-content-center inset-0 z-40'>
-                    <div className='flex flex-col items-center w-[750px] max-h-[600px] overflow-y-auto inset-0 z-50 bg-white rounded-xl shadow-lg px-8 py-4'>
-                      {/* <img className="w-3/4" src={strategyPopup.image_of_in_country_news} /> */}
-                      <div className="my-4 font-semibold text-lg">
-                        {marketplacePopup.product}
-                      </div>
-                      <div className="-mt-4 mb-2">
-                        {parseDateString(marketplacePopup.date_created)}
-                      </div>
-                      <div className="">
-                        {/* <ReactMarkdown children={strategyPopup.text_of_in_country_news} /> */}
-                        {/* <ReactMarkdown components={renderers}>{markdown}</ReactMarkdown> */}
-                        {/* {(strategyPopup.text_of_in_country_news).replace('[newline]', '\n\n')} */}
-                        {/* {strategyPopup.text.split('[newline]').map((paragraph, index) => (
-                          <>
-                            <p>{paragraph}</p>
-                            {index != strategyPopup.text.split('[newline]').length - 1 && (
-                              <>
-                                <br />
-                              </>
-                            )}
-                          </>
-                        ))} */}
-                        Stock (tonnes):&nbsp;{marketplacePopup.stock_tonnes}
-                      </div>
-                      <div>Price (usd):&nbsp;{marketplacePopup.price_usd}</div>
-                    </div>
-                    <div onClick={() => setMarketplacePopup(null)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 

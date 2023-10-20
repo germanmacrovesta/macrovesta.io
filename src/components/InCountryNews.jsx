@@ -3,23 +3,26 @@ import InfoButton from './infoButton'
 import { parseDateString } from '~/utils/dateUtils'
 import Image from 'next/image'
 import { Select, SelectItem, Pagination, useDisclosure, Button } from '@nextui-org/react'
-import CustomModal from './CustomModal'
+import dynamic from 'next/dynamic'
+import { useCustomModal } from '~/context/ModalContext'
+
+// Lazy import (Modal never needed on page load)
+const CustomModal = dynamic(
+  () => import('./CustomModal'),
+  { ssr: false }
+)
 
 const InCountryNews = ({ countryNewsData, session }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  const [modalType, setModalType] = useState(null)
-  const [modalSection, setModalSection] = useState(null)
-  const [modalSnapshotdata, setModalSnapshotData] = useState(null)
+  const {
+    isOpen, // Boolean, determine if modal go to be rendered
+    onOpen, // Open modal
+    onOpenChange // When Open/close
+  } = useDisclosure()
 
-  const handleOpenModal = (type, section, snapshot) => {
-    if (snapshot) {
-      setModalSnapshotData(snapshot)
-    } else {
-      setModalSnapshotData(null)
-    }
+  const { openModal } = useCustomModal()
 
-    setModalType(type)
-    setModalSection(section)
+  const handleOpenModal = (type, section, data) => {
+    openModal(type, section, data)
     onOpen()
   }
 
@@ -137,15 +140,13 @@ const InCountryNews = ({ countryNewsData, session }) => {
         />
       </div>
 
-      <CustomModal
-        onOpenChange={onOpenChange}
-        isOpen={isOpen}
-        section={modalSection}
-        snapshotData={modalSnapshotdata}
-        type={modalType}
-        session={session}
-      />
-
+      {isOpen && (
+        <CustomModal
+          onOpenChange={onOpenChange}
+          isOpen={isOpen}
+          session={session}
+        />
+      )}
     </div>
 
   )

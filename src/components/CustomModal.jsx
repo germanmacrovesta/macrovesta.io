@@ -1,77 +1,62 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem } from '@nextui-org/react'
 import { parseDateString } from '~/utils/dateUtils'
-
+import Alert from './Alert'
+import useValidate from '~/hooks/useValidation'
+import { useCustomModal } from '~/context/ModalContext'
 // TODO: Modal for FutureEvents, RecentEvents & InCountryNews. Have to split Validations and Submit into CHook or Functions
-const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapshotData, session }) => {
-  const [alert, setAlert] = useState('')
+const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
+  const { modalType, modalSection, modalData } = useCustomModal()
+  // Build the required fields that user must be introduce depending on section type
+  const initialObject = {
+    title: '',
+    text: '',
+    impact: '',
+    ...(modalSection === 'In Country News' && { country: '' }),
+    ...(modalSection === 'Recent Events' && { news_type: modalSection }),
+    ...(modalSection === 'Future Considerations' && { news_type: '' })
+  }
+  console.log(initialObject)
+  const {
+    validationAlert,
+    setValidationAlert,
+    setStartValidation,
+    objectToValidate,
+    setObjectToValidate,
+    objectIsValid,
+    setObjectIsValid
+  } = useValidate(initialObject)
 
   // Clear any alert when modal open or close
   useEffect(() => {
-    setAlert('')
+    setValidationAlert({})
   }, [onOpenChange])
 
-  // Select Options
+  // Select Options (Can be moved into a sample CONST file)
   const impactSelect = [{ name: 'High Impact', parameter: 'High' }, { name: 'Low impact', parameter: 'Low' }]
   const countrySelect = [{ country: 'Brazil' }, { country: 'USA' }, { country: 'Bangladesh' }, { country: 'Australia' }, { country: 'Pakistan' }, { country: 'Vietnam' }, { country: 'India' }, { country: 'China' }, { country: 'Thailand' }, { country: 'Turkey' }, { country: 'Spain' }, { country: 'UK' }, { country: 'West Africa' }, { country: 'Indonesia' }, { country: 'Greece' }, { country: 'Other' }]
   const termSelect = [{ parameter: 'Long Term' }, { parameter: 'Short Term' }]
 
-  // Data to Display when modal is Info type
-  const title = snapshotData?.title_of_snapshot_strategy || snapshotData?.title_of_in_country_news
-  const text = snapshotData?.text_of_snapshot_strategy || snapshotData?.text_of_in_country_news
-  const date = snapshotData?.date_of_snapshot_strategy || snapshotData?.date_of_in_country_news
-  const image = snapshotData?.image_of_snapshot_strategy || snapshotData?.image_of_in_country_news
-  const countryData = snapshotData?.country
+  // Data to Display when modal is 'info' type
+  const title = modalData?.title_of_snapshot_strategy || modalData?.title_of_in_country_news
+  const text = modalData?.text_of_snapshot_strategy || modalData?.text_of_in_country_news
+  const date = modalData?.date_of_snapshot_strategy || modalData?.date_of_in_country_news
+  const image = modalData?.image_of_snapshot_strategy || modalData?.image_of_in_country_news
+  const countryData = modalData?.country
 
-  // Data to fill when modal is Form type
-  const [country, setCountry] = useState('UK')
-  const [impact, setImpact] = useState('Low')
-  const [term, setTerm] = useState('Short Term')
+  // Fill the object name/value
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setObjectToValidate((objectToValidate) => ({ ...objectToValidate, [name]: value }))
+    console.log(objectToValidate)
+  }
 
-  const handleSnapshotFormSubmit = async (e) => {
-    e.preventDefault()
-
-    const title = e.target.title.value
-    const text = e.target.text.value
-    const image = e.target.image.value
-
-    if (section === null && section === '') {
-      setAlert('Error identifying section!')
-      return
-    }
-
-    if (title === null || title === '') {
-      setAlert('Please enter a title. ')
-      return
-    }
-
-    if (text === null || text === '') {
-      setAlert('Please enter a text.')
-      return
-    }
-
-    if (country === null || text === '') {
-      setAlert('Please enter a country.')
-      return
-    }
-
-    if (section === 'Future Considerations' && term === '') {
-      setAlert('Please enter a term.')
-      return
-    }
-
-    setAlert('')
-
-    const data = {
-      title,
-      text,
-      image,
-      impact,
-      user: session?.user?.name,
-      ...(section === 'In Country News' && { country }),
-      ...(section === 'Recent Events' && { news_type: section }),
-      ...(section === 'Future Considerations' && { news_type: term })
-    }
+  async function sendForm () {
+    console.log(objectToValidate)
+    setObjectIsValid(false)
+    return
+    // Send
+    const data = { ...objectToValidate, user: session?.user?.name }
 
     // Send the data to the server in JSON format.
     const JSONdata = JSON.stringify(data)
@@ -98,8 +83,18 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
     // Get the response data from server as JSON.
     // If server returns the name submitted, that means the form works.
     const result = await response.json()
+  }
 
-    setAlert('Successfully added')
+  useEffect(() => {
+    if (objectIsValid) {
+      sendForm()
+      setValidationAlert({ msg: 'Success', error: false })
+    }
+  }, [objectIsValid])
+
+  const handleSnapshotFormSubmit = async (e) => {
+    e.preventDefault()
+    setStartValidation(true)
   }
 
   return (
@@ -116,17 +111,17 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
         {(onClose) => (
           <>
             <ModalHeader className='flex flex-col gap-1'>
-              {type === 'info' && (
-                <h2 className='text-center'>{section}</h2>
+              {modalType === 'info' && (
+                <h2 className='text-center'>{modalSection}</h2>
               )}
-              {type === 'form' && (
-                <h2 className='text-center'>{section}</h2>
+              {modalType === 'form' && (
+                <h2 className='text-center'>{modalSection}</h2>
               )}
             </ModalHeader>
             <ModalBody>
-              {type === 'info' && (
+              {modalType === 'info' && (
                 <div className='flex flex-col items-center justify-center'>
-                  {section === 'In Country News' && (
+                  {modalSection === 'In Country News' && (
                     <h1>{countryData}</h1>
                   )}
                   <img className='w-3/4' src={image} />
@@ -142,12 +137,10 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
                 </div>
               )}
 
-              {type === 'form' && (
+              {modalType === 'form' && (
 
                 <div className='w-full'>
-                  {alert !== '' && (
-                    <p className={`${alert === 'Successfully added' ? 'bg-green-600' : 'bg-danger-600'} rounded-lg text-center  p-1 text-white animate-fade-up`}>{alert}</p>
-                  )}
+                  {(validationAlert.msg) && <Alert alert={validationAlert} />}
                   <form className='mt-4 flex flex-col gap-x-4 w-full' id='modal-form' onSubmit={handleSnapshotFormSubmit}>
                     <div className='flex gap-4'>
                       <Select
@@ -156,7 +149,8 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
                         classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
                         className='mb-4'
                         size='md'
-                        onChange={(e) => setImpact(e.target.value || 'Low')}
+                        name='impact'
+                        onChange={handleChange}
                         placeholder='Default: Low Impact'
                         defaultSelectedKeys={['Low']}
                         variant='bordered'
@@ -168,14 +162,15 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
                           </SelectItem>
                         ))}
                       </Select>
-                      {section === 'Future Considerations' && (
+                      {modalSection === 'Future Considerations' && (
                         <Select
                           radius='md'
                           label='Select the term'
                           classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
                           className='mb-4'
                           size='md'
-                          onChange={(e) => setTerm(e.target.value || 'Short Term')}
+                          name='term'
+                          onChange={handleChange}
                           placeholder='Default: UK'
                           defaultSelectedKeys={['Short Term']}
                           variant='bordered'
@@ -189,14 +184,15 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
                         </Select>
                       )}
                     </div>
-                    {section === 'In Country News' && (
+                    {modalSection === 'In Country News' && (
                       <Select
                         radius='md'
                         label='Select a Country'
                         classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
                         className='mb-4'
                         size='md'
-                        onChange={(e) => setCountry(e.target.value || 'UK')}
+                        name='country'
+                        onChange={handleChange}
                         placeholder='Default: UK'
                         defaultSelectedKeys={['UK']}
                         variant='bordered'
@@ -218,7 +214,8 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
                       </label>
                       <input
                         type='text'
-                        id='image'
+                        name='image'
+                        onChange={handleChange}
                         className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
                         placeholder='Enter a url to an image e.g. https://picsum.photos/200'
                       />
@@ -232,7 +229,8 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
                       </label>
                       <input
                         type='text'
-                        id='title'
+                        name='title'
+                        onChange={handleChange}
                         className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
                         placeholder='Enter title'
                       />
@@ -244,7 +242,7 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
                       >
                         Text
                       </label>
-                      <textarea id='text' placeholder='Enter text' name='text' rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
+                      <textarea placeholder='Enter text' name='text' onChange={handleChange} rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
                     </div>
 
                   </form>
@@ -252,7 +250,7 @@ const CustomModal = ({ isOpen, onOpenChange, type, section, size = 'md', snapsho
               )}
 
             </ModalBody>
-            {type === 'form' && (
+            {modalType === 'form' && (
               <ModalFooter>
                 <Button
                   color='danger' variant='light' onPress={onClose}
