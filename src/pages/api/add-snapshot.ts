@@ -5,6 +5,7 @@ import { prisma } from '../../server/db'
 
 const AddSnapshot = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
+    console.log(req.body)
     const record = await prisma?.snapshot_strategy.create({
       data: {
         title_of_snapshot_strategy: req.body.title,

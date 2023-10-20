@@ -5,12 +5,13 @@ import { prisma } from '../../server/db'
 
 const AddSnapshot = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
+    console.log(req.body)
     const record = await prisma?.in_country_news.create({
       data: {
         country: req.body.country,
         title_of_in_country_news: req.body.title,
         text_of_in_country_news: req.body.text,
-        image_of_in_country_news: req.body.image,
+        image_of_in_country_news: req.body.image || '',
         impact: req.body.impact,
         date_of_in_country_news: new Date(),
         added_by: req.body.user

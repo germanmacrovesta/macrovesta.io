@@ -234,10 +234,10 @@ const Home: NextPage = ({ marketplaceData }) => {
         <Sidebar />
         <div className="w-40"></div>
         <div className="flex w-full flex-col self-start">
-          <header className="z-50 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={'Marketplace'} urlPath={urlPath} user={session?.user.name} />
-            {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
-          </header>
+
+          <Breadcrumbs title={'Marketplace'} urlPath={urlPath} user={session?.user.name} />
+          {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
+
           {/* <WeglotLanguageSwitcher
             domain="macrovesta.ai"
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}

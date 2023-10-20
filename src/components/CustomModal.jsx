@@ -16,7 +16,9 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
     ...(modalSection === 'Recent Events' && { news_type: modalSection }),
     ...(modalSection === 'Future Considerations' && { news_type: '' })
   }
+
   console.log(initialObject)
+
   const {
     validationAlert,
     setValidationAlert,
@@ -26,7 +28,7 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
     objectIsValid,
     setObjectIsValid
   } = useValidate(initialObject)
-
+  console.log(objectToValidate)
   // Clear any alert when modal open or close
   useEffect(() => {
     setValidationAlert({})
@@ -54,15 +56,15 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
   async function sendForm () {
     console.log(objectToValidate)
     setObjectIsValid(false)
-    return
-    // Send
     const data = { ...objectToValidate, user: session?.user?.name }
 
     // Send the data to the server in JSON format.
     const JSONdata = JSON.stringify(data)
 
     // API endpoint where we send form data.
-    const endpoint = section === 'In Country News' ? '/api/add-country-news' : '/api/add-snapshot'
+    const endpoint = modalSection === 'In Country News' ? '/api/add-country-news' : '/api/add-snapshot'
+
+    console.log(objectToValidate, endpoint)
 
     // Form the request for sending data to the server.
     const options = {
@@ -151,8 +153,7 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
                         size='md'
                         name='impact'
                         onChange={handleChange}
-                        placeholder='Default: Low Impact'
-                        defaultSelectedKeys={['Low']}
+                        placeholder='Select the impact'
                         variant='bordered'
                         labelPlacement='outside'
                       >
@@ -169,10 +170,9 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
                           classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
                           className='mb-4'
                           size='md'
-                          name='term'
+                          name='news_type'
                           onChange={handleChange}
-                          placeholder='Default: UK'
-                          defaultSelectedKeys={['Short Term']}
+                          placeholder='Future long/short term consideration'
                           variant='bordered'
                           labelPlacement='outside'
                         >
@@ -193,8 +193,7 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
                         size='md'
                         name='country'
                         onChange={handleChange}
-                        placeholder='Default: UK'
-                        defaultSelectedKeys={['UK']}
+                        placeholder='Select the country'
                         variant='bordered'
                         labelPlacement='outside'
                       >
