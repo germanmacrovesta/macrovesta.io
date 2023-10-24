@@ -4,18 +4,18 @@
 
 
 .tooltip {
-    position: absolute;
-    text-align: center;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    padding-left: 5px;
-    padding-right: 5px;
-    font: 12px sans-serif;
-    background: rgb(220, 230, 244);
-    border: 0px;
-    border-radius: 8px;
-    pointer-events: none;
-  }
+  position: absolute;
+  text-align: center;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  font: 12px sans-serif;
+  background: rgb(220, 230, 244);
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
 
 .weglot_switcher {
   /* display: none !important; */
@@ -24,8 +24,8 @@
 }
 
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   border: none;
   -webkit-text-fill-color: inherit;
@@ -36,8 +36,8 @@ input:-webkit-autofill:active {
 }
 
 input.text-white:-webkit-autofill,
-input.text-white:-webkit-autofill:hover, 
-input.text-white:-webkit-autofill:focus, 
+input.text-white:-webkit-autofill:hover,
+input.text-white:-webkit-autofill:focus,
 input.text-white:-webkit-autofill:active {
   border: none;
   -webkit-text-fill-color: white;
@@ -50,3 +50,4 @@ input.text-white:-webkit-autofill:active {
 /* body {
   overflow-x: hidden;
 } */
+

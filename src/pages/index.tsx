@@ -1,25 +1,12 @@
 import { type NextPage } from 'next'
 import Head from 'next/head'
 import { prisma } from '../server/db'
-import Sidebar from '../components/sidebar'
-import Breadcrumbs from '../components/breadcrumbs'
+import NavBar from '../components/NavBar'
 import TabMenu from '../components/tabmenu'
 import { useRouter } from 'next/router'
 import { TabMenuArray } from '../components/tabMenuArray'
 import React from 'react'
-import { TVChartContainer } from '../components/TVChartContainer'
-import type {
-  ChartingLibraryWidgetOptions,
-  ResolutionString
-} from '../../public/static/charting_library/charting_library'
-import GroupedBarChart from '../components/groupedBarChart'
-import FormSubmit from '../components/formSubmit'
-import ReactMarkdown from 'react-markdown'
-import { render } from 'react-dom'
-import BullishBearishDonut from '../components/bullishBearishDonut'
 import { useSession, getSession } from 'next-auth/react'
-import { useDateFormatter, useLocale } from 'react-aria'
-import { WeglotLanguageSwitcher } from '~/components/weglotLanguageSwitcher'
 import useWeglotLang from '../components/useWeglotLang'
 import MonthlyIndex from '~/components/MonthlyIndex'
 import { groupAndStringifyContracts, formatAndStringifyBasisData, splitUrl } from '../utils/calculateUtils'
@@ -41,7 +28,7 @@ import FutureContractsStudy from '~/components/FutureContractsStudy'
 import V4 from '~/components/V4'
 import LearnMore from '~/components/LearnMore'
 
-// TODO: Use <Image></Image> from next instead <img> - Better performance.
+// TODO: Use <Image></Image> from next instead <img> in all web
 // TODO: The data that will arrive at the Home page from the server needs to be typed here.Type it when we are sure of the final form in which the data will arrive.
 
 interface IHomeProps {
@@ -108,14 +95,10 @@ const Home: NextPage<IHomeProps> = ({ monthlyIndexData, seasonalIndexData, snaps
           })}
         </script> */}
       </Head>
-      <main className="main grid grid-cols-[160px_auto] h-screen items-center">
-        <Sidebar />
-        <div className="w-40"></div>
+      <main className="main h-screen items-center bg-slate-200">
         <div className="flex w-full flex-col self-start">
-          <header className="z-20 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={'Macrovesta Demo'} urlPath={urlPath} user={session?.user.name} />
-            <TabMenu data={TabMenuArray} urlPath={urlPath} />
-          </header>
+          <NavBar title={'Macrovesta Demo'} urlPath={urlPath} user={session?.user.name} />
+
           {/* <WeglotLanguageSwitcher
             domain="macrovesta.ai"
             langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}

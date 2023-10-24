@@ -50,11 +50,9 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
   const handleChange = (e) => {
     const { name, value } = e.target
     setObjectToValidate((objectToValidate) => ({ ...objectToValidate, [name]: value }))
-    console.log(objectToValidate)
   }
 
   async function sendForm () {
-    console.log(objectToValidate)
     setObjectIsValid(false)
     const data = { ...objectToValidate, user: session?.user?.name }
 

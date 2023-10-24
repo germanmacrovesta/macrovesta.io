@@ -99,12 +99,15 @@ model VerificationToken {
 model marketplace {
     record_id    String   @id @default(cuid())
     product      String
-    stock_tonnes Decimal?
-    price_usd    Decimal?
+    category     String?
+    quantity     Decimal?
+    quality      String
     description  String?
     image_url    String?
-    category     String?
+    price_usd    Decimal?
     added_by     String?
+    shipment     String
+    payment_terms String
     date_created DateTime @default(now())
 }
 

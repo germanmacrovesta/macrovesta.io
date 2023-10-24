@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { prisma } from '../server/db'
 import Sidebar from '../components/sidebar'
-import Breadcrumbs from '../components/breadcrumbs'
+import Breadcrumbs from '../components/NavBar'
 import TabMenu from '../components/tabmenu'
 import { useRouter } from 'next/router'
 import { TabMenuArray } from '../components/tabMenuArray'
@@ -48,7 +48,7 @@ const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   autosize: true
 }
 
-function getCurrentMonth () {
+function getCurrentMonth() {
   // Create a new Date object
   const date = new Date()
 
@@ -99,7 +99,7 @@ const parseDateString = (dateString) => {
   }
 }
 
-function getWeekNumber (d) {
+function getWeekNumber(d) {
   // Copy date so don't modify original
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
   // Set to nearest Thursday: current date + 4 - current day number

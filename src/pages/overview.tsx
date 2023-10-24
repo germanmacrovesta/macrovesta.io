@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { prisma } from '../server/db'
 import Sidebar from '../components/sidebar'
-import Breadcrumbs from '../components/breadcrumbs'
+import Breadcrumbs from '../components/NavBar'
 import TabMenu from '../components/tabmenu'
 import { useRouter } from 'next/router'
 import { TabMenuArray } from '../components/tabMenuArray'
@@ -46,7 +46,7 @@ const defaultWidgetProps: Partial<ChartingLibraryWidgetOptions> = {
   autosize: true
 }
 
-function getCurrentMonth () {
+function getCurrentMonth() {
   // Create a new Date object
   const date = new Date()
 
@@ -97,7 +97,7 @@ const parseDateString = (dateString) => {
   }
 }
 
-function getWeekNumber (d) {
+function getWeekNumber(d) {
   // Copy date so don't modify original
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
   // Set to nearest Thursday: current date + 4 - current day number
@@ -689,14 +689,14 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return result
   }
 
-  function getWeek (date, startDay) {
+  function getWeek(date, startDay) {
     const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
     tempDate.setUTCDate(tempDate.getUTCDate() + 3 - (tempDate.getUTCDay() + 6 - startDay + 7) % 7)
     const week1 = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4))
     return 1 + Math.ceil(((tempDate - week1) / 86400000 + 3) / 7)
   }
 
-  function transformData (input) {
+  function transformData(input) {
     const contract1Data = { name: 'CTZ23', data: [], noCircles: true }
     const contract2Data = { name: 'CTZ24', data: [], noCircles: true }
     input.forEach((item) => {
@@ -843,7 +843,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
   //   return outputArray;
   // }
 
-  function transformSurveyData (inputArray, propertyUsed) {
+  function transformSurveyData(inputArray, propertyUsed) {
     const outputArray = []
     const averages = {}
     // const combinedSeries = {
@@ -943,7 +943,7 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return outputArray
   }
 
-  function calculateSpread (arr1, arr2, name) {
+  function calculateSpread(arr1, arr2, name) {
     // Transform arrays into maps for easy lookup
     const map1 = new Map(arr1.map(item => [item.datetime, item.close]))
     const map2 = new Map(arr2.map(item => [item.datetime, item.close]))

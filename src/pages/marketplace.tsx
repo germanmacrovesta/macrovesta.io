@@ -1,8 +1,7 @@
 import { type NextPage } from 'next'
 import Head from 'next/head'
 import { prisma } from '../server/db'
-import Sidebar from '../components/sidebar'
-import Breadcrumbs from '../components/breadcrumbs'
+import NavBar from '../components/NavBar'
 import { useRouter } from 'next/router'
 import React from 'react'
 import type {
@@ -12,7 +11,12 @@ import type {
 import { useSession, getSession } from 'next-auth/react'
 import useWeglotLang from '../components/useWeglotLang'
 import { parseDateString } from '~/utils/dateUtils'
-import { Card, CardFooter, CardBody, CardHeader, Image, Button } from '@nextui-org/react'
+import Image from 'next/image'
+import { Card, CardFooter, CardBody, CardHeader, Button, Select, SelectItem, Chip } from '@nextui-org/react'
+import Footer from '~/components/footer'
+import DashboardFooter from '~/components/DashboardFooter'
+import { Divider } from '@nextui-org/react'
+import Link from 'next/link'
 
 const Home: NextPage = ({ marketplaceData }) => {
   const router = useRouter()
@@ -21,8 +25,6 @@ const Home: NextPage = ({ marketplaceData }) => {
   const currentLang = useWeglotLang()
 
   const { data: session } = useSession()
-  console.log('session', session)
-  console.log('session.submittedSurvey', session?.submittedSurvey)
 
   const todaysDate = new Date()
 
@@ -168,6 +170,7 @@ const Home: NextPage = ({ marketplaceData }) => {
   }
 
   const [marketplacePopup, setMarketplacePopup] = React.useState(null)
+  const productOptions = [{ name: 'Cotton', parameter: 'cotton' }, { name: 'Cotton Waste', parameter: 'cotton waste' }]
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
@@ -210,7 +213,7 @@ const Home: NextPage = ({ marketplaceData }) => {
       console.log(error)
     }
   }
-
+  console.log(JSON.parse(marketplaceData).slice(0, 4))
   return (
     <>
       <Head>
@@ -230,135 +233,242 @@ const Home: NextPage = ({ marketplaceData }) => {
           })}
         </script> */}
       </Head>
-      <main className="main grid grid-cols-[160px_auto] h-screen items-center bg-slate-200">
-        <Sidebar />
-        <div className="w-40"></div>
+      <main className="main h-screen items-center bg-slate-200">
+
         <div className="flex w-full flex-col self-start">
 
-          <Breadcrumbs title={'Marketplace'} urlPath={urlPath} user={session?.user.name} />
-          {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
+          <NavBar title={'Marketplace'} urlPath={urlPath} user={session?.user.name} />
+          <div className="p-6 mx-8 bg-slate-200 mb-5">
+          <Button as={Link} color='success' className='w-[50%]' href='/' variant='flat'>
+              Marketplace Seller panel
+            </Button>
+            <div className='md:flex justify-between items-center '>
+              <h1 className="relative inline-block text-xl -z-0 italic align-baseline">
+                Featured Products
+                <span className="absolute -z-10 left-2 bottom-0 w-full h-[20%] bg-gradient-to-r from-transparent via-transparent to-green-400"></span>
+              </h1>
+              <Select
+                radius='md'
+                label='Category'
+                className='md:max-w-sm'
+                size='sm'
+                placeholder='Default: Cotton'
+                variant='underlined'
+                defaultSelectedKeys={['cotton']}
+              >
+                {productOptions.map((option) => (
+                  <SelectItem key={option.parameter} value={option.parameter}>
+                    {option.name}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
 
-          {/* <WeglotLanguageSwitcher
-            domain="macrovesta.ai"
-            langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
-          <div className="p-6 bg-slate-200">
-            <div>
-              <div className="text-lg font-semibold text-center mb-2">
-                Marketplace
-              </div>
-              <div className="grid grid-cols-1 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2  gap-4 mx-auto ">
-                {JSON.parse(marketplaceData).map((offer: any) => (
-                  <Card className="py-4 hover:scale-105" key={offer.product}>
+            <div className="grid md:grid-cols-4 md:grid-rows-2 gap-4 mt-4">
+              {JSON.parse(marketplaceData).slice(0, 4).map((offer: any, index: any) => (
+                <div key={offer.product} className={`${index === 0
+                  ? 'md:col-start-1 md:col-end-3 md:row-start-1 md:row-end-3'
+                  : index === 1
+                    ? 'md:col-start-3 md:col-end-5 md:row-start-1 md:row-end-2'
+                    : index === 2
+                      ? 'md:col-start-3 md:col-end-4 md:row-start-2 md:row-end-3'
+                      : index === 3
+                        ? 'md:col-start-4 md:col-end-5 md:row-start-2 md:row-end-3'
+                        : ''
+                  }`}>
+                  <Card className="p-0 hover:scale-[102%] h-full relative" >
+                    <CardBody className=" flex flex-col justify-between relative h-52 p-0 overflow-hidden z-0">
+                      <div className='flex justify-between p-4'>
+                        <h4 className="font-bold text-large text-white italic">{offer.product}</h4>
+                        <Chip
+                          variant="shadow"
+                          classNames={{
+                            base: 'bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white/50 shadow-pink-500/30',
+                            content: 'drop-shadow shadow-black text-white'
+                          }}
+                        >
+                          {offer.category}
+                        </Chip>
+                      </div>
+
+                      {/* Gradient layer */}
+                      <div className='flex flex-col justify-between absolute w-full h-full -z-10 '>
+                        <div className='bg-gradient-to-b from-black to-transparent w-full h-[40%] opacity-80'></div>
+                        <div className='bg-gradient-to-t from-black to-transparent w-full h-[40%] opacity-80 '></div>
+                      </div>
+
+                      <Image
+                        alt="Card background"
+                        className="absolute -z-20 "
+                        src='/product-mock-1.jpeg'
+                        fill={true}
+                        sizes="(max-width: 768px) 100vw"
+                        style={{ objectFit: 'cover' }}
+                      />
+
+                      <div className='flex justify-between items-center p-4'>
+                        <Chip variant='dot' className='text-white' color={`${offer.quantity > 10
+                          ? 'success'
+                          : offer.quantity > 5
+                            ? 'warning'
+                            : 'danger'
+                          }`}>
+                          <span className={`${index === 0 || index === 1 ? 'md:inline' : ''} hidden`}>Available Stock </span>
+                          {offer.quantity}
+                        </Chip>
+
+                        <Button href={`/product/${offer.record_id}`} as={Link} variant='ghost' className='text-white'>
+                          Check Product
+                        </Button>
+
+                      </div>
+                    </CardBody>
+                  </Card>
+                </div>
+              ))}
+            </div>
+
+            <div className='md:flex justify-between items-center my-5'>
+              <h1 className="relative inline-block text-xl -z-0 italic">
+                Exclusive for you
+                <span className="absolute -z-10 left-2 bottom-0 w-full h-[20%] bg-gradient-to-r from-transparent via-transparent to-green-400"></span>
+              </h1>
+              <Select
+                radius='md'
+                label='Category'
+                className='md:max-w-sm'
+                size='sm'
+                placeholder='Default: Cotton'
+                variant='underlined'
+                defaultSelectedKeys={['cotton']}
+              >
+                {productOptions.map((option) => (
+                  <SelectItem key={option.parameter} value={option.parameter}>
+                    {option.name}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+
+            <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-4 mt-4">
+              {JSON.parse(marketplaceData).slice(0, 4).map((offer: any, index: any) => (
+                <div key={offer.product}>
+                  <Card className="py-4 hover:scale-105 h-full" >
                     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                       <p className="text-tiny uppercase font-bold">{offer.category}</p>
                       <small className={`${offer.stock_tonnes > 10
                         ? 'text-green-600'
-                        : offer.stock_tonnes > 5
+                        : offer.quantity > 5
                           ? 'text-orange-600'
                           : 'text-red-600'
-                        } text-default-500`}>Available Stock {offer.stock_tonnes}</small>
+                        } text-default-500`}>Available Stock {offer.quantity}</small>
                       <h4 className="font-bold text-large">{offer.product}</h4>
                     </CardHeader>
                     <CardBody className="overflow-visible py-2">
                       <Image
                         alt="Card background"
                         className="object-cover rounded-xl"
-                        src={offer.image_url}
-                        width={270}
+                        src='/product-mock-1.jpeg'
+                        width={100}
+                        height={100}
                       />
+                      <Button variant='ghost'>
+                        Check Product
+                      </Button>
                     </CardBody>
                   </Card>
-
-                ))}
-              </div>
-
-              <form onSubmit={handleSubmit} className='mt-20 w-[50%] border rounded-lg p-4 shadow-md'>
-                <h1 className='mb-5 font-bold'>Add new product</h1>
-                <label
-                  htmlFor="cents_per_pound3"
-                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                >
-                  Product name
-                </label>
-                <input
-                  type="text"
-                  id="product"
-                  required
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                  placeholder="Enter the product name"
-                />
-                <label
-                  htmlFor="cents_per_pound3"
-                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                >
-                  Image Url
-                </label>
-                <input
-                  type="text"
-                  id="image"
-                  required
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                  placeholder="Enter the image url"
-                />
-                <label
-                  htmlFor="cents_per_pound3"
-                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                >
-                  Category
-                </label>
-                <input
-                  type="text"
-                  id="category"
-                  required
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                  placeholder="Enter the product category"
-                />
-                <label
-                  htmlFor="cents_per_pound3"
-                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                >
-                  Stock in tonnes
-                </label>
-                <input
-                  type="number"
-                  id="stock"
-                  required
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                  placeholder="Enter the product stock"
-                />
-                <label
-                  htmlFor="cents_per_pound3"
-                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                >
-                  Description
-                </label>
-                <input
-                  type="text"
-                  id="description"
-                  required
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                  placeholder="Enter the product description"
-                />
-                <label
-                  htmlFor="cents_per_pound3"
-                  className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                >
-                  Price in USD
-                </label>
-                <input
-                  type="text"
-                  id="price"
-                  required
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                  placeholder="Enter the product Price"
-                />
-                <Button type='submit' variant='bordered' className='mt-5' >Add a product!</Button>
-
-              </form>
+                </div>
+              ))}
             </div>
+
+            <form onSubmit={handleSubmit} className='mt-20 w-[50%] border rounded-lg p-4 shadow-md bg-slate-50'>
+              <h1 className='mb-5 font-bold'>Add new product</h1>
+              <label
+                htmlFor="cents_per_pound3"
+                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+              >
+                Product name
+              </label>
+              <input
+                type="text"
+                id="product"
+                required
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                placeholder="Enter the product name"
+              />
+              <label
+                htmlFor="cents_per_pound3"
+                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+              >
+                Image Url
+              </label>
+              <input
+                type="text"
+                id="image"
+                required
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                placeholder="Enter the image url"
+              />
+              <label
+                htmlFor="cents_per_pound3"
+                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+              >
+                Category
+              </label>
+              <input
+                type="text"
+                id="category"
+                required
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                placeholder="Enter the product category"
+              />
+              <label
+                htmlFor="cents_per_pound3"
+                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+              >
+                Stock in tonnes
+              </label>
+              <input
+                type="number"
+                id="stock"
+                required
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                placeholder="Enter the product stock"
+              />
+              <label
+                htmlFor="cents_per_pound3"
+                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+              >
+                Description
+              </label>
+              <input
+                type="text"
+                id="description"
+                required
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                placeholder="Enter the product description"
+              />
+              <label
+                htmlFor="cents_per_pound3"
+                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
+              >
+                Price in USD
+              </label>
+              <input
+                type="text"
+                id="price"
+                required
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
+                placeholder="Enter the product Price"
+              />
+              <Button type='submit' variant='bordered' className='mt-5' >Add a product!</Button>
+
+            </form>
+
           </div>
 
         </div>
+        <DashboardFooter />
       </main >
     </>
   )
