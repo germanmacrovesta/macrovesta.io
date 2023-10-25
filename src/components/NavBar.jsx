@@ -5,24 +5,7 @@ import { useState } from 'react'
 import SingleSelectDropdown from './singleSelectDropdown'
 import FormSubmit from './formSubmit'
 
-export default function NavBar (props) {
-  const { data: session } = useSession()
-  const urlcrumbs = props.urlPath.split('/')
-  const textcrumbs = props.urlPath.replace('-', ' ').split('/')
-
-  textcrumbs.shift()
-  urlcrumbs.shift()
-
-  function partialURL (index) {
-    let url = props.root + '/'
-    for (let i = 0; i <= index; i++) {
-      url += urlcrumbs[i]
-      url += '/'
-    }
-    console.log(url)
-    return url
-  }
-
+export default function NavBar (session) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(false)
   const [newVenue, setNewVenue] = useState(null)
@@ -39,8 +22,6 @@ export default function NavBar (props) {
   } else if (splitPath.length >= 3) {
     active = ['/' + splitPath[splitPath.length - 1], '/' + splitPath[splitPath.length - 2], '/' + splitPath[splitPath.length - 3], '/' + splitPath[splitPath.length - 3]]
   }
-
-  const activeVenue = 'ApplePop'
 
   const [openBugForm, setOpenBugForm] = useState(false)
 
@@ -160,7 +141,7 @@ export default function NavBar (props) {
       href: '/marketplace'
     }
   ]
-
+  console.log(session)
   return (
     <>
       <Navbar
@@ -183,44 +164,48 @@ export default function NavBar (props) {
         </NavbarContent>
 
         <NavbarContent className='hidden sm:flex gap-4 max-w-full relative' justify='center'>
+          <NavbarItem className='relative'>
+            <Link className='w-[32px] h-[32px]' href='/'>
+              <img src='/logo-small.png' alt='' className='hover:cursor-pointer' />
+            </Link>
+          </NavbarItem>
 
-          {menuItems.map((item, index) => (
-            <NavbarItem key={`${item}-${index}`} className='relative'>
-              {item.name === 'Home'
-                ? (
-                  <Link className='w-[32px] h-[32px]' href='/'>
-                    <img src='/logo-small.png' alt='' className='hover:cursor-pointer' />
-                  </Link>
-                  )
-                : item.name === 'Improvements'
-                  ? (
-                    <Link href={item.href} className='text-black relative'>
-                      {item.name}
-                    </Link>
-                    )
-                  : (
-                    <Badge
-                      content='&#9733;' color='danger' size='sm' className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30'
-                    >
-                      <Link href={item.href} className='text-black relative'>
-                        {item.name}
-                      </Link>
-                    </Badge>
-                    )}
-            </NavbarItem>
-          ))}
+          <NavbarItem className='relative'>
+            <Link href='/improvements' className='text-black relative'>
+              Improvements
+            </Link>
+          </NavbarItem>
+
+          <NavbarItem className='relative'>
+            <Badge
+              content='&#9733;'
+              color='danger'
+              size='sm'
+              className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30'
+            >
+              <Link href='/position' className='text-black relative'>
+                Position
+              </Link>
+            </Badge>
+          </NavbarItem>
+
           <Dropdown>
             <NavbarItem>
-              <DropdownTrigger>
-                <Button
-                  disableRipple
-                  className='p-0 bg-transparent data-[hover=true]:bg-transparent'
-                  radius='sm'
-                  variant='light'
-                >
-                  Features
-                </Button>
-              </DropdownTrigger>
+              <Badge
+                content='&#9733;'
+                color='danger'
+                size='sm'
+                className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30'
+              >
+                <DropdownTrigger>
+                  <Link href='/marketplace' className='text-black relative'>
+                    <p className='mr-1'>Marketplace</p>
+                    <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
+                    </svg>
+                  </Link>
+                </DropdownTrigger>
+              </Badge>
             </NavbarItem>
             <DropdownMenu
               aria-label='ACME features'
@@ -231,38 +216,15 @@ export default function NavBar (props) {
             >
               <DropdownItem
                 key='autoscaling'
-                description='ACME scales apps to meet user demand, automagically, based on load.'
-
+                description='Manage your products in the market.'
+                startContent={<svg xmlns='http://www.w3.org/2000/svg' height='1.5rem' viewBox='0 0 640 512'><path d='M36.8 192H603.2c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0H121.7c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224V384v80c0 26.5 21.5 48 48 48H336c26.5 0 48-21.5 48-48V384 224H320V384H128V224H64zm448 0V480c0 17.7 14.3 32 32 32s32-14.3 32-32V224H512z' /></svg>}
               >
-                Autoscaling
-              </DropdownItem>
-              <DropdownItem
-                key='usage_metrics'
-                description='Real-time metrics to debug issues. Slow query added? We’ll show you exactly where.'
-              >
-                Usage Metrics
-              </DropdownItem>
-              <DropdownItem
-                key='production_ready'
-                description='ACME runs on ACME, join us and others serving requests at web scale.'
-              >
-                Production Ready
-              </DropdownItem>
-              <DropdownItem
-                key='99_uptime'
-                description='Applications stay on the grid with high availability and high uptime guarantees.'
-              >
-                +99% Uptime
-              </DropdownItem>
-              <DropdownItem
-                key='supreme_support'
-                description='Overcome any challenge with a supporting team ready to respond.'
-              >
-                +Supreme Support
+                Seller Panel
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </NavbarContent>
+
         <NavbarContent justify='end'>
           <NavbarItem className='hidden sm:inline'>
             <Button as={Link} color='success' className='hidden sm:flex ' href='/my-dashboard' variant='flat'>
@@ -277,7 +239,7 @@ export default function NavBar (props) {
           <Dropdown placement='bottom-end'>
             <DropdownTrigger>
               <Avatar
-                name={session?.user.name}
+                name={session?.user?.name}
                 as='button'
                 className='transition-transform'
                 size='md'
@@ -286,9 +248,9 @@ export default function NavBar (props) {
             </DropdownTrigger>
             <DropdownMenu aria-label='Profile Actions' variant='flat'>
               <DropdownItem key='profile' className='h-14 gap-2'>
-                <p className='font-semibold'>Signed in as</p>
-                <p className='font-semibold'>senpudev@gmail.com</p>
-                <p className='font-semibold'>Role: User </p>
+                <p className='font-semibold'>{session.session?.user.name}</p>
+                <p className='font-semibold'>{session.session?.user.email}</p>
+                <p className='font-semibold'>Role: {session.session?.role} </p>
               </DropdownItem>
               <DropdownItem key='settings'>
                 <Link className='text-black' href='/system-preferences'>

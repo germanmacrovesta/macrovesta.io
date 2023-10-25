@@ -4,19 +4,81 @@ import { parseDateString } from '~/utils/dateUtils'
 import Alert from './Alert'
 import useValidate from '~/hooks/useValidation'
 import { useCustomModal } from '~/context/ModalContext'
+import ModalForm from './ModalForm'
+
 // TODO: Modal for FutureEvents, RecentEvents & InCountryNews. Have to split Validations and Submit into CHook or Functions
 const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
   const { modalType, modalSection, modalData } = useCustomModal()
-  // Build the required fields that user must be introduce depending on section type
-  const initialObject = {
-    title: '',
-    text: '',
-    impact: '',
-    ...(modalSection === 'In Country News' && { country: '' }),
-    ...(modalSection === 'Recent Events' && { news_type: modalSection }),
-    ...(modalSection === 'Future Considerations' && { news_type: '' })
+
+  // Can be extracted from here
+  function obtainCustomKeys (modalSection) {
+    let objectShape
+    console.log(modalSection)
+    switch (modalSection) {
+      case 'In Country News':
+        objectShape = {
+          title: '',
+          text: '',
+          impact: '',
+          country: ''
+        }
+        return objectShape
+      case 'Recent Events':
+        objectShape = {
+          title: '',
+          text: '',
+          impact: '',
+          news_type: modalSection
+        }
+        return objectShape
+      case 'Future Considerations':
+        objectShape = {
+          title: '',
+          text: '',
+          impact: '',
+          news_type: ''
+        }
+        return objectShape
+      case 'Add Product':
+        objectShape = {
+          product: '',
+          category: '',
+          quantity: '',
+          description: '',
+          price_usd: '',
+          quality: '',
+          shipment: '',
+          payment_terms: ''
+        }
+        return objectShape
+      default:
+        console.log(modalSection)
+        break
+    }
   }
 
+  function obtainEndPoint (modalSection) {
+    let endpoint
+    switch (modalSection) {
+      case 'In Country News':
+        endpoint = '/api/add-country-news'
+        return endpoint
+      case 'Recent Events':
+      case 'Future Considerations':
+        endpoint = '/api/add-snapshot'
+        return endpoint
+      case 'Add Product':
+        endpoint = '/api/add-product'
+        return endpoint
+      default:
+        console.log(modalSection)
+        break
+    }
+  }
+
+  // ---
+
+  const initialObject = obtainCustomKeys(modalSection) // Depends on modalSection initialObjectForm varies
   console.log(initialObject)
 
   const {
@@ -28,17 +90,15 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
     objectIsValid,
     setObjectIsValid
   } = useValidate(initialObject)
+
   console.log(objectToValidate)
   // Clear any alert when modal open or close
   useEffect(() => {
     setValidationAlert({})
   }, [onOpenChange])
-
+  
   // Select Options (Can be moved into a sample CONST file)
-  const impactSelect = [{ name: 'High Impact', parameter: 'High' }, { name: 'Low impact', parameter: 'Low' }]
-  const countrySelect = [{ country: 'Brazil' }, { country: 'USA' }, { country: 'Bangladesh' }, { country: 'Australia' }, { country: 'Pakistan' }, { country: 'Vietnam' }, { country: 'India' }, { country: 'China' }, { country: 'Thailand' }, { country: 'Turkey' }, { country: 'Spain' }, { country: 'UK' }, { country: 'West Africa' }, { country: 'Indonesia' }, { country: 'Greece' }, { country: 'Other' }]
-  const termSelect = [{ parameter: 'Long Term' }, { parameter: 'Short Term' }]
-
+  
   // Data to Display when modal is 'info' type
   const title = modalData?.title_of_snapshot_strategy || modalData?.title_of_in_country_news
   const text = modalData?.text_of_snapshot_strategy || modalData?.text_of_in_country_news
@@ -60,10 +120,10 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
     const JSONdata = JSON.stringify(data)
 
     // API endpoint where we send form data.
-    const endpoint = modalSection === 'In Country News' ? '/api/add-country-news' : '/api/add-snapshot'
+    const endpoint = obtainEndPoint(modalSection)
 
     console.log(objectToValidate, endpoint)
-
+    return
     // Form the request for sending data to the server.
     const options = {
       // The method is POST because we are sending data.
@@ -92,14 +152,34 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
     }
   }, [objectIsValid])
 
-  const handleSnapshotFormSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log(objectToValidate)
     setStartValidation(true)
   }
 
   return (
     <Modal
-      size='2xl' isOpen={isOpen} onOpenChange={onOpenChange} classNames={{
+      size='2xl' isOpen={isOpen} onOpenChange={onOpenChange} motionProps={{
+        variants: {
+          enter: {
+            y: 0,
+            opacity: 1,
+            transition: {
+              duration: 0.3,
+              ease: 'easeOut'
+            }
+          },
+          exit: {
+            y: 20,
+            opacity: 0,
+            transition: {
+              duration: 0.2,
+              ease: 'easeIn'
+            }
+          }
+        }
+      }} classNames={{
         body: 'py-6',
         backdrop: 'bg-[#292f46]/50 backdrop-opacity-40',
         header: 'border-b-[1px] border-[#bec1ce]',
@@ -111,12 +191,7 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
         {(onClose) => (
           <>
             <ModalHeader className='flex flex-col gap-1'>
-              {modalType === 'info' && (
-                <h2 className='text-center'>{modalSection}</h2>
-              )}
-              {modalType === 'form' && (
-                <h2 className='text-center'>{modalSection}</h2>
-              )}
+              <h2 className='text-center'>{modalSection}</h2>
             </ModalHeader>
             <ModalBody>
               {modalType === 'info' && (
@@ -141,112 +216,12 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
 
                 <div className='w-full'>
                   {(validationAlert.msg) && <Alert alert={validationAlert} />}
-                  <form className='mt-4 flex flex-col gap-x-4 w-full' id='modal-form' onSubmit={handleSnapshotFormSubmit}>
-                    <div className='flex gap-4'>
-                      <Select
-                        radius='md'
-                        label='Select the impact'
-                        classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
-                        className='mb-4'
-                        size='md'
-                        name='impact'
-                        onChange={handleChange}
-                        placeholder='Select the impact'
-                        variant='bordered'
-                        labelPlacement='outside'
-                      >
-                        {impactSelect.map((option) => (
-                          <SelectItem key={option.parameter} value={option.parameter}>
-                            {option.name}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                      {modalSection === 'Future Considerations' && (
-                        <Select
-                          radius='md'
-                          label='Select the term'
-                          classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
-                          className='mb-4'
-                          size='md'
-                          name='news_type'
-                          onChange={handleChange}
-                          placeholder='Future long/short term consideration'
-                          variant='bordered'
-                          labelPlacement='outside'
-                        >
-                          {termSelect.map((option) => (
-                            <SelectItem key={option.parameter} value={option.parameter}>
-                              {option.parameter}
-                            </SelectItem>
-                          ))}
-                        </Select>
-                      )}
-                    </div>
-                    {modalSection === 'In Country News' && (
-                      <Select
-                        radius='md'
-                        label='Select a Country'
-                        classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
-                        className='mb-4'
-                        size='md'
-                        name='country'
-                        onChange={handleChange}
-                        placeholder='Select the country'
-                        variant='bordered'
-                        labelPlacement='outside'
-                      >
-                        {countrySelect.map((option) => (
-                          <SelectItem key={option.country} value={option.country}>
-                            {option.country}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                    <div className='mb-4'>
-                      <label
-                        htmlFor='image'
-                        className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-                      >
-                        Image (optional)
-                      </label>
-                      <input
-                        type='text'
-                        name='image'
-                        onChange={handleChange}
-                        className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-                        placeholder='Enter a url to an image e.g. https://picsum.photos/200'
-                      />
-                    </div>
-                    <div className='mb-4'>
-                      <label
-                        htmlFor='title'
-                        className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-                      >
-                        Title
-                      </label>
-                      <input
-                        type='text'
-                        name='title'
-                        onChange={handleChange}
-                        className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-                        placeholder='Enter title'
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor='text'
-                        className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-                      >
-                        Text
-                      </label>
-                      <textarea placeholder='Enter text' name='text' onChange={handleChange} rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
-                    </div>
-
-                  </form>
+                  <ModalForm modalSection={modalSection} handleChange={handleChange} handleSubmit={handleSubmit} />
                 </div>
               )}
 
             </ModalBody>
+
             {modalType === 'form' && (
               <ModalFooter>
                 <Button

@@ -171,49 +171,6 @@ const Home: NextPage = ({ marketplaceData }) => {
 
   const [marketplacePopup, setMarketplacePopup] = React.useState(null)
   const productOptions = [{ name: 'Cotton', parameter: 'cotton' }, { name: 'Cotton Waste', parameter: 'cotton waste' }]
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault()
-
-    const product = e.target.product?.value
-    const stockTonnes = e.target.stock.value
-    const description = e.target.description.value
-    const priceUSD = e.target.price?.value
-    const category = e.target.category?.value
-    const imageUrl = e.target.image?.value
-
-    try {
-      const data = {
-        product,
-        stock_tonnes: stockTonnes,
-        price_usd: priceUSD,
-        description,
-        category,
-        image_url: imageUrl,
-        added_by: session?.user?.name
-      }
-      console.log(data)
-
-      const JSONdata = JSON.stringify(data)
-      const endpoint = '/api/add-product'
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSONdata
-      }
-
-      // Send the form data to our forms API on Vercel and get a response.
-      const response = await fetch(endpoint, options)
-      console.log(response)
-      const result = await response.json()
-      console.log(result)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  console.log(JSON.parse(marketplaceData).slice(0, 4))
   return (
     <>
       <Head>
@@ -233,15 +190,17 @@ const Home: NextPage = ({ marketplaceData }) => {
           })}
         </script> */}
       </Head>
-      <main className="main h-screen items-center bg-slate-200">
+      <main className="main h-full items-center bg-slate-200">
 
         <div className="flex w-full flex-col self-start">
 
-          <NavBar title={'Marketplace'} urlPath={urlPath} user={session?.user.name} />
+          <NavBar session={session} />
           <div className="p-6 mx-8 bg-slate-200 mb-5">
-          <Button as={Link} color='success' className='w-[50%]' href='/' variant='flat'>
-              Marketplace Seller panel
-            </Button>
+            <div className='flex justify-end'>
+              <Button as={Link} color='danger' className='w-[25%]' href='/marketplace-seller-panel' variant='flat'>
+                Marketplace Seller panel
+              </Button>
+            </div>
             <div className='md:flex justify-between items-center '>
               <h1 className="relative inline-block text-xl -z-0 italic align-baseline">
                 Featured Products
@@ -380,93 +339,7 @@ const Home: NextPage = ({ marketplaceData }) => {
                 </div>
               ))}
             </div>
-
-            <form onSubmit={handleSubmit} className='mt-20 w-[50%] border rounded-lg p-4 shadow-md bg-slate-50'>
-              <h1 className='mb-5 font-bold'>Add new product</h1>
-              <label
-                htmlFor="cents_per_pound3"
-                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-              >
-                Product name
-              </label>
-              <input
-                type="text"
-                id="product"
-                required
-                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                placeholder="Enter the product name"
-              />
-              <label
-                htmlFor="cents_per_pound3"
-                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-              >
-                Image Url
-              </label>
-              <input
-                type="text"
-                id="image"
-                required
-                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                placeholder="Enter the image url"
-              />
-              <label
-                htmlFor="cents_per_pound3"
-                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-              >
-                Category
-              </label>
-              <input
-                type="text"
-                id="category"
-                required
-                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                placeholder="Enter the product category"
-              />
-              <label
-                htmlFor="cents_per_pound3"
-                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-              >
-                Stock in tonnes
-              </label>
-              <input
-                type="number"
-                id="stock"
-                required
-                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                placeholder="Enter the product stock"
-              />
-              <label
-                htmlFor="cents_per_pound3"
-                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-              >
-                Description
-              </label>
-              <input
-                type="text"
-                id="description"
-                required
-                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                placeholder="Enter the product description"
-              />
-              <label
-                htmlFor="cents_per_pound3"
-                className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-              >
-                Price in USD
-              </label>
-              <input
-                type="text"
-                id="price"
-                required
-                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                placeholder="Enter the product Price"
-              />
-              <Button type='submit' variant='bordered' className='mt-5' >Add a product!</Button>
-
-            </form>
-
           </div>
-
         </div>
         <DashboardFooter />
       </main >
