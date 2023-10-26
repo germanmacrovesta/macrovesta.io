@@ -9,11 +9,15 @@ const AddProduct = async (req: NextApiRequest, res: NextApiResponse) => {
     await prisma?.marketplace.create({
       data: {
         product: req.body.product,
-        stock_tonnes: req.body.stock_tonnes,
-        price_usd: req.body.price_usd,
-        description: req.body.description,
-        image_url: req.body.image_url,
         category: req.body.category,
+        quantity: req.body.quantity,
+        description: req.body.description,
+        price_usd: req.body.price_usd,
+        quality: req.body.quality,
+        shipment: req.body.shipment,
+        payment_terms: req.body.payment_terms,
+        hvi_file: req.body.hvi_file,
+        image_url: req.body.image_url,
         added_by: req.body.added_by
       }
     })

@@ -94,7 +94,7 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-//Below is the table marketplace
+//Below is the table marketplace TODO: maketplace_agent, marketplace_client_list
 
 model marketplace {
     record_id    String   @id @default(cuid())
@@ -106,9 +106,18 @@ model marketplace {
     image_url    String?
     price_usd    Decimal?
     added_by     String?
+    hvi_file     String
     shipment     String
     payment_terms String
     date_created DateTime @default(now())
+}
+
+//Below is the table marketplace_agent
+model marketplace_agent {
+    record_id      String   @id @default(cuid())
+    marketplace_id String
+    agent_id       String
+    date_created   DateTime @default(now())
 }
 
 //Below is the table a_index

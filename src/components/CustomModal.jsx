@@ -7,10 +7,10 @@ import { useCustomModal } from '~/context/ModalContext'
 import ModalForm from './ModalForm'
 
 // TODO: Modal for FutureEvents, RecentEvents & InCountryNews. Have to split Validations and Submit into CHook or Functions
-const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
+const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavior = 'inside' }) => {
   const { modalType, modalSection, modalData } = useCustomModal()
 
-  // Can be extracted from here
+  // Can be separated ---
   function obtainCustomKeys (modalSection) {
     let objectShape
     console.log(modalSection)
@@ -48,6 +48,7 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
           price_usd: '',
           quality: '',
           shipment: '',
+          hvi_file: '',
           payment_terms: ''
         }
         return objectShape
@@ -92,13 +93,14 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
   } = useValidate(initialObject)
 
   console.log(objectToValidate)
+
   // Clear any alert when modal open or close
   useEffect(() => {
     setValidationAlert({})
   }, [onOpenChange])
-  
+
   // Select Options (Can be moved into a sample CONST file)
-  
+
   // Data to Display when modal is 'info' type
   const title = modalData?.title_of_snapshot_strategy || modalData?.title_of_in_country_news
   const text = modalData?.text_of_snapshot_strategy || modalData?.text_of_in_country_news
@@ -108,13 +110,19 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
 
   // Fill the object name/value
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setObjectToValidate((objectToValidate) => ({ ...objectToValidate, [name]: value }))
+    if (e.name) { // Is File field
+      setObjectToValidate((objectToValidate) => ({ ...objectToValidate, hvi_file: e.name }))
+    }
+    if (e.target) { // Is Basic field
+      const { name, value } = e.target
+      setObjectToValidate((objectToValidate) => ({ ...objectToValidate, [name]: value }))
+      console.log(objectToValidate)
+    }
   }
 
   async function sendForm () {
     setObjectIsValid(false)
-    const data = { ...objectToValidate, user: session?.user?.name }
+    const data = { ...objectToValidate, added_by: session?.user?.name }
 
     // Send the data to the server in JSON format.
     const JSONdata = JSON.stringify(data)
@@ -122,8 +130,8 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
     // API endpoint where we send form data.
     const endpoint = obtainEndPoint(modalSection)
 
-    console.log(objectToValidate, endpoint)
-    return
+    console.log(data, endpoint)
+
     // Form the request for sending data to the server.
     const options = {
       // The method is POST because we are sending data.
@@ -160,7 +168,7 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
 
   return (
     <Modal
-      size='2xl' isOpen={isOpen} onOpenChange={onOpenChange} motionProps={{
+      size={size} scrollBehavior={scrollBehavior} isOpen={isOpen} onOpenChange={onOpenChange} motionProps={{
         variants: {
           enter: {
             y: 0,
@@ -171,7 +179,7 @@ const CustomModal = ({ isOpen, onOpenChange, size = 'md', session }) => {
             }
           },
           exit: {
-            y: 20,
+            y: 80,
             opacity: 0,
             transition: {
               duration: 0.2,

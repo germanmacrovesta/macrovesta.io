@@ -30,6 +30,7 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-cookie": "^6.1.1",
     "react-dom": "18.2.0",
+    "react-drag-drop-files": "^2.3.10",
     "react-markdown": "^8.0.7",
     "react-stately": "^3.19.0",
     "zod": "^3.21.4"

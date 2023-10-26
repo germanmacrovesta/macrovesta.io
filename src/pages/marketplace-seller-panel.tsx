@@ -10,8 +10,8 @@ import { useDisclosure } from '@nextui-org/react'
 import dynamic from 'next/dynamic'
 
 const CustomModal = dynamic(() => import('../components/CustomModal'), { ssr: false })
-// Only needs product + avaiable properties
-const MarketPlaceSellerPanel = ({ marketplaceData }) => {
+// Only needs product + available properties
+const MarketPlaceSellerPanel = ({ marketplaceData, agentsData }) => {
   const { data: session } = useSession()
 
   const columns = [
@@ -27,48 +27,6 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
   const handleOpenModal = (type, section, data) => {
     openModal(type, section, data)
     onOpen()
-  }
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault()
-
-    const product = e.target.product?.value
-    const stockTonnes = e.target.stock.value
-    const description = e.target.description.value
-    const priceUSD = e.target.price?.value
-    const category = e.target.category?.value
-    const imageUrl = e.target.image?.value
-
-    try {
-      const data = {
-        product,
-        stock_tonnes: stockTonnes,
-        price_usd: priceUSD,
-        description,
-        category,
-        image_url: imageUrl,
-        added_by: session?.user?.name
-      }
-      console.log(data)
-
-      const JSONdata = JSON.stringify(data)
-      const endpoint = '/api/add-product'
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSONdata
-      }
-
-      // Send the form data to our forms API on Vercel and get a response.
-      const response = await fetch(endpoint, options)
-      console.log(response)
-      const result = await response.json()
-      console.log(result)
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   // TODO: Move to table component
@@ -106,24 +64,27 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
       case 'actions':
         return (
           <div className='relative flex items-center justify-center gap-2'>
-            <Tooltip content='Details'>
+            <Tooltip content='See Details'>
               <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-                <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
-                  <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+
+              </span>
+            </Tooltip>
+            <Tooltip content='Edit Product'>
+              <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                  <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
+                  <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
                 </svg>
               </span>
             </Tooltip>
-            <Tooltip content='Edit user'>
-              <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-                <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
-                  <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
-                </svg>
-              </span>
-            </Tooltip>
-            <Tooltip color='danger' content='Delete user'>
+            <Tooltip color='danger' content='Delete Product'>
               <span className='text-lg text-danger cursor-pointer active:opacity-50'>
-                <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
-                  <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </span>
             </Tooltip>
@@ -135,7 +96,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
   }, [])
 
   return (
-    <main className='main h-full items-center bg-slate-200'>
+    <main className='main h-screen items-center bg-slate-200'>
 
       <NavBar session={session} />
 
@@ -161,94 +122,13 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
         </Table>
       </div>
 
-      <form onSubmit={handleSubmit} className='mt-20 w-[50%] border rounded-lg p-4 shadow-md bg-slate-50'>
-        <h1 className='mb-5 font-bold'>Add new product</h1>
-        <label
-          htmlFor='cents_per_pound3'
-          className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-        >
-          Product name
-        </label>
-        <input
-          type='text'
-          id='product'
-          required
-          className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-          placeholder='Enter the product name'
-        />
-        <label
-          htmlFor='cents_per_pound3'
-          className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-        >
-          Image Url
-        </label>
-        <input
-          type='text'
-          id='image'
-          required
-          className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-          placeholder='Enter the image url'
-        />
-        <label
-          htmlFor='cents_per_pound3'
-          className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-        >
-          Category
-        </label>
-        <input
-          type='text'
-          id='category'
-          required
-          className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-          placeholder='Enter the product category'
-        />
-        <label
-          htmlFor='cents_per_pound3'
-          className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-        >
-          Stock in tonnes
-        </label>
-        <input
-          type='number'
-          id='stock'
-          required
-          className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-          placeholder='Enter the product stock'
-        />
-        <label
-          htmlFor='cents_per_pound3'
-          className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-        >
-          Description
-        </label>
-        <input
-          type='text'
-          id='description'
-          required
-          className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-          placeholder='Enter the product description'
-        />
-        <label
-          htmlFor='cents_per_pound3'
-          className='block text-gray-700 text-sm font-bold mb-2 pl-3'
-        >
-          Price in USD
-        </label>
-        <input
-          type='text'
-          id='price'
-          required
-          className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-          placeholder='Enter the product Price'
-        />
-        <Button type='submit' variant='bordered' className='mt-5'>Add a product!</Button>
-
-      </form>
       {isOpen && (
         <CustomModal
           onOpenChange={onOpenChange}
           isOpen={isOpen}
           session={session}
+          size='4xl'
+          scrollBehavior='inside'
         />
       )}
     </main >
@@ -266,12 +146,58 @@ export const getServerSideProps = async (context: any) => {
       }
     }
   }
+  const productsWithAgents = await prisma.marketplace.findMany({
+    select: {
+      product: true,
+      category: true,
+      quantity: true,
+      quality: true,
+      description: true,
+      image_url: true,
+      price_usd: true,
+      added_by: true,
+      hvi_file: true,
+      shipment: true,
+      payment_terms: true,
+      agents: {
+        select: {
+          name: true,
+          email: true
+        },
+        where: {
+          role: 'admin' // Filtra los usuarios por el rol "agent"
+        }
+      },
+      date_created: true
+    }
+  })
 
+  // Bring agents related to a productId
   const marketplace = await prisma?.marketplace.findMany({})
+  const agentsRelatedToAProduct = await prisma.marketplace_agent.findMany({
+    where: {
+      marketplace_id: 'clo75z73f0000o3xg1gqzp14t'
+    }
+  })
+  console.log(agentsRelatedToAProduct)
+
+  // Bring all avaible agents (For <Select>)
+  const agents = await prisma.user.findMany({
+    where: {
+      role: 'admin' // Agents or whatever
+    },
+    select: {
+      name: true,
+      email: true
+    }
+  })
+
+  const agentsData = JSON.stringify(agents)
+
   const marketplaceData = JSON.stringify(marketplace)
 
   return {
-    props: { marketplaceData }
+    props: { marketplaceData, agentsData }
   }
 }
 
