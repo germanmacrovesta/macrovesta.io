@@ -45,25 +45,6 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-    id                  String    @id @default(cuid())
-    name                String?
-    email               String?   @unique
-    emailVerified       DateTime?
-    role                String?
-    company_id          String?
-    company             Company?  @relation(name: "UserCompanyRelation", fields: [company_id], references: [record_id], map: "UserCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
-    selected_company_id String?
-    selected_company    Company?  @relation(name: "UserSelectedCompanyRelation", fields: [selected_company_id], references: [record_id], map: "UserSelectedCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
-    company_managing    Company?  @relation("CompanyManagerRelation")
-    macrovesta_managing Company[] @relation("MacrovestaManagerRelation")
-    submittedSurvey     Boolean?  @default(false)
-    image               String?
-    accounts            Account[]
-    sessions            Session[]
-
-    @@index([company_id])
-}
 
 model Company {
     record_id                            String                                 @id @default(cuid())
@@ -94,9 +75,30 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+model User {
+    id                  String    @id @default(cuid())
+    name                String?
+    email               String?   @unique
+    emailVerified       DateTime?
+    role                String?
+    company_id          String?
+    company             Company?  @relation(name: "UserCompanyRelation", fields: [company_id], references: [record_id], map: "UserCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    selected_company_id String?
+    selected_company    Company?  @relation(name: "UserSelectedCompanyRelation", fields: [selected_company_id], references: [record_id], map: "UserSelectedCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    company_managing    Company?  @relation("CompanyManagerRelation")
+    macrovesta_managing Company[] @relation("MacrovestaManagerRelation")
+    submittedSurvey     Boolean?  @default(false)
+    image               String?
+    accounts            Account[]
+    sessions            Session[]
+    agents              MarketplaceAgent[]
+    buyers              MarketplaceBuyer[]
+    @@index([company_id])
+}
+
 //Below is the table marketplace TODO: maketplace_agent, marketplace_client_list
 
-model marketplace {
+model Marketplace {
     record_id    String   @id @default(cuid())
     product      String
     category     String?
@@ -110,14 +112,35 @@ model marketplace {
     shipment     String
     payment_terms String
     date_created DateTime @default(now())
+    agents    MarketplaceAgent[]
+    buyers    MarketplaceBuyer[]
+    @@map("marketplace")
 }
 
 //Below is the table marketplace_agent
-model marketplace_agent {
+
+model MarketplaceAgent {
     record_id      String   @id @default(cuid())
     marketplace_id String
     agent_id       String
+    agent          User @relation(fields: [agent_id], references: [id])
     date_created   DateTime @default(now())
+    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id])
+
+    @@map("marketplace_agent")
+}
+
+//Below is the table marketplace_buyer
+
+model MarketplaceBuyer {
+    record_id      String   @id @default(cuid())
+    marketplace_id String
+    buyer_id       String
+    buyer          User @relation(fields: [buyer_id], references: [id])
+    date_created   DateTime @default(now())
+    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id])
+
+    @@map("marketplace_buyer")
 }
 
 //Below is the table a_index

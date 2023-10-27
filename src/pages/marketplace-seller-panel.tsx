@@ -11,7 +11,7 @@ import dynamic from 'next/dynamic'
 
 const CustomModal = dynamic(() => import('../components/CustomModal'), { ssr: false })
 // Only needs product + available properties
-const MarketPlaceSellerPanel = ({ marketplaceData, agentsData }) => {
+const MarketPlaceSellerPanel = ({ marketplaceData }) => {
   const { data: session } = useSession()
 
   const columns = [
@@ -46,33 +46,38 @@ const MarketPlaceSellerPanel = ({ marketplaceData, agentsData }) => {
             <User
               avatarProps={{ radius: 'lg', src: '/Vic.jpeg' }}
               description='victor.email@gmail.com'
-              name={'Victor Fernandez'}
+              name={'Victor Fernandes'}
             >
             </User>
           </div>
         )
       case 'agents':
         return (
-          <div className='flex flex-col'>
+          <div className='flex flex-col' >
             <AvatarGroup isBordered>
-              <Avatar radius="lg" isBordered src="https://i.pravatar.cc/150?u=a042581f4e29026024d" />
-              <Avatar radius="lg" isBordered src="https://i.pravatar.cc/150?u=a04258114e29026702d" />
-              <Avatar radius="lg" isBordered src="https://i.pravatar.cc/150?u=a04258114e29026708c" />
+              {item.agents.length !== 0 &&
+                item.agents.map(agent => (
+                  <Avatar name={agent.agent.name} src={agent.agent.image}></Avatar>
+                ))}
             </AvatarGroup>
-          </div>
+
+          </div >
         )
       case 'actions':
         return (
           <div className='relative flex items-center justify-center gap-2'>
-            <Tooltip content='See Details'>
-              <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
 
-              </span>
+            <Tooltip content='See Details' >
+              <button className='outline-none' onClick={() => handleOpenModal('info', 'Info Product', item.record_id)}>
+                <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </span>
+              </button>
             </Tooltip>
+
             <Tooltip content='Edit Product'>
               <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
@@ -88,7 +93,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData, agentsData }) => {
                 </svg>
               </span>
             </Tooltip>
-          </div>
+          </div >
         )
       default:
         return cellValue
@@ -112,7 +117,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData, agentsData }) => {
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody items={JSON.parse(marketplaceData)}>
+          <TableBody items={marketplaceData}>
             {(item) => (
               <TableRow key={item.record_id}>
                 {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
@@ -146,58 +151,28 @@ export const getServerSideProps = async (context: any) => {
       }
     }
   }
-  const productsWithAgents = await prisma.marketplace.findMany({
-    select: {
-      product: true,
-      category: true,
-      quantity: true,
-      quality: true,
-      description: true,
-      image_url: true,
-      price_usd: true,
-      added_by: true,
-      hvi_file: true,
-      shipment: true,
-      payment_terms: true,
+
+  const marketplace = await prisma.marketplace.findMany({
+    include: {
       agents: {
         select: {
-          name: true,
-          email: true
-        },
-        where: {
-          role: 'admin' // Filtra los usuarios por el rol "agent"
+          agent: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true
+            }
+          }
         }
-      },
-      date_created: true
+      }
     }
   })
 
-  // Bring agents related to a productId
-  const marketplace = await prisma?.marketplace.findMany({})
-  const agentsRelatedToAProduct = await prisma.marketplace_agent.findMany({
-    where: {
-      marketplace_id: 'clo75z73f0000o3xg1gqzp14t'
-    }
-  })
-  console.log(agentsRelatedToAProduct)
-
-  // Bring all avaible agents (For <Select>)
-  const agents = await prisma.user.findMany({
-    where: {
-      role: 'admin' // Agents or whatever
-    },
-    select: {
-      name: true,
-      email: true
-    }
-  })
-
-  const agentsData = JSON.stringify(agents)
-
-  const marketplaceData = JSON.stringify(marketplace)
-
+  const marketplaceData = JSON.parse(JSON.stringify(marketplace))
+  console.log(marketplaceData)
   return {
-    props: { marketplaceData, agentsData }
+    props: { marketplaceData }
   }
 }
 

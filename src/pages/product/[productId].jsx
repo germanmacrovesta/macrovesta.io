@@ -64,6 +64,14 @@ const ProductDetail = ({ productData }) => {
         <p>Shipment: {product.shipment}</p>
         <p>PaymentTerms: {product.payment_terms}</p>
         <p>AddedBy: {product.added_by}</p>
+        <h1 className='font-bold'>Buyers</h1>
+        {product.buyers.map((buyer, index) => (
+          <p key={index}>{buyer.buyer.name}</p>
+        ))}
+        <h1 className='font-bold'>Agents</h1>
+        {product.agents.map((agent, index) => (
+          <p key={index}>{agent.agent.name}</p>
+        ))}
       </main>
     </>
   )
@@ -82,12 +90,37 @@ export const getServerSideProps = async (context) => {
     }
   }
 
+  // Product with agents and exclusive clients
   const product = await prisma.marketplace.findUnique({
-    where: { record_id: params.productId }
+    where: { record_id: params.productId },
+    include: {
+      buyers: {
+        select: {
+          buyer: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      },
+      agents: {
+        select: {
+          agent: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      }
+    }
   })
 
   const productData = JSON.stringify(product)
-
+  console.log(JSON.parse(productData))
   return {
     props: { productData }
   }

@@ -5,6 +5,7 @@ import Alert from './Alert'
 import useValidate from '~/hooks/useValidation'
 import { useCustomModal } from '~/context/ModalContext'
 import ModalForm from './ModalForm'
+import ModalInfo from './ModalInfo'
 
 // TODO: Modal for FutureEvents, RecentEvents & InCountryNews. Have to split Validations and Submit into CHook or Functions
 const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavior = 'inside' }) => {
@@ -49,7 +50,9 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
           quality: '',
           shipment: '',
           hvi_file: '',
-          payment_terms: ''
+          payment_terms: '',
+          agents: [],
+          buyers: []
         }
         return objectShape
       default:
@@ -101,19 +104,14 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
 
   // Select Options (Can be moved into a sample CONST file)
 
-  // Data to Display when modal is 'info' type
-  const title = modalData?.title_of_snapshot_strategy || modalData?.title_of_in_country_news
-  const text = modalData?.text_of_snapshot_strategy || modalData?.text_of_in_country_news
-  const date = modalData?.date_of_snapshot_strategy || modalData?.date_of_in_country_news
-  const image = modalData?.image_of_snapshot_strategy || modalData?.image_of_in_country_news
-  const countryData = modalData?.country
 
   // Fill the object name/value
   const handleChange = (e) => {
-    if (e.name) { // Is File field
+    if (e.name) { // Is File field (File especific)
       setObjectToValidate((objectToValidate) => ({ ...objectToValidate, hvi_file: e.name }))
     }
-    if (e.target) { // Is Basic field
+
+    if (e.target) { // Is Basic field (String, Number, Bolean)
       const { name, value } = e.target
       setObjectToValidate((objectToValidate) => ({ ...objectToValidate, [name]: value }))
       console.log(objectToValidate)
@@ -122,7 +120,18 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
 
   async function sendForm () {
     setObjectIsValid(false)
+
+    // Separate buyers & agents into array
+    if (objectToValidate.agents) {
+      objectToValidate.agents = objectToValidate.agents.split(',')
+    }
+    if (objectToValidate.agents) {
+      objectToValidate.buyers = objectToValidate.buyers.split(',')
+    }
+
+    // Add user
     const data = { ...objectToValidate, added_by: session?.user?.name }
+    console.log(data)
 
     // Send the data to the server in JSON format.
     const JSONdata = JSON.stringify(data)
@@ -203,21 +212,7 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
             </ModalHeader>
             <ModalBody>
               {modalType === 'info' && (
-                <div className='flex flex-col items-center justify-center'>
-                  {modalSection === 'In Country News' && (
-                    <h1>{countryData}</h1>
-                  )}
-                  <img className='w-3/4' src={image} />
-                  <div className='my-4 font-semibold text-lg'>
-                    {title}
-                  </div>
-                  <div className='-mt-4 mb-2'>
-                    {parseDateString(date)}
-                  </div>
-                  <div className=''>
-                    {text}
-                  </div>
-                </div>
+                <ModalInfo modalSection={modalSection} handleChange={handleChange} handleSubmit={handleSubmit} modalData={modalData} />
               )}
 
               {modalType === 'form' && (

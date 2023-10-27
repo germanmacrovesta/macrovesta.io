@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { COUNTRIES, IMPACT, TERMS, PRODUCT_CATEGORIES, PRODUCT_QUALITY, SHIPMENT } from '~/constants/constants'
 import { Select, SelectItem, Chip, Avatar } from '@nextui-org/react'
 import { FileUploader } from 'react-drag-drop-files'
@@ -15,68 +15,41 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
   // hvi: '',
   // agents: ''
   // offered: ''
+  const [agents, setAgents] = useState([])
+  const [buyers, setBuyers] = useState([])
 
-  const users = [
-    {
-      id: 1,
-      name: 'Tony Reichert',
-      role: 'CEO',
-      team: 'Management',
-      status: 'active',
-      age: '29',
-      avatar: 'https://d2u8k2ocievbld.cloudfront.net/memojis/male/1.png',
-      email: 'tony.reichert@example.com'
-    },
-    {
-      id: 2,
-      name: 'Zoey Lang',
-      role: 'Tech Lead',
-      team: 'Development',
-      status: 'paused',
-      age: '25',
-      avatar: 'https://d2u8k2ocievbld.cloudfront.net/memojis/female/1.png',
-      email: 'zoey.lang@example.com'
-    },
-    {
-      id: 3,
-      name: 'Jane Fisher',
-      role: 'Sr. Dev',
-      team: 'Development',
-      status: 'active',
-      age: '22',
-      avatar: 'https://d2u8k2ocievbld.cloudfront.net/memojis/female/2.png',
-      email: 'jane.fisher@example.com'
-    },
-    {
-      id: 4,
-      name: 'William Howard',
-      role: 'C.M.',
-      team: 'Marketing',
-      status: 'vacation',
-      age: '28',
-      avatar: 'https://d2u8k2ocievbld.cloudfront.net/memojis/male/2.png',
-      email: 'william.howard@example.com'
-    },
-    {
-      id: 5,
-      name: 'Kristen Copper',
-      role: 'S. Manager',
-      team: 'Sales',
-      status: 'active',
-      age: '24',
-      avatar: 'https://d2u8k2ocievbld.cloudfront.net/memojis/female/3.png',
-      email: 'kristen.cooper@example.com'
-    },
-    {
-      id: 6,
-      name: 'Brian Kim',
-      role: 'P. Manager',
-      team: 'Management',
-      age: '29',
-      avatar: 'https://d2u8k2ocievbld.cloudfront.net/memojis/male/3.png',
-      email: 'brian.kim@example.com',
-      status: 'Active'
-    }]
+  useEffect(() => {
+    async function getAgents () {
+      try {
+        const response = await fetch('/api/get-agents')
+        console.log(response)
+        const agents = await response.json()
+        console.log(agents)
+        setAgents(agents)
+      } catch (error) {
+        // Manejar errores de red u otros errores
+        console.error('Error en la solicitud:', error)
+      }
+    }
+
+    async function getBuyers () {
+      try {
+        const response = await fetch('/api/get-buyers')
+        console.log(response)
+        const buyers = await response.json()
+        console.log(buyers)
+        setBuyers(buyers)
+      } catch (error) {
+        // Manejar errores de red u otros errores
+        console.error('Error en la solicitud:', error)
+      }
+    }
+
+    if (modalSection === 'Add Product') {
+      getBuyers()
+      getAgents()
+    }
+  }, [])
 
   return (
     <>
@@ -146,12 +119,12 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
 
       {modalSection === 'Future Considerations' && (
         <form className='mt-4 flex flex-col gap-x-4 w-full' id='modal-form' onSubmit={handleSubmit}>
-          <div className='flex gap-4'>
+          <div className='flex gap-4 mb-4'>
             <Select
               radius='md'
               label='Select the impact'
               classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
-              className='mb-4'
+              className='w-[50%]'
               size='md'
               name='impact'
               onChange={handleChange}
@@ -169,7 +142,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
               radius='md'
               label='Select the term'
               classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
-              className='mb-4'
+              className='w-[50%]'
               size='md'
               name='news_type'
               onChange={handleChange}
@@ -456,69 +429,98 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
 
           <FileUploader classes='!border-dotted !border-gray-300 !p-14 !w-full !max-w-full !mb-4' label='Drop here your HVI file' className='bg-red-400' handleChange={handleChange} name='hvi_file' types={['PDF']} />
 
-          <div className='flex gap-4'>
+          <div className='flex'>
 
-            <Select
-              items={users}
-              label='[NOT AVAILABLE YET] Agent assignment'
-              variant='bordered'
-              isMultiline
-              selectionMode='multiple'
-              placeholder='Select agent/agents'
-              labelPlacement='outside'
-              classNames={{
-                label: 'font-bold',
-                base: 'w-[50%]',
-                trigger: 'min-h-unit-12 py-2 rounded-md border border-gray-300'
-              }}
-              renderValue={(items) => {
-                return (
-                  <div className='flex flex-wrap gap-2'>
-                    {items.map((item) => (
-                      <Chip key={item.key}>{item.data.name}</Chip>
-                    ))}
-                  </div>
-                )
-              }}
-            >
-              {(user) => (
-                <SelectItem key={user.id} textValue={user.name}>
-                  <div className='flex gap-2 items-center'>
-                    <Avatar alt={user.name} className='flex-shrink-0' size='sm' src={user.avatar} />
-                    <div className='flex flex-col'>
-                      <span className='text-small'>{user.name}</span>
-                      <span className='text-tiny text-default-400'>{user.email}</span>
+            {agents.length && (
+              <Select
+                items={agents}
+                label='Agent assignment'
+                variant='bordered'
+                isMultiline
+                name='agents'
+                onChange={handleChange}
+                selectionMode='multiple'
+                placeholder='Select agent/agents'
+                labelPlacement='outside'
+                classNames={{
+                  label: 'font-bold',
+                  base: 'w-[50%] mr-4',
+                  trigger: 'min-h-unit-12 py-2 rounded-md border border-gray-300'
+                }}
+                renderValue={(agents) => {
+                  return (
+                    <div className='flex flex-wrap gap-2'>
+                      {/* TODO: Show the avatar too here */}
+                      {agents.map((agent) => (
+                        <Chip key={agent.id}>{agent.data.name}</Chip>
+                      ))}
                     </div>
-                  </div>
-                </SelectItem>
-              )}
-            </Select>
+                  )
+                }}
+              >
+                {(agent) => (
+                  <SelectItem key={agent.id} textValue={agent.name}>
+                    <div className='flex gap-2 items-center'>
+                      <Avatar alt={agent.name} name={agent.name} className='flex-shrink-0' size='sm' src={agent.image} />
+                      <div className='flex flex-col'>
+                        <span className='text-small'>{agent.name}</span>
+                        <span className='text-tiny text-default-400'>{agent.email}</span>
+                      </div>
+                    </div>
+                  </SelectItem>
+                )}
+              </Select>
+            )}
+
+            {buyers.length && (
+              <Select
+                items={buyers}
+                label='Offer to:'
+                variant='bordered'
+                isMultiline
+                name='buyers'
+                onChange={handleChange}
+                selectionMode='multiple'
+                placeholder='Select possible buyer/buyers'
+                labelPlacement='outside'
+                classNames={{
+                  label: 'font-bold',
+                  base: 'w-[50%]',
+                  trigger: 'min-h-unit-12 py-2 rounded-md border border-gray-300'
+                }}
+                renderValue={(agents) => {
+                  return (
+                    <div className='flex flex-wrap gap-2'>
+                      {/* TODO: Show the avatar too here */}
+                      {agents.map((agent) => (
+                        <Chip key={agent.id}>{agent.data.name}</Chip>
+                      ))}
+                    </div>
+                  )
+                }}
+              >
+                {(agent) => (
+                  <SelectItem key={agent.id} textValue={agent.name}>
+                    <div className='flex gap-2 items-center'>
+                      <Avatar alt={agent.name} name={agent.name} className='flex-shrink-0' size='sm' src={agent.image} />
+                      <div className='flex flex-col'>
+                        <span className='text-small'>{agent.name}</span>
+                        <span className='text-tiny text-default-400'>{agent.email}</span>
+                      </div>
+                    </div>
+                  </SelectItem>
+                )}
+              </Select>
+            )}
             <label
               htmlFor='offer'
               className='block text-gray-700 text-sm font-bold mb-2'
             />
-            <Select
-              label=' [NOT AVAILABLE YET] Offer to:'
-              radius='md'
-              classNames={{ label: 'font-bold', base: 'w-[50%]', trigger: 'rounded-md border border-gray-300' }}
-              size='md'
-              name='shipment'
-              onChange={handleChange}
-              placeholder='Select your client list'
-              variant='bordered'
-              labelPlacement='outside'
-            >
-              {SHIPMENT.map((option) => (
-                <SelectItem key={option.parameter} value={option.parameter}>
-                  {option.name}
-                </SelectItem>
-              ))}
-            </Select>
+
           </div>
         </form>
       )}
     </>
-
   )
 }
 
