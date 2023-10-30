@@ -29,7 +29,18 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
     onOpen()
   }
 
-  // TODO: Move to table component
+  const handleDeleteProduct = async (productId) => {
+    console.log(productId)
+    try {
+      const answer = window.confirm(`${productId} is going to be deleted. Are you sure?`)
+      if (answer) {
+        const response = await fetch(`/api/delete-product?id=${productId}`, { method: 'DELETE' })
+      }
+    } catch (error) {
+
+    }
+  }
+
   const renderCell = useCallback((item, columnKey) => {
     const cellValue = item[columnKey]
 
@@ -43,12 +54,9 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
       case 'reserved':
         return (
           <div className='flex flex-col'>
-            <User
-              avatarProps={{ radius: 'lg', src: '/Vic.jpeg' }}
-              description='victor.email@gmail.com'
-              name={'Victor Fernandes'}
-            >
-            </User>
+            <p className='text-center'>
+              {item.reserved_by ?? 'Not reserved yet!'}
+            </p>
           </div>
         )
       case 'agents':
@@ -57,7 +65,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
             <AvatarGroup isBordered>
               {item.agents.length !== 0 &&
                 item.agents.map(agent => (
-                  <Avatar name={agent.agent.name} src={agent.agent.image}></Avatar>
+                  <Avatar name={agent.agent.name} key={agent.agent.email} src={agent.agent.image}></Avatar>
                 ))}
             </AvatarGroup>
 
@@ -79,19 +87,24 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
             </Tooltip>
 
             <Tooltip content='Edit Product'>
-              <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                  <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
-                  <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
-                </svg>
-              </span>
+              <button className='outline-none' onClick={() => handleOpenModal('form', 'Edit Product', item.record_id)}>
+                <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                    <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
+                    <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
+                  </svg>
+                </span>
+              </button>
             </Tooltip>
+
             <Tooltip color='danger' content='Delete Product'>
-              <span className='text-lg text-danger cursor-pointer active:opacity-50'>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </span>
+              <button className='outline-none' onClick={() => handleDeleteProduct(item.record_id)}>
+                <span className='text-lg text-danger cursor-pointer active:opacity-50'>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </span>
+              </button>
             </Tooltip>
           </div >
         )

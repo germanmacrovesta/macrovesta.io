@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem } from '@nextui-org/react'
 import { parseDateString } from '~/utils/dateUtils'
 import Alert from './Alert'
@@ -74,6 +74,29 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
       case 'Add Product':
         endpoint = '/api/add-product'
         return endpoint
+      case 'Edit Product':
+        endpoint = '/api/edit-product'
+        return endpoint
+      default:
+        console.log(modalSection)
+        break
+    }
+  }
+
+  function obtainMethod (modalSection) {
+    let method
+    switch (modalSection) {
+      case 'In Country News':
+      case 'Recent Events':
+      case 'Future Considerations':
+        method = 'POST'
+        return method
+      case 'Add Product':
+        method = 'POST'
+        return method
+      case 'Edit Product':
+        method = 'PUT'
+        return method
       default:
         console.log(modalSection)
         break
@@ -82,9 +105,11 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
 
   // ---
 
+  // Initial object structure for form depends on section.
   const initialObject = obtainCustomKeys(modalSection) // Depends on modalSection initialObjectForm varies
   console.log(initialObject)
 
+  // UseValdation for currentObjectValidation
   const {
     validationAlert,
     setValidationAlert,
@@ -97,21 +122,47 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
 
   console.log(objectToValidate)
 
+  // If we are editing a register, must load object data, readapt object structure for validation.
+  useEffect(() => {
+    if (modalSection === 'Edit Product') {
+      async function getProduct (modalData) {
+        try {
+          const response = await fetch(`/api/get-product?id=${modalData}`)
+          const product = await response.json()
+          product.agents = product.agents.map(item => item.agent.id)
+          product.buyers = product.buyers.map(item => item.buyer.id)
+          console.log(product)
+          setObjectToValidate(product)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+      if (modalSection === 'Edit Product') {
+        getProduct(modalData)
+      }
+      setObjectToValidate()
+    }
+  }, [])
+
   // Clear any alert when modal open or close
   useEffect(() => {
     setValidationAlert({})
   }, [onOpenChange])
 
-  // Select Options (Can be moved into a sample CONST file)
-
-
   // Fill the object name/value
   const handleChange = (e) => {
     if (e.name) { // Is File field (File especific)
       setObjectToValidate((objectToValidate) => ({ ...objectToValidate, hvi_file: e.name }))
-    }
-
-    if (e.target) { // Is Basic field (String, Number, Bolean)
+    } else if (e.target.name === 'agents' || e.target.name === 'buyers') { // Is multiple field select (Array)
+      const { name, value } = e.target
+      if (value.includes(',')) {
+        const valueArray = value.split(',')
+        setObjectToValidate({ ...objectToValidate, [name]: valueArray })
+      } else {
+        setObjectToValidate({ ...objectToValidate, [name]: [value] })
+      }
+    } else { // Is Basic field (String, Number, Bolean)
       const { name, value } = e.target
       setObjectToValidate((objectToValidate) => ({ ...objectToValidate, [name]: value }))
       console.log(objectToValidate)
@@ -120,14 +171,9 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
 
   async function sendForm () {
     setObjectIsValid(false)
-
-    // Separate buyers & agents into array
-    if (objectToValidate.agents) {
-      objectToValidate.agents = objectToValidate.agents.split(',')
-    }
-    if (objectToValidate.agents) {
-      objectToValidate.buyers = objectToValidate.buyers.split(',')
-    }
+    const endpoint = obtainEndPoint(modalSection)
+    const method = obtainMethod(modalSection)
+    console.log(objectToValidate)
 
     // Add user
     const data = { ...objectToValidate, added_by: session?.user?.name }
@@ -137,14 +183,12 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
     const JSONdata = JSON.stringify(data)
 
     // API endpoint where we send form data.
-    const endpoint = obtainEndPoint(modalSection)
-
     console.log(data, endpoint)
 
     // Form the request for sending data to the server.
     const options = {
       // The method is POST because we are sending data.
-      method: 'POST',
+      method,
       // Tell the server we're sending JSON.
       headers: {
         'Content-Type': 'application/json'
@@ -219,7 +263,7 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
 
                 <div className='w-full'>
                   {(validationAlert.msg) && <Alert alert={validationAlert} />}
-                  <ModalForm modalSection={modalSection} handleChange={handleChange} handleSubmit={handleSubmit} />
+                  <ModalForm modalSection={modalSection} handleChange={handleChange} handleSubmit={handleSubmit} objectToValidate={modalSection === 'Edit Product' && objectToValidate} />
                 </div>
               )}
 

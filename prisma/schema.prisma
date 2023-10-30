@@ -45,7 +45,6 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
 model Company {
     record_id                            String                                 @id @default(cuid())
     name                                 String
@@ -76,70 +75,78 @@ model VerificationToken {
 }
 
 model User {
-    id                  String    @id @default(cuid())
+    id                  String             @id @default(cuid())
     name                String?
-    email               String?   @unique
+    email               String?            @unique
     emailVerified       DateTime?
     role                String?
     company_id          String?
-    company             Company?  @relation(name: "UserCompanyRelation", fields: [company_id], references: [record_id], map: "UserCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    company             Company?           @relation(name: "UserCompanyRelation", fields: [company_id], references: [record_id], map: "UserCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
     selected_company_id String?
-    selected_company    Company?  @relation(name: "UserSelectedCompanyRelation", fields: [selected_company_id], references: [record_id], map: "UserSelectedCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
-    company_managing    Company?  @relation("CompanyManagerRelation")
-    macrovesta_managing Company[] @relation("MacrovestaManagerRelation")
-    submittedSurvey     Boolean?  @default(false)
+    selected_company    Company?           @relation(name: "UserSelectedCompanyRelation", fields: [selected_company_id], references: [record_id], map: "UserSelectedCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    company_managing    Company?           @relation("CompanyManagerRelation")
+    macrovesta_managing Company[]          @relation("MacrovestaManagerRelation")
+    submittedSurvey     Boolean?           @default(false)
     image               String?
     accounts            Account[]
     sessions            Session[]
     agents              MarketplaceAgent[]
     buyers              MarketplaceBuyer[]
+
+    @@index([selected_company_id])
     @@index([company_id])
 }
 
 //Below is the table marketplace TODO: maketplace_agent, marketplace_client_list
 
 model Marketplace {
-    record_id    String   @id @default(cuid())
-    product      String
-    category     String?
-    quantity     Decimal?
-    quality      String
-    description  String?
-    image_url    String?
-    price_usd    Decimal?
-    added_by     String?
-    hvi_file     String
-    shipment     String
+    record_id     String             @id @default(cuid())
+    product       String
+    category      String?
+    quantity      Decimal?
+    quality       String
+    description   String?
+    image_url     String?
+    price_usd     Decimal?
+    added_by      String?
+    hvi_file      String
+    shipment      String
     payment_terms String
-    date_created DateTime @default(now())
-    agents    MarketplaceAgent[]
-    buyers    MarketplaceBuyer[]
+    date_created  DateTime           @default(now())
+    reserved_by   String?
+    agents        MarketplaceAgent[]
+    buyers        MarketplaceBuyer[]
+    
     @@map("marketplace")
 }
 
 //Below is the table marketplace_agent
 
 model MarketplaceAgent {
-    record_id      String   @id @default(cuid())
+    record_id      String      @id @default(cuid())
     marketplace_id String
+    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id], onDelete: Cascade)
     agent_id       String
-    agent          User @relation(fields: [agent_id], references: [id])
-    date_created   DateTime @default(now())
-    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id])
+    agent          User        @relation(fields: [agent_id], references: [id])
+    date_created   DateTime    @default(now())
 
+    @@index([agent_id])
+    @@index([marketplace_id])
     @@map("marketplace_agent")
 }
 
 //Below is the table marketplace_buyer
 
 model MarketplaceBuyer {
-    record_id      String   @id @default(cuid())
+    record_id      String      @id @default(cuid())
     marketplace_id String
     buyer_id       String
-    buyer          User @relation(fields: [buyer_id], references: [id])
-    date_created   DateTime @default(now())
-    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id])
+    buyer          User        @relation(fields: [buyer_id], references: [id])
+    date_created   DateTime    @default(now())
+    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id], onDelete: Cascade)
 
+    @@index([buyer_id])
+    @@index([marketplace_id])
     @@map("marketplace_buyer")
 }
 

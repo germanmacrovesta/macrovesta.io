@@ -2,21 +2,25 @@ import { useEffect, useState } from 'react'
 import { COUNTRIES, IMPACT, TERMS, PRODUCT_CATEGORIES, PRODUCT_QUALITY, SHIPMENT } from '~/constants/constants'
 import { Select, SelectItem, Chip, Avatar } from '@nextui-org/react'
 import { FileUploader } from 'react-drag-drop-files'
+import Spinner from './Spinner'
 
-const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
-  // product: '',
-  // category: '',
-  // quantity: '',
-  // description: '',
-  // price_usd: '',
-  // quality: '',
-  // shipment: '',
-  // payment_terms: '',
-  // hvi: '',
-  // agents: ''
-  // offered: ''
+const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate = {} }) => {
+  // Add Product/Edit Product Needs to fetch agents and buyers for selector
   const [agents, setAgents] = useState([])
   const [buyers, setBuyers] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (modalSection !== 'Edit Product') {
+      setLoading(false)
+      return
+    }
+
+    if (Object.keys(objectToValidate).length > 0) {
+      setLoading(false)
+      console.log('object')
+    }
+  }, [objectToValidate])
 
   useEffect(() => {
     async function getAgents () {
@@ -45,11 +49,19 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
       }
     }
 
-    if (modalSection === 'Add Product') {
+    if (modalSection === 'Add Product' || modalSection === 'Edit Product') {
       getBuyers()
       getAgents()
     }
   }, [])
+
+  if (loading) {
+    return (
+      <div className='flex justify-center'>
+        <Spinner />
+      </div>
+    )
+  }
 
   return (
     <>
@@ -284,7 +296,8 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
         </form>
       )}
 
-      {modalSection === 'Add Product' && (
+      {/* Need a load state not validate product.length */}
+      {(modalSection === 'Add Product' || (modalSection === 'Edit Product')) && (
         <form className='mt-4 flex flex-col gap-x-4 w-full' id='modal-form' onSubmit={handleSubmit}>
           <div className='flex gap-4 mb-4'>
             <div className='w-[50%]'>
@@ -300,6 +313,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
                 onChange={handleChange}
                 className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
                 placeholder='Enter the product name'
+                value={objectToValidate.product}
               />
             </div>
             <div className='w-[50%]'>
@@ -313,6 +327,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
                 placeholder='Select the category'
                 variant='bordered'
                 labelPlacement='outside'
+                defaultSelectedKeys={objectToValidate.category && [objectToValidate.category]}
               >
                 {PRODUCT_CATEGORIES.map((option) => (
                   <SelectItem key={option.parameter} value={option.parameter}>
@@ -322,27 +337,12 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
               </Select>
             </div>
           </div>
-          {/* <div className='mb-4'>
-            <label
-              htmlFor='image'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Image (optional)
-            </label>
-            <input
-              type='text'
-              name='image'
-              onChange={handleChange}
-              className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
-              placeholder='Enter a url to an image e.g. https://picsum.photos/200'
-            />
-          </div> */}
 
           <div className='mb-2'>
             <label htmlFor='description' className='block text-gray-700 text-sm font-bold mb-2'>
               Product Description
             </label>
-            <textarea placeholder='Enter product description' name='description' onChange={handleChange} rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
+            <textarea placeholder='Enter product description' name='description' value={objectToValidate.description} onChange={handleChange} rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
           </div>
 
           <div className='flex gap-4 mb-4'>
@@ -351,6 +351,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
                 Price in USD
               </label>
               <input
+                value={objectToValidate.price_usd}
                 type='number'
                 name='price_usd'
                 onChange={handleChange}
@@ -363,6 +364,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
                 Quantity
               </label>
               <input
+                value={objectToValidate.quantity}
                 type='number'
                 name='quantity'
                 onChange={handleChange}
@@ -381,9 +383,10 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
                 size='md'
                 name='quality'
                 onChange={handleChange}
-                placeholder='Select the quality'
+                placeholder='Select the product quality'
                 variant='bordered'
                 labelPlacement='outside'
+                defaultSelectedKeys={objectToValidate.quality && [objectToValidate.quality]}
               >
                 {PRODUCT_QUALITY.map((option) => (
                   <SelectItem key={option.parameter} value={option.parameter}>
@@ -403,6 +406,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
                 placeholder='Select the shipment'
                 variant='bordered'
                 labelPlacement='outside'
+                defaultSelectedKeys={objectToValidate.shipment && [objectToValidate.shipment]}
               >
                 {SHIPMENT.map((option) => (
                   <SelectItem key={option.parameter} value={option.parameter}>
@@ -417,7 +421,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
             <label htmlFor='payment_terms' className='block text-gray-700 text-sm font-bold mb-2'>
               Payment Terms
             </label>
-            <textarea placeholder='Enter product description' name='payment_terms' onChange={handleChange} rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
+            <textarea value={objectToValidate?.payment_terms} placeholder='Enter product description' name='payment_terms' onChange={handleChange} rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
           </div>
 
           <label
@@ -426,8 +430,8 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
           >
             HVI File
           </label>
-
-          <FileUploader classes='!border-dotted !border-gray-300 !p-14 !w-full !max-w-full !mb-4' label='Drop here your HVI file' className='bg-red-400' handleChange={handleChange} name='hvi_file' types={['PDF']} />
+          <p>{objectToValidate.hvi_file}</p>
+          <FileUploader value={objectToValidate.hvi_file} classes='!border-dotted !border-gray-300 !p-14 !w-full !max-w-full !mb-4' label='Drop here your HVI file' className='bg-red-400' handleChange={handleChange} name='hvi_file' types={['PDF']} />
 
           <div className='flex'>
 
@@ -442,6 +446,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
                 selectionMode='multiple'
                 placeholder='Select agent/agents'
                 labelPlacement='outside'
+                defaultSelectedKeys={objectToValidate?.agents ?? ''}
                 classNames={{
                   label: 'font-bold',
                   base: 'w-[50%] mr-4',
@@ -483,6 +488,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit }) => {
                 selectionMode='multiple'
                 placeholder='Select possible buyer/buyers'
                 labelPlacement='outside'
+                defaultSelectedKeys={objectToValidate?.buyers ?? ''}
                 classNames={{
                   label: 'font-bold',
                   base: 'w-[50%]',
