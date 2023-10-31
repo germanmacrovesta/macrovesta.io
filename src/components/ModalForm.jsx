@@ -296,7 +296,6 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
         </form>
       )}
 
-      {/* Need a load state not validate product.length */}
       {(modalSection === 'Add Product' || (modalSection === 'Edit Product')) && (
         <form className='mt-4 flex flex-col gap-x-4 w-full' id='modal-form' onSubmit={handleSubmit}>
           <div className='flex gap-4 mb-4'>

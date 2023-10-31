@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { getSession, useSession } from 'next-auth/react'
 import NavBar from '~/components/NavBar'
+import Carrousel from '~/components/Carrousel'
+import { Accordion, AccordionItem, Button, Avatar } from '@nextui-org/react'
 const prisma = new PrismaClient()
 
 const ProductDetail = ({ productData }) => {
@@ -39,6 +41,11 @@ const ProductDetail = ({ productData }) => {
   splitUrl(urlArray, 1)
   const product = JSON.parse(productData)
   console.log(product)
+  const slides = [
+    '/product-mock-1.jpeg',
+    '/product-mock-2.jpeg',
+    '/product-mock-3.jpeg'
+  ]
   return (
     <>
       <Head>
@@ -54,24 +61,81 @@ const ProductDetail = ({ productData }) => {
       </Head>
       <main className='main h-screen items-center bg-slate-200'>
         <NavBar title='Marketplace' urlPath={urlPath} user={session?.user.name} />
-        <h1>Product: {product.product}</h1>
-        <p>Description: {product.description}</p>
-        <p>Category: {product.category}</p>
-        <p>Quantity: {product.quantity}</p>
-        <p>Quality: {product.quality}</p>
-        <p>Price: {product.price_usd}</p>
-        <p>ImageUrl: {product.image_url}</p>
-        <p>Shipment: {product.shipment}</p>
-        <p>PaymentTerms: {product.payment_terms}</p>
-        <p>AddedBy: {product.added_by}</p>
-        <h1 className='font-bold'>Buyers</h1>
-        {product.buyers.map((buyer, index) => (
-          <p key={index}>{buyer.buyer.name}</p>
-        ))}
-        <h1 className='font-bold'>Agents</h1>
-        {product.agents.map((agent, index) => (
-          <p key={index}>{agent.agent.name}</p>
-        ))}
+        <div className='md:grid md:grid-cols-2 mx-10 my-8 p-4 gap-8 bg-slate-100 rounded-xl shadow-md'>
+          <Carrousel slides={slides} />
+          <div className='flex flex-col justify-between'>
+
+            <h1 className='flex italic align-baseline text-3xl mt-8 md:mt-0'>
+              {product.product}
+            </h1>
+
+            <div className='flex flex-col gap-1 mt-8 md:mt-0'>
+              <p className='flex gap-2 items-baseline italic font-medium'>
+                Quantity:
+                <span className='font-normal not-italic'>
+                  {product.quantity} tonnes
+                </span>
+              </p>
+
+              <p className='flex gap-2 items-baseline italic font-medium'>
+                Quality:
+                <span className='font-normal not-italic'>
+                  {product.quality}
+                </span>
+              </p>
+              <p className='flex gap-2 items-baseline italic font-medium'>
+                Shipment:
+                <span className='font-normal not-italic'>
+                  {product.shipment}
+                </span>
+              </p>
+
+              <p className='flex gap-2 items-baseline italic font-medium'>
+                PaymentTerms:
+                <span className='font-normal not-italic'>
+                  {product.payment_terms}
+                </span>
+              </p>
+
+              <p className='flex gap-2 items-baseline italic font-medium'>
+                Incoterm:
+                <span className='font-normal not-italic'>
+                  --
+                </span>
+              </p>
+
+              <p className='flex gap-2 items-baseline italic font-medium'>
+                Price:
+                <span className='font-normal not-italic'>
+                  {product.price_usd}$ on CTZ23
+                </span>
+              </p>
+            </div>
+            <Button className='bg-deep_blue py-6 text-white text-xl mt-8 md:mt-0'>Reserve Product</Button>
+          </div>
+        </div>
+
+        <div className='flex mx-8'>
+          <Accordion>
+            <AccordionItem key='1' aria-label='MEET OUR AGENT' title='MEET OUR AGENT' className='bg-slate-100 rounded-xl shadow-md px-4'>
+
+              {product.agents.map((agent, index) => (
+                <div key={agent.agent.email} className='flex gap-2 items-center'>
+                  <Avatar alt={agent.agent.name} name={agent.agent.name} className='flex-shrink-0' size='sm' src={`/${agent.agent.image}`} />
+                  <div className='flex flex-col'>
+                    <span className='text-small'>{agent.agent.name}</span>
+                    <span className='text-tiny text-default-400'>{agent.agent.email}</span>
+                  </div>
+                </div>
+              ))}
+            </AccordionItem>
+          </Accordion>
+          <Accordion>
+            <AccordionItem key='1' aria-label='MEET OUR AGENT' title='FAQ' className='bg-slate-100 rounded-xl shadow-md px-4'>
+              Blah Blah
+            </AccordionItem>
+          </Accordion>
+        </div>
       </main>
     </>
   )
@@ -111,7 +175,8 @@ export const getServerSideProps = async (context) => {
             select: {
               id: true,
               name: true,
-              email: true
+              email: true,
+              image: true
             }
           }
         }
