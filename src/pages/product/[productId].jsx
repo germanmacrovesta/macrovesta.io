@@ -5,6 +5,10 @@ import { getSession, useSession } from 'next-auth/react'
 import NavBar from '~/components/NavBar'
 import Carrousel from '~/components/Carrousel'
 import { Accordion, AccordionItem, Button, Avatar } from '@nextui-org/react'
+import DashboardFooter from '~/components/DashboardFooter'
+import Link from 'next/link'
+import { toast } from 'react-toastify'
+
 const prisma = new PrismaClient()
 
 const ProductDetail = ({ productData }) => {
@@ -46,6 +50,43 @@ const ProductDetail = ({ productData }) => {
     '/product-mock-2.jpeg',
     '/product-mock-3.jpeg'
   ]
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const endpoint = '/api/edit-product'
+    const method = 'PUT'
+
+    console.log(session?.user)
+    // record_id and User email for reservation
+    const data = { record_id: product.record_id, reserved_by: session?.user?.email }
+
+    const JSONdata = JSON.stringify(data)
+    console.log(JSONdata)
+
+    const options = {
+      method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSONdata
+    }
+
+    // Send the form data to our forms API on Vercel and get a response.
+    const response = await fetch(endpoint, options)
+    console.log(response)
+
+    const result = await response.json()
+
+    if (result.message === 'Success') {
+      if (!toast.isActive()) {
+        toast('Product Reserved!')
+      }
+
+      console.log('notificando!')
+    } else {
+      toast('Ops! Something goes wrong.')
+    }
+  }
+
   return (
     <>
       <Head>
@@ -60,14 +101,17 @@ const ProductDetail = ({ productData }) => {
         <link rel='alternate' hrefLang='th' href='https://th.macrovesta.ai' />
       </Head>
       <main className='main h-screen items-center bg-slate-200'>
-        <NavBar title='Marketplace' urlPath={urlPath} user={session?.user.name} />
+        <NavBar session={session} />
         <div className='md:grid md:grid-cols-2 mx-10 my-8 p-4 gap-8 bg-slate-100 rounded-xl shadow-md'>
           <Carrousel slides={slides} />
           <div className='flex flex-col justify-between'>
 
-            <h1 className='flex italic align-baseline text-3xl mt-8 md:mt-0'>
-              {product.product}
-            </h1>
+            <div className='mt-8 md:mt-0'>
+              <h1 className='relative inline-block text-3xl -z-0 italic align-baseline'>
+                {product.product}
+                <span className='absolute -z-10 left-4 -bottom-1 w-full h-[20%] bg-gradient-to-r from-transparent via-transparent to-green-400' />
+              </h1>
+            </div>
 
             <div className='flex flex-col gap-1 mt-8 md:mt-0'>
               <p className='flex gap-2 items-baseline italic font-medium'>
@@ -111,7 +155,7 @@ const ProductDetail = ({ productData }) => {
                 </span>
               </p>
             </div>
-            <Button className='bg-deep_blue py-6 text-white text-xl mt-8 md:mt-0'>Reserve Product</Button>
+            <Button variant='flat' color='secondary' type='submit' onClick={handleSubmit} className='py-6 text-xl mt-8 md:mt-0'>Reserve Product</Button>
           </div>
         </div>
 
@@ -120,12 +164,17 @@ const ProductDetail = ({ productData }) => {
             <AccordionItem key='1' aria-label='MEET OUR AGENT' title='MEET OUR AGENT' className='bg-slate-100 rounded-xl shadow-md px-4'>
 
               {product.agents.map((agent, index) => (
-                <div key={agent.agent.email} className='flex gap-2 items-center'>
-                  <Avatar alt={agent.agent.name} name={agent.agent.name} className='flex-shrink-0' size='sm' src={`/${agent.agent.image}`} />
-                  <div className='flex flex-col'>
-                    <span className='text-small'>{agent.agent.name}</span>
-                    <span className='text-tiny text-default-400'>{agent.agent.email}</span>
+                <div key={agent.agent.email} className='flex justify-between items-center pb-2'>
+                  <div className='flex gap-2 items-center'>
+                    <Avatar alt={agent.agent.name} name={agent.agent.name} className='flex-shrink-0' size='sm' src={`/${agent.agent.image}`} />
+                    <div className='flex flex-col'>
+                      <span className='text-small'>{agent.agent.name}</span>
+                      <span className='text-tiny text-default-400'>{agent.agent.email}</span>
+                    </div>
                   </div>
+                  <Link href='/' className='text-default-400'>
+                    Go to profile
+                  </Link>
                 </div>
               ))}
             </AccordionItem>
@@ -136,6 +185,7 @@ const ProductDetail = ({ productData }) => {
             </AccordionItem>
           </Accordion>
         </div>
+        <DashboardFooter />
       </main>
     </>
   )

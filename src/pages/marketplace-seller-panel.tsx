@@ -53,10 +53,23 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
         )
       case 'reserved':
         return (
-          <div className='flex flex-col'>
-            <p className='text-center'>
-              {item.reserved_by ?? 'Not reserved yet!'}
-            </p>
+          <div className='flex flex-col items-center justify-center'>
+            {item.reserved_by
+              ? (
+                <div className='flex gap-2 items-center '>
+                  <Avatar alt='A' name='A' className='flex-shrink-0' size='sm' src={item.reserved_by_user.image} />
+                  <div className='flex flex-col'>
+                    <span className='text-small'>{item.reserved_by_user.name}</span>
+                    <span className='text-tiny text-default-400'>{item.reserved_by_user.email}</span>
+                  </div>
+                </div>
+              )
+              : (
+                <p>
+                  Not reserved yet
+                </p>
+              )
+            }
           </div>
         )
       case 'agents':
@@ -167,6 +180,7 @@ export const getServerSideProps = async (context: any) => {
 
   const marketplace = await prisma.marketplace.findMany({
     include: {
+      reserved_by_user: true,
       agents: {
         select: {
           agent: {

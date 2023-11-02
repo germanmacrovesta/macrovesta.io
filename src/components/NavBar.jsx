@@ -58,18 +58,6 @@ export default function NavBar (session) {
     if (text == null || text == '') {
       errorMessage += 'Please enter a text. '
     }
-    // if (image == null || image == "") {
-    //     warningMessage += "You can add an image as well. If you don't want to just click confirm. ";
-    // }
-
-    // if (warningMessage !== "") {
-    //     setBugWarning_Message(warningMessage);
-    //     // throw new Error(errorMessage)
-    // } else {
-    //     if (bugWarning_Message != "") {
-    //         setBugWarning_Message("")
-    //     }
-    // }
 
     if (errorMessage != '') {
       setBugError_Message(errorMessage)
@@ -163,20 +151,21 @@ export default function NavBar (session) {
           </NavbarBrand>
         </NavbarContent>
 
-        <NavbarContent className='hidden sm:flex gap-4 max-w-full relative' justify='center'>
+        <NavbarContent className='hidden sm:flex max-w-full relative' justify='center'>
+
           <NavbarItem className='relative'>
             <Link className='w-[32px] h-[32px]' href='/'>
               <img src='/logo-small.png' alt='' className='hover:cursor-pointer' />
             </Link>
           </NavbarItem>
 
-          <NavbarItem className='relative'>
-            <Link href='/improvements' className='text-black relative'>
+          <NavbarItem className='relative px-4'>
+            <Link href='/improvements' className='text-black'>
               Improvements
             </Link>
           </NavbarItem>
 
-          <NavbarItem className='relative'>
+          <NavbarItem className='relative px-4'>
             <Badge
               content='&#9733;'
               color='danger'
@@ -189,7 +178,42 @@ export default function NavBar (session) {
             </Badge>
           </NavbarItem>
 
-          <Dropdown>
+          <div class='group inline-block relative'>
+            <NavbarItem
+              class='rounded items-center'
+            >
+              <Badge
+                content='&#9733;'
+                color='danger'
+                size='sm'
+                className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30'
+              >
+
+                <div className='text-black relative hover:cursor-pointer px-4 '>
+                  <Link href='/marketplace' className='mr-1 text-black'>Marketplace</Link>
+                  <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4 absolute right-0 top-1'>
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
+                  </svg>
+                </div>
+
+              </Badge>
+            </NavbarItem>
+            <ul class='absolute hidden pt-1 group-hover:block '>
+              <li class='rounded-b flex items-center bg-[#f5f8fc] py-4 px-4 animate-flip-down'>
+                <Link
+                  className='whitespace-nowrap text-black hover:text-purple-700'
+                  href='/marketplace-seller-panel'
+                >
+                  Seller panel
+                  <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-6 h-6 ml-2'>
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9' />
+                  </svg>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* <Dropdown>
             <NavbarItem>
               <Badge
                 content='&#9733;'
@@ -198,21 +222,18 @@ export default function NavBar (session) {
                 className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30'
               >
                 <DropdownTrigger>
-                  <Link href='/marketplace' className='text-black relative'>
+                  <div className='text-black relative hover:cursor-pointer pr-4'>
                     <p className='mr-1'>Marketplace</p>
-                    <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
+                    <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4 absolute right-0 top-1'>
                       <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
                     </svg>
-                  </Link>
+                  </div>
                 </DropdownTrigger>
               </Badge>
             </NavbarItem>
             <DropdownMenu
               aria-label='ACME features'
-              className='w-[340px]'
-              itemClasses={{
-                base: 'gap-4'
-              }}
+              className='w-full'
             >
               <DropdownItem
                 key='autoscaling'
@@ -222,7 +243,7 @@ export default function NavBar (session) {
                 Seller Panel
               </DropdownItem>
             </DropdownMenu>
-          </Dropdown>
+          </Dropdown> */}
         </NavbarContent>
 
         <NavbarContent justify='end'>

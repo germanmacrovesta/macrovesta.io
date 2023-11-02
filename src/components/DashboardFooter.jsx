@@ -2,7 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 const DashboardFooter = () => {
   return (
-    <footer className='bg-gray-200'>
+    <footer className='bg-slate-200'>
       <div className='mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8'>
         <div className='flex justify-center mt-10'>
           <span className='text-sm text-gray-500 sm:text-center '>© 2023

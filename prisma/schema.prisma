@@ -92,6 +92,7 @@ model User {
     sessions            Session[]
     agents              MarketplaceAgent[]
     buyers              MarketplaceBuyer[]
+    Marketplace         Marketplace[]
 
     @@index([selected_company_id])
     @@index([company_id])
@@ -100,23 +101,25 @@ model User {
 //Below is the table marketplace TODO: maketplace_agent, marketplace_client_list
 
 model Marketplace {
-    record_id     String             @id @default(cuid())
-    product       String
-    category      String?
-    quantity      Decimal?
-    quality       String
-    description   String?
-    image_url     String?
-    price_usd     Decimal?
-    added_by      String?
-    hvi_file      String
-    shipment      String
-    payment_terms String
-    date_created  DateTime           @default(now())
-    reserved_by   String?
-    agents        MarketplaceAgent[]
-    buyers        MarketplaceBuyer[]
-    
+    record_id        String             @id @default(cuid())
+    product          String
+    category         String?
+    quantity         Decimal?
+    quality          String
+    description      String?
+    image_url        String?
+    price_usd        Decimal?
+    added_by         String?
+    hvi_file         String
+    shipment         String
+    payment_terms    String
+    date_created     DateTime           @default(now())
+    reserved_by      String?
+    reserved_by_user User?              @relation(fields: [reserved_by], references: [email])
+    agents           MarketplaceAgent[]
+    buyers           MarketplaceBuyer[]
+
+    @@index([reserved_by])
     @@map("marketplace")
 }
 

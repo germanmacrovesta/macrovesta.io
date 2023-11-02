@@ -4,6 +4,28 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '../../server/db'
 
 const EditProduct = async (req: NextApiRequest, res: NextApiResponse) => {
+  // An user is reserving a product
+  console.log(req.body) // TODO: Put req.body.reservedBy fix
+  if (req.body.reserved_by && req.method === 'PUT') {
+    console.log(req.body.record_id)
+    try {
+      await prisma.marketplace.update({
+        where: {
+          record_id: req.body.record_id
+        },
+        data: {
+          reserved_by: req.body.reserved_by
+        }
+      })
+      res.status(200).json({ message: 'Success' })
+    } catch (error) {
+      console.error(error)
+      res.status(500).json({ message: 'Internal Server Error' })
+    }
+    return
+  }
+
+  // Admin is modifying product
   if (req.method === 'PUT') {
     console.log(req.body)
     try {
