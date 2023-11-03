@@ -41,7 +41,7 @@ const PositionClientInfo = ({ companyData, premiumCompaniesData, session, router
     })
   }
   return (
-    <div className='rounded-lg px-4 py-2 bg-deep_blue text-white flex justify-between -mt-6'>
+    <div className='rounded-lg px-4 py-2 mx-8 bg-deep_blue text-white flex justify-between'>
       <div className='flex flex-col'>
         <div>Client Name: {JSON.parse(companyData)?.name}</div>
         <div>Client Manager Name: {JSON.parse(companyData)?.company_manager?.name}</div>

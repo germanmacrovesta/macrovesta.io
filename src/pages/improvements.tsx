@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { prisma } from '../server/db'
 import Sidebar from '../components/sidebar'
-import Breadcrumbs from '../components/NavBar'
+import NavBar from '../components/NavBar'
 import { useRouter } from 'next/router'
 import React from 'react'
 import SingleSelectDropdown from '../components/singleSelectDropdown'
@@ -16,7 +16,6 @@ import { useSession, getSession } from 'next-auth/react'
 import useWeglotLang from '../components/useWeglotLang'
 import InfoButton from '../components/infoButton'
 import { parseDateString, getWeekNumber } from '~/utils/dateUtils'
-
 const Home: NextPage = ({ upcomingData }) => {
   const router = useRouter()
   const url = router.pathname
@@ -185,112 +184,40 @@ const Home: NextPage = ({ upcomingData }) => {
           })}
         </script> */}
       </Head>
-      <main className="main grid grid-cols-[160px_auto] h-screen items-center bg-slate-200">
-        <Sidebar />
-        <div className="w-40"></div>
+
+      <main className="main h-full items-center bg-slate-200">
+
         <div className="flex w-full flex-col self-start">
-          <header className="z-50 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={'Improvements'} urlPath={urlPath} user={session?.user.name} />
-            {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
-          </header>
-          {/* <WeglotLanguageSwitcher
-            domain="macrovesta.ai"
-            langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
-          <div className="p-6 bg-slate-200">
-            <div className="relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg">
-              <div className="text-center font-semibold text-lg">Planned Changes</div>
-              <ul className="list-disc pl-4">
-                {JSON.parse(upcomingData).map((upcoming) => (
-                  <>
-                    <li>
-                      <div className="font-semibold mb-2">
-                        {upcoming.title}
-                      </div>
-                      <div className="mb-4">
-                        {upcoming.text}
-                      </div>
-                    </li>
-                  </>
-                ))}
-              </ul>
+
+          <NavBar session={session} />
+          <div className="p-6 mx-8 bg-slate-200">
+            <div className="flex w-full flex-col self-start">
+
+              <div className=" bg-slate-200">
+                <div className="relative flex flex-col bg-[#ffffff] p-8 rounded-xl shadow-lg">
+                  <div className="text-center font-semibold text-lg">Planned Changes</div>
+                  <ul className="list-disc pl-4">
+                    {JSON.parse(upcomingData).map((upcoming) => (
+                      <>
+                        <li>
+                          <div className="font-semibold mb-2">
+                            {upcoming.title}
+                          </div>
+                          <div className="mb-4">
+                            {upcoming.text}
+                          </div>
+                        </li>
+                      </>
+                    ))}
+                  </ul>
+                </div>
+
+              </div>
 
             </div>
-
-            <div className='relative flex flex-col bg-[#ffffff] p-4 rounded-xl m-8 shadow-lg'>
-              <div className="my-4 font-semibold text-lg text-center">
-                Add Suggestion
-              </div>
-              <div className="w-full">
-                <form className="mt-4 mb-4 pl-4 flex flex-col gap-x-4 w-full" onSubmit={handleSuggestionFormSubmit}>
-                  <div className="mb-4">
-                    <div className="mb-4">
-                      <SingleSelectDropdown
-                        options={[{ name: 'General', value: 'General' }, { name: 'Data Visualisation', value: 'Data Visualisation' }, { name: 'Information Request', value: 'Information Request' }, { name: 'Reports', value: 'Reports' }]}
-                        label="suggestion_type"
-                        variable="name"
-                        colour="bg-deep_blue"
-                        onSelectionChange={(e) => setSelectedSuggestionType(e.value)}
-                        placeholder="Select Suggestion Type"
-                        searchPlaceholder="Search Types"
-                        includeLabel={false}
-                      />
-                    </div>
-                    {/* <label
-                              htmlFor="image"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Image (optional)
-                            </label>
-                            <input
-                              type="text"
-                              id="image"
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                              placeholder="Enter a url to an image e.g. https://picsum.photos/200"
-                            /> */}
-                  </div>
-                  {/* <div className="mb-4">
-                            <label
-                              htmlFor="title"
-                              className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                            >
-                              Title
-                            </label>
-                            <input
-                              type="text"
-                              id="title"
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
-                              placeholder="Enter title"
-                            />
-                          </div> */}
-                  <div className="mb-4">
-                    <label
-                      htmlFor="text"
-                      className="block text-gray-700 text-sm font-bold mb-2 pl-3"
-                    >
-                      Suggestion
-                    </label>
-                    <textarea id="text" placeholder="Enter text" name="text" rows={4} cols={87} className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"></textarea>
-                  </div>
-
-                  <div className="col-span-2 flex justify-center">
-                    {/* <button
-                                type="submit"
-                                className="bg-deep_blue hover:scale-105 duration-200 text-white font-bold py-2 px-12 rounded-xl"
-                              >
-                                Submit
-                              </button> */}
-                    <FormSubmit errorMessage={suggestionError_Message} warningMessage={suggestionWarning_Message} submitted={suggestionSubmitted} submitting={suggestionSubmitting} warningSubmit={suggestionWarningSubmit} />
-                  </div>
-                </form>
-              </div>
-            </div>
-            {/* <div onClick={() => setOpenSuggestionForm(false)} className='fixed inset-0 backdrop-blur-sm backdrop-brightness-75 z-10'></div> */}
-            {/* </div>
-              </div> */}
           </div>
-
         </div>
-      </main >
+      </main>
     </>
   )
 }

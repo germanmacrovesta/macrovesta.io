@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { prisma } from '../server/db'
 import Sidebar from '../components/sidebar'
-import Breadcrumbs from '../components/NavBar'
+import NavBar from '../components/NavBar'
 import TabMenu from '../components/tabmenu'
 import { useRouter } from 'next/router'
 import { TabMenuArray } from '../components/tabMenuArray'
@@ -572,17 +572,10 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
           })}
         </script> */}
       </Head>
-      <main className="main grid grid-cols-[160px_auto] h-screen items-center bg-slate-200">
-        <Sidebar />
-        <div className="w-40"></div>
+      <main className="main h-screen items-center bg-slate-200">
+        <NavBar session={session} />
         <div className="flex w-full flex-col self-start">
-          <header className="z-40 w-full grid grid-cols-[auto_1fr] grid-rows-1 bg-white shadow-center-md">
-            <Breadcrumbs title={'Position'} urlPath={urlPath} user={session?.user.name} />
-            {/* <TabMenu data={TabMenuArray} urlPath={urlPath} /> */}
-          </header>
-          {/* <WeglotLanguageSwitcher
-            domain="macrovesta.ai"
-            langs={{ www: 'en', es: 'es', tr: 'tr', th: 'th', 'pt-br': 'pt-br' }} /> */}
+
           <div className="p-6 bg-slate-200">
 
             <PositionClientInfo
