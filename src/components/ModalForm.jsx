@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { COUNTRIES, IMPACT, TERMS, PRODUCT_CATEGORIES, PRODUCT_QUALITY, SHIPMENT } from '~/constants/constants'
+import { COUNTRIES, IMPACT, TERMS, PRODUCT_CATEGORIES } from '~/constants/constants'
 import { Select, SelectItem, Chip, Avatar } from '@nextui-org/react'
 import { FileUploader } from 'react-drag-drop-files'
 import Spinner from './Spinner'
@@ -375,44 +375,30 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
 
           <div className='flex gap-4 mb-4'>
             <div className='w-[50%]'>
-              <Select
-                radius='md'
-                label='Quality'
-                classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
-                size='md'
+              <label htmlFor='quality' className='block text-gray-700 text-sm font-bold mb-2'>
+                Quality
+              </label>
+              <input
+                value={objectToValidate.quality}
+                type='text'
                 name='quality'
                 onChange={handleChange}
-                placeholder='Select the product quality'
-                variant='bordered'
-                labelPlacement='outside'
-                defaultSelectedKeys={objectToValidate.quality && [objectToValidate.quality]}
-              >
-                {PRODUCT_QUALITY.map((option) => (
-                  <SelectItem key={option.parameter} value={option.parameter}>
-                    {option.name}
-                  </SelectItem>
-                ))}
-              </Select>
+                className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
+                placeholder='Type the product quality'
+              />
             </div>
             <div className='w-[50%]'>
-              <Select
-                radius='md'
-                label='Shipment'
-                classNames={{ label: 'font-bold', trigger: 'rounded-md border border-gray-300' }}
-                size='md'
+              <label htmlFor='shipment' className='block text-gray-700 text-sm font-bold mb-2'>
+                Shipment
+              </label>
+              <input
+                value={objectToValidate.shipment}
+                type='text'
                 name='shipment'
                 onChange={handleChange}
-                placeholder='Select the shipment'
-                variant='bordered'
-                labelPlacement='outside'
-                defaultSelectedKeys={objectToValidate.shipment && [objectToValidate.shipment]}
-              >
-                {SHIPMENT.map((option) => (
-                  <SelectItem key={option.parameter} value={option.parameter}>
-                    {option.name}
-                  </SelectItem>
-                ))}
-              </Select>
+                className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500'
+                placeholder='Type shipment estimated months'
+              />
             </div>
           </div>
 
@@ -420,7 +406,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
             <label htmlFor='payment_terms' className='block text-gray-700 text-sm font-bold mb-2'>
               Payment Terms
             </label>
-            <textarea value={objectToValidate?.payment_terms} placeholder='Enter product description' name='payment_terms' onChange={handleChange} rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
+            <textarea value={objectToValidate?.payment_terms} placeholder='Enter the payment terms' name='payment_terms' onChange={handleChange} rows={4} cols={87} className='w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500' />
           </div>
 
           <label

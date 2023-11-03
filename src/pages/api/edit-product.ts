@@ -5,9 +5,7 @@ import { prisma } from '../../server/db'
 
 const EditProduct = async (req: NextApiRequest, res: NextApiResponse) => {
   // An user is reserving a product
-  console.log(req.body) // TODO: Put req.body.reservedBy fix
-  if (req.body.reserved_by && req.method === 'PUT') {
-    console.log(req.body.record_id)
+  if (req.body.reserved_by && req.body.isReserving && req.method === 'PUT') {
     try {
       await prisma.marketplace.update({
         where: {

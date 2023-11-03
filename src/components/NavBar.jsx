@@ -212,41 +212,25 @@ export default function NavBar (session) {
               </li>
             </ul>
           </div>
-
-          {/* <Dropdown>
-            <NavbarItem>
-              <Badge
-                content='&#9733;'
-                color='danger'
-                size='sm'
-                className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30'
-              >
-                <DropdownTrigger>
-                  <div className='text-black relative hover:cursor-pointer pr-4'>
-                    <p className='mr-1'>Marketplace</p>
-                    <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4 absolute right-0 top-1'>
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
-                    </svg>
-                  </div>
-                </DropdownTrigger>
-              </Badge>
-            </NavbarItem>
-            <DropdownMenu
-              aria-label='ACME features'
-              className='w-full'
-            >
-              <DropdownItem
-                key='autoscaling'
-                description='Manage your products in the market.'
-                startContent={<svg xmlns='http://www.w3.org/2000/svg' height='1.5rem' viewBox='0 0 640 512'><path d='M36.8 192H603.2c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0H121.7c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224V384v80c0 26.5 21.5 48 48 48H336c26.5 0 48-21.5 48-48V384 224H320V384H128V224H64zm448 0V480c0 17.7 14.3 32 32 32s32-14.3 32-32V224H512z' /></svg>}
-              >
-                Seller Panel
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown> */}
         </NavbarContent>
 
         <NavbarContent justify='end'>
+          <NavbarItem>
+            <Badge content='4' shape='circle' color='danger'>
+              <Button
+                radius='full'
+                isIconOnly
+                aria-label='more than 99 notifications'
+                variant='light'
+                as={Link}
+                href='/my-notifications'
+              >
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='w-6 h-6'>
+                  <path fillRule='evenodd' d='M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z' clipRule='evenodd' />
+                </svg>
+              </Button>
+            </Badge>
+          </NavbarItem>
           <NavbarItem className='hidden sm:inline'>
             <Button as={Link} color='success' className='hidden sm:flex ' href='/my-dashboard' variant='flat'>
               My Dashboard

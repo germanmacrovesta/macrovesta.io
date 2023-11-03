@@ -8,6 +8,11 @@ import 'swiper/css/pagination'
 import Image from 'next/image'
 
 const Carrousel = ({ slides }) => {
+  // Zoom function
+  const handleClickZoom = (e) => {
+    e.preventDefault()
+  }
+
   return (
     <div className=''>
       <Swiper
@@ -33,7 +38,7 @@ const Carrousel = ({ slides }) => {
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index} className='bg-slate-900 relative'>
-            <Image src={slide} width={300} height={400} className='mx-auto ' alt={`Product slide ${index}`} />
+            <Image src={slide} width={300} height={400} className='mx-auto ' onClick={handleClickZoom} alt={`Product slide ${index}`} />
           </SwiperSlide>
         ))}
         ...

@@ -5,7 +5,3 @@ export const COUNTRIES = [{ country: 'Brazil' }, { country: 'USA' }, { country: 
 export const TERMS = [{ parameter: 'Long Term' }, { parameter: 'Short Term' }]
 
 export const PRODUCT_CATEGORIES = [{ name: 'Cotton', parameter: 'cotton' }, { name: 'Cotton Waste', parameter: 'waste' }]
-
-export const SHIPMENT = [{ name: 'Shipment Method 1', parameter: 'option1' }, { name: 'Shipment Method 2', parameter: 'option2' }]
-
-export const PRODUCT_QUALITY = [{ name: 'High Quality', parameter: 'high' }, { name: 'Medium Quality', parameter: 'medium' }]

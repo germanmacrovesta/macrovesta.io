@@ -126,12 +126,6 @@ const Home: NextPage = ({ marketplaceData }) => {
                     </SelectItem>
                   ))}
                 </Select>
-                <Button as={Link} variant='flat' color='secondary' href='/marketplace-seller-panel' endContent={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 ">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-                </svg>
-                }>
-                  Go to seller panel
-                </Button>
               </div>
 
             </div>
@@ -151,13 +145,13 @@ const Home: NextPage = ({ marketplaceData }) => {
                     }`}>
                     <Card className="p-0 hover:scale-[102%] h-full relative" href={`/product/${offer.record_id}`} as={Link}>
                       <CardBody className=" flex flex-col justify-between relative h-52 p-0 overflow-hidden z-0">
-                        <div className='flex justify-between p-4'>
-                          <h4 className="font-bold text-large text-white italic">{offer.product}</h4>
+                        <div className='flex justify-between p-2'>
+                          <h4 className="font-bold text-large text-white italic overflow-hidden truncate">{offer.product}</h4>
                           <Chip
                             variant="shadow"
                             classNames={{
-                              base: `${offer.category === 'waste' ? 'from-yellow-500 to-red-500 shadow-red-500/30' : 'from-yellow-500 to-green-500 shadow-green-500/30'} bg-gradient-to-br  italic rounded-lg uppercase text-tiny`,
-                              content: 'drop-shadow shadow-black text-white'
+                              base: `${offer.category === 'waste' ? 'from-yellow-500 to-red-500 shadow-red-500/30' : 'from-yellow-500 to-green-500 shadow-green-500/30'} bg-gradient-to-br p-0 italic rounded-lg uppercase text-tiny`,
+                              content: 'drop-shadow shadow-black text-white m-0'
                             }}
                           >
                             {offer.category}
@@ -166,8 +160,8 @@ const Home: NextPage = ({ marketplaceData }) => {
 
                         {/* Gradient layer */}
                         <div className='flex flex-col justify-between absolute w-full h-full -z-10 '>
-                          <div className='bg-gradient-to-b from-black to-transparent w-full h-[40%] opacity-80'></div>
-                          <div className='bg-gradient-to-t from-black to-transparent w-full h-[40%] opacity-80 '></div>
+                          <div className='bg-gradient-to-b from-black to-transparent w-full h-[35%] opacity-80'></div>
+                          <div className='bg-gradient-to-t from-black to-transparent w-full h-[35%] opacity-80 '></div>
                         </div>
 
                         <Image
@@ -179,20 +173,9 @@ const Home: NextPage = ({ marketplaceData }) => {
                           style={{ objectFit: 'cover' }}
                         />
 
-                        <div className='flex justify-between items-center p-4'>
+                        <div className='flex justify-between items-center p-2'>
                           <div className='mt-auto'>
-                            <div className='flex gap-2'>
-                              <Chip
-                                startContent={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white">
-                                  <path d="M15.98 1.804a1 1 0 00-1.96 0l-.24 1.192a1 1 0 01-.784.785l-1.192.238a1 1 0 000 1.962l1.192.238a1 1 0 01.785.785l.238 1.192a1 1 0 001.962 0l.238-1.192a1 1 0 01.785-.785l1.192-.238a1 1 0 000-1.962l-1.192-.238a1 1 0 01-.785-.785l-.238-1.192zM6.949 5.684a1 1 0 00-1.898 0l-.683 2.051a1 1 0 01-.633.633l-2.051.683a1 1 0 000 1.898l2.051.684a1 1 0 01.633.632l.683 2.051a1 1 0 001.898 0l.683-2.051a1 1 0 01.633-.633l2.051-.683a1 1 0 000-1.898l-2.051-.683a1 1 0 01-.633-.633L6.95 5.684zM13.949 13.684a1 1 0 00-1.898 0l-.184.551a1 1 0 01-.632.633l-.551.183a1 1 0 000 1.898l.551.183a1 1 0 01.633.633l.183.551a1 1 0 001.898 0l.184-.551a1 1 0 01.632-.633l.551-.183a1 1 0 000-1.898l-.551-.184a1 1 0 01-.633-.632l-.183-.551z" />
-                                </svg>
-                                }
-                                color=''
-                              >
-                                <p className='max-w-[100px] text-white overflow-hidden truncate'>
-                                  {offer.quality}
-                                </p>
-                              </Chip>
+                            <div className={`${(index === 2 || index === 3) && 'md:hidden 2xl:flex'} flex gap-2`} >
                               <Chip
                                 startContent={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white">
                                   <path d="M2 4.5A2.5 2.5 0 014.5 2h11a2.5 2.5 0 010 5h-11A2.5 2.5 0 012 4.5zM2.75 9.083a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75zM2.75 12.663a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75zM2.75 16.25a.75.75 0 000 1.5h14.5a.75.75 0 100-1.5H2.75z" />
@@ -205,11 +188,23 @@ const Home: NextPage = ({ marketplaceData }) => {
                                   {offer.quantity} Tonnes
                                 </p>
                               </Chip>
+                              <Chip
+                                className={`${(index === 2 || index === 3) && '2xl:hidden'}`}
+                                startContent={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white">
+                                  <path d="M15.98 1.804a1 1 0 00-1.96 0l-.24 1.192a1 1 0 01-.784.785l-1.192.238a1 1 0 000 1.962l1.192.238a1 1 0 01.785.785l.238 1.192a1 1 0 001.962 0l.238-1.192a1 1 0 01.785-.785l1.192-.238a1 1 0 000-1.962l-1.192-.238a1 1 0 01-.785-.785l-.238-1.192zM6.949 5.684a1 1 0 00-1.898 0l-.683 2.051a1 1 0 01-.633.633l-2.051.683a1 1 0 000 1.898l2.051.684a1 1 0 01.633.632l.683 2.051a1 1 0 001.898 0l.683-2.051a1 1 0 01.633-.633l2.051-.683a1 1 0 000-1.898l-2.051-.683a1 1 0 01-.633-.633L6.95 5.684zM13.949 13.684a1 1 0 00-1.898 0l-.184.551a1 1 0 01-.632.633l-.551.183a1 1 0 000 1.898l.551.183a1 1 0 01.633.633l.183.551a1 1 0 001.898 0l.184-.551a1 1 0 01.632-.633l.551-.183a1 1 0 000-1.898l-.551-.184a1 1 0 01-.633-.632l-.183-.551z" />
+                                </svg>
+                                }
+                                color=''
+                              >
+                                <p className='max-w-[100px] text-white overflow-hidden truncate'>
+                                  {offer.quality}
+                                </p>
+                              </Chip>
                             </div>
 
                           </div>
 
-                          <h1 className='text-white text-4xl bg-gradient-to-br rounded-xl italic uppercase whitespace-nowrap '>
+                          <h1 className='text-white mt-auto text-4xl bg-gradient-to-br rounded-xl italic uppercase whitespace-nowrap '>
                             {offer.price_usd}
                             <span className='text-xs'>
                               $ on CTZ23
@@ -223,11 +218,11 @@ const Home: NextPage = ({ marketplaceData }) => {
                 ))}
               </div>
             )}
-
+            <Divider className='mt-10'></Divider>
             <div className='md:flex justify-between items-center my-5'>
-              <h1 className="relative inline-block text-xl -z-0 italic">
+              <h1 className="relative inline-block text-3xl -z-0 italic ">
                 Featured Products
-                <span className="absolute -z-10 left-2 -bottom-0 w-full h-[20%] bg-gradient-to-r from-transparent via-transparent to-green-400"></span>
+                <span className="absolute -z-10 left-2 -bottom-1 w-full h-[20%] bg-gradient-to-r from-transparent via-transparent to-green-400"></span>
               </h1>
               <Select
                 radius='md'
@@ -249,28 +244,75 @@ const Home: NextPage = ({ marketplaceData }) => {
             <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-4 mt-4">
               {JSON.parse(marketplaceData).slice(0, 4).map((offer: any, index: any) => (
                 <div key={offer.product}>
-                  <Card className="py-4 hover:scale-105 h-full" >
-                    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                      <p className="text-tiny uppercase font-bold">{offer.category}</p>
-                      <small className={`${offer.stock_tonnes > 10
-                        ? 'text-green-600'
-                        : offer.quantity > 5
-                          ? 'text-orange-600'
-                          : 'text-red-600'
-                        } text-default-500`}>Available Stock {offer.quantity}</small>
-                      <h4 className="font-bold text-large">{offer.product}</h4>
-                    </CardHeader>
-                    <CardBody className="overflow-visible py-2">
+                  <Card className="p-0 hover:scale-[102%] h-full relative" href={`/product/${offer.record_id}`} as={Link}>
+                    <CardBody className=" flex flex-col justify-between relative h-52 p-0 overflow-hidden z-0">
+                      <div className='flex justify-between p-2'>
+                        <h4 className="font-bold text-large text-white italic overflow-hidden truncate">{offer.product}</h4>
+                        <Chip
+                          variant="shadow"
+                          classNames={{
+                            base: `${offer.category === 'waste' ? 'from-yellow-500 to-red-500 shadow-red-500/30' : 'from-yellow-500 to-green-500 shadow-green-500/30'} bg-gradient-to-br p-0 italic rounded-lg uppercase text-tiny`,
+                            content: 'drop-shadow shadow-black text-white m-0'
+                          }}
+                        >
+                          {offer.category}
+                        </Chip>
+                      </div>
+
+                      {/* Gradient layer */}
+                      <div className='flex flex-col justify-between absolute w-full h-full -z-10 '>
+                        <div className='bg-gradient-to-b from-black to-transparent w-full h-[35%] opacity-80'></div>
+                        <div className='bg-gradient-to-t from-black to-transparent w-full h-[35%] opacity-80 '></div>
+                      </div>
+
                       <Image
                         alt="Card background"
-                        className="object-cover rounded-xl"
+                        className="absolute -z-20 "
                         src={`/product-mock-${index}.jpeg`}
-                        width={100}
-                        height={100}
+                        fill={true}
+                        sizes="(max-width: 768px) 100vw"
+                        style={{ objectFit: 'cover' }}
                       />
-                      <Button variant='ghost'>
-                        Check Product
-                      </Button>
+
+                      <div className='flex justify-between items-center p-2'>
+                        <div className='mt-auto'>
+                          <div className='flex gap-2' >
+                            <Chip
+                              startContent={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white">
+                                <path d="M2 4.5A2.5 2.5 0 014.5 2h11a2.5 2.5 0 010 5h-11A2.5 2.5 0 012 4.5zM2.75 9.083a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75zM2.75 12.663a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75zM2.75 16.25a.75.75 0 000 1.5h14.5a.75.75 0 100-1.5H2.75z" />
+                              </svg>
+
+                              }
+                              color=''
+                            >
+                              <p className='truncate text-white'>
+                                {offer.quantity} Tonnes
+                              </p>
+                            </Chip>
+                            <Chip
+                              className='md:hidden'
+                              startContent={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white">
+                                <path d="M15.98 1.804a1 1 0 00-1.96 0l-.24 1.192a1 1 0 01-.784.785l-1.192.238a1 1 0 000 1.962l1.192.238a1 1 0 01.785.785l.238 1.192a1 1 0 001.962 0l.238-1.192a1 1 0 01.785-.785l1.192-.238a1 1 0 000-1.962l-1.192-.238a1 1 0 01-.785-.785l-.238-1.192zM6.949 5.684a1 1 0 00-1.898 0l-.683 2.051a1 1 0 01-.633.633l-2.051.683a1 1 0 000 1.898l2.051.684a1 1 0 01.633.632l.683 2.051a1 1 0 001.898 0l.683-2.051a1 1 0 01.633-.633l2.051-.683a1 1 0 000-1.898l-2.051-.683a1 1 0 01-.633-.633L6.95 5.684zM13.949 13.684a1 1 0 00-1.898 0l-.184.551a1 1 0 01-.632.633l-.551.183a1 1 0 000 1.898l.551.183a1 1 0 01.633.633l.183.551a1 1 0 001.898 0l.184-.551a1 1 0 01.632-.633l.551-.183a1 1 0 000-1.898l-.551-.184a1 1 0 01-.633-.632l-.183-.551z" />
+                              </svg>
+                              }
+                              color=''
+                            >
+                              <p className='max-w-[100px] text-white overflow-hidden truncate'>
+                                {offer.quality}
+                              </p>
+                            </Chip>
+                          </div>
+
+                        </div>
+
+                        <h1 className='text-white mt-auto text-4xl bg-gradient-to-br rounded-xl italic uppercase whitespace-nowrap '>
+                          {offer.price_usd}
+                          <span className='text-xs'>
+                            $ on CTZ23
+                          </span>
+                        </h1>
+
+                      </div>
                     </CardBody>
                   </Card>
                 </div>

@@ -42,7 +42,7 @@ const ProductDetail = ({ productData }) => {
       }
     }
   }
-  splitUrl(urlArray, 1)
+  console.log(splitUrl(urlArray, 1))
   const product = JSON.parse(productData)
   console.log(product)
   const slides = [
@@ -50,41 +50,44 @@ const ProductDetail = ({ productData }) => {
     '/product-mock-2.jpeg',
     '/product-mock-3.jpeg'
   ]
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const endpoint = '/api/edit-product'
     const method = 'PUT'
 
     console.log(session?.user)
-    // record_id and User email for reservation
-    const data = { record_id: product.record_id, reserved_by: session?.user?.email }
+    setTimeout(async () => {
+      const answer = window.confirm(`Want to reserve ${product.product}? You will receive an email with product details.`)
+      if (answer) {
+        try {
+          // record_id and User email for reservation
+          const data = { record_id: product.record_id, reserved_by: session?.user?.email, isReserving: true }
+          const JSONdata = JSON.stringify(data)
+          console.log(JSONdata)
+          const options = {
+            method,
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSONdata
+          }
+          const response = await fetch(endpoint, options)
+          const result = await response.json()
+          if (result.message === 'Success') {
+            if (!toast.isActive()) {
+              toast('Product Reserved!')
+            }
 
-    const JSONdata = JSON.stringify(data)
-    console.log(JSONdata)
-
-    const options = {
-      method,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSONdata
-    }
-
-    // Send the form data to our forms API on Vercel and get a response.
-    const response = await fetch(endpoint, options)
-    console.log(response)
-
-    const result = await response.json()
-
-    if (result.message === 'Success') {
-      if (!toast.isActive()) {
-        toast('Product Reserved!')
+            console.log('notificando!')
+          } else {
+            toast('Ops! Something goes wrong.')
+          }
+        } catch (error) {
+          console.log(error)
+        }
       }
-
-      console.log('notificando!')
-    } else {
-      toast('Ops! Something goes wrong.')
-    }
+    }, 100)
   }
 
   return (

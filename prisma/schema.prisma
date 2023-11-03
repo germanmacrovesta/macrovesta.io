@@ -93,9 +93,23 @@ model User {
     agents              MarketplaceAgent[]
     buyers              MarketplaceBuyer[]
     Marketplace         Marketplace[]
+    Notifications       Notifications[]
 
     @@index([selected_company_id])
     @@index([company_id])
+}
+
+model Notifications {
+    record_id    String   @id @default(cuid())
+    title        String
+    description  String?
+    is_read      Decimal?
+    user_id      String
+    user         User?    @relation(fields: [user_id], references: [id])
+    date_created DateTime @default(now())
+
+    @@index([user_id])
+    @@map("notifications")
 }
 
 //Below is the table marketplace TODO: maketplace_agent, marketplace_client_list

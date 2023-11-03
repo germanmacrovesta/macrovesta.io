@@ -37,7 +37,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
         const response = await fetch(`/api/delete-product?id=${productId}`, { method: 'DELETE' })
       }
     } catch (error) {
-
+      console.log(error);
     }
   }
 
