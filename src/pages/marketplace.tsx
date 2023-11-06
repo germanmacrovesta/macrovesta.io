@@ -102,8 +102,6 @@ const Home: NextPage = ({ marketplaceData }) => {
       <main className="main h-full items-center bg-slate-200">
 
         <div className="flex w-full flex-col self-start">
-
-          <NavBar session={session} />
           <div className="p-6 mx-8 bg-slate-200 mb-5">
             <div className='md:flex justify-between items-center '>
               <h1 className="relative inline-block text-3xl -z-0 italic align-baseline">

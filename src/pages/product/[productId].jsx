@@ -57,11 +57,12 @@ const ProductDetail = ({ productData }) => {
     const method = 'PUT'
 
     console.log(session?.user)
-    setTimeout(async () => {
+    setTimeout(async () => { /* Cause button animation needs time to complete 100ms* TODO: Remove when popup confirms added */
       const answer = window.confirm(`Want to reserve ${product.product}? You will receive an email with product details.`)
       if (answer) {
         try {
-          // record_id and User email for reservation
+          getSession
+          // record_id and User email for reservation // Is reserving is only for proper endpoint check
           const data = { record_id: product.record_id, reserved_by: session?.user?.email, isReserving: true }
           const JSONdata = JSON.stringify(data)
           console.log(JSONdata)
@@ -75,11 +76,47 @@ const ProductDetail = ({ productData }) => {
           const response = await fetch(endpoint, options)
           const result = await response.json()
           if (result.message === 'Success') {
-            if (!toast.isActive()) {
-              toast('Product Reserved!')
+            // Send email
+            const emailData = {
+              subject: `${product.product} successfully reserved! - Macrovesta`,
+              to: session?.user?.email,
+              htmlText: `<p>${`You reserved the following product: ${product.product} x${product.quantity} tonnes, with quality ${product.quality} for ${product.price_usd}$`}</p>`,
+              text: `Product ${product.product} reserved!`
             }
-
-            console.log('notificando!')
+            const JSONEmaildata = JSON.stringify(emailData)
+            const optionsEmail = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSONEmaildata
+            }
+            const responseEmail = await fetch('/api/send-email', optionsEmail)
+            const resultEmail = await responseEmail.json()
+            if (resultEmail.message === 'Success') {
+              // Save alert into DB
+              const notificationData = {
+                title: `Your product ${product.product} has been reserved!`,
+                description: `Quantity: ${product.quantity}, Quality: ${product.quantity}... Blah blah, whatever is required`,
+                userId: session?.user?.id
+              }
+              const JSONNotificationData = JSON.stringify(notificationData)
+              console.log(session?.user?.id)
+              const optionsNotification = {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSONNotificationData
+              }
+              const responseNotification = await fetch('/api/store-notification', optionsNotification)
+              console.log(responseNotification)
+              const resultNotification = await responseNotification.json()
+              console.log(resultNotification)
+              if (resultNotification.message === 'Success' && !toast.isActive()) {
+                toast('Product Reserved!')
+              }
+            }
           } else {
             toast('Ops! Something goes wrong.')
           }
@@ -103,9 +140,9 @@ const ProductDetail = ({ productData }) => {
         <link rel='alternate' hrefLang='tr' href='https://tr.macrovesta.ai' />
         <link rel='alternate' hrefLang='th' href='https://th.macrovesta.ai' />
       </Head>
-      <main className='main h-screen items-center bg-slate-200'>
-        <NavBar session={session} />
-        <div className='md:grid md:grid-cols-2 mx-10 my-8 p-4 gap-8 bg-slate-100 rounded-xl shadow-md'>
+
+      <main>
+        <div className='md:grid md:grid-cols-2 mx-10 my-10 p-4 gap-8 bg-slate-50 rounded-xl shadow-md'>
           <Carrousel slides={slides} />
           <div className='flex flex-col justify-between'>
 
@@ -197,6 +234,7 @@ const ProductDetail = ({ productData }) => {
 export const getServerSideProps = async (context) => {
   const { params } = context
   const session = await getSession({ req: context.req })
+  console.log(session)
 
   if (!session || session?.access_to_marketplace !== true) {
     return {

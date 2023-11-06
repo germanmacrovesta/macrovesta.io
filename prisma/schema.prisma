@@ -93,13 +93,13 @@ model User {
     agents              MarketplaceAgent[]
     buyers              MarketplaceBuyer[]
     Marketplace         Marketplace[]
-    Notifications       Notifications[]
+    Notification       Notification[]
 
     @@index([selected_company_id])
     @@index([company_id])
 }
 
-model Notifications {
+model Notification {
     record_id    String   @id @default(cuid())
     title        String
     description  String?
@@ -109,7 +109,7 @@ model Notifications {
     date_created DateTime @default(now())
 
     @@index([user_id])
-    @@map("notifications")
+    @@map("notification")
 }
 
 //Below is the table marketplace TODO: maketplace_agent, marketplace_client_list

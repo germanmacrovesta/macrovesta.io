@@ -127,10 +127,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
   }, [])
 
   return (
-    <main className='main h-screen items-center bg-slate-200'>
-
-      <NavBar session={session} />
-
+    <main>
       <div className='p-6 mx-8'>
         <Button className='mb-4' color='secondary' variant='flat' onPress={() => handleOpenModal('form', 'Add Product')}>
           Register new product

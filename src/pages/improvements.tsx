@@ -188,8 +188,6 @@ const Home: NextPage = ({ upcomingData }) => {
       <main className="main h-full items-center bg-slate-200">
 
         <div className="flex w-full flex-col self-start">
-
-          <NavBar session={session} />
           <div className="p-6 mx-8 bg-slate-200">
             <div className="flex w-full flex-col self-start">
 

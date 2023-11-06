@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from 'next'
 import nodemailer from 'nodemailer'
 
-export default async function handler (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     const { to, subject, text, htmlText } = req.body
 
@@ -17,7 +17,7 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         refreshToken: process.env.REFRESH_TOKEN
       }
     })
-
+    console.log(transporter)
     const mailOptions = {
       from: process.env.NODEMAILER_ALIAS,
       to,
@@ -28,8 +28,10 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
 
     try {
       const info = await transporter.sendMail(mailOptions)
-      res.status(200).json({ messageId: info.messageId })
+      console.log(info)
+      res.status(200).json({ messageId: info.messageId, message: 'Success' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error: JSON.stringify(error) })
     }
   } else {

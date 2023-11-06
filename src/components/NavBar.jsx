@@ -4,13 +4,11 @@ import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import SingleSelectDropdown from './singleSelectDropdown'
 import FormSubmit from './formSubmit'
+import { useNotificationCount } from '~/context/NotificationContext'
 
 export default function NavBar (session) {
+  const { notificationCount } = useNotificationCount()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState(false)
-  const [newVenue, setNewVenue] = useState(null)
-  const [venueArray, setVenueArray] = useState(null)
-  const [selectedVenue, setSelectedVenue] = useState(null)
 
   const router = useRouter()
   const urlPath = router.asPath
@@ -129,7 +127,7 @@ export default function NavBar (session) {
       href: '/marketplace'
     }
   ]
-  console.log(session)
+
   return (
     <>
       <Navbar
@@ -216,7 +214,7 @@ export default function NavBar (session) {
 
         <NavbarContent justify='end'>
           <NavbarItem>
-            <Badge content='4' shape='circle' color='danger'>
+            <Badge content={notificationCount} shape='circle' color='danger'>
               <Button
                 radius='full'
                 isIconOnly
@@ -271,27 +269,6 @@ export default function NavBar (session) {
             </DropdownMenu>
           </Dropdown>
         </NavbarContent>
-
-        {/* <div className={`${urlPath === '/improvements' ? 'bg-[#ffffff20]' : ''} rounded-full px-2 py-1 relative flex items-center w-fit`}>
-        <Link href={{ pathname: '/improvements' }}>
-          IMPROVEMENTS
-        </Link>
-      </div>
-      {(session?.tier === 'premium' || session?.type === 'owner') && (
-        <Link href={{ pathname: '/position' }}>
-          POSITION
-        </Link>
-      )}
-      {session?.access_to_marketplace === true && (
-        <Link href={{ pathname: '/marketplace' }}>
-          MARKETPLACE
-        </Link>
-      )}
-      {session?.role === 'admin' && (
-        <Link href={{ pathname: '/system-preferences' }}>
-          PREFERENCES
-        </Link>
-      )} */}
 
         {/* Mobile Menu */}
         <NavbarMenu className='flex flex-col justify-center items-center'>

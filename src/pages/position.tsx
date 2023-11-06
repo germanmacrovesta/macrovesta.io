@@ -572,8 +572,7 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
           })}
         </script> */}
       </Head>
-      <main className="main h-screen items-center bg-slate-200">
-        <NavBar session={session} />
+      <main>
         <div className="flex w-full flex-col self-start">
 
           <div className="p-6 bg-slate-200">

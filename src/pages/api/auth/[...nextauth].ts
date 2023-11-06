@@ -16,15 +16,15 @@ import { prisma } from '../../../server/db'
 import { text, html } from '../../../components/nextAuthCustom/verificationEmail'
 
 type ExtendedSession<T> = T & {
-    role: string | null;
-    type: string | null;
-    access_to_marketplace: boolean | null;
-    tier: string | null;
-    company: string | null;
-    company_id: string | null;
-    selected_company: string | null;
-    selected_company_id: string | null;
-    submittedSurvey: boolean | null;
+  role: string | null;
+  type: string | null;
+  access_to_marketplace: boolean | null;
+  tier: string | null;
+  company: string | null;
+  company_id: string | null;
+  selected_company: string | null;
+  selected_company_id: string | null;
+  submittedSurvey: boolean | null;
 }
 
 const generateAuthtoken = () => {
@@ -70,6 +70,7 @@ export const authOptions: NextAuthOptions = {
           selected_company: true
         }
       })
+      session.user.id = user.id
       const extendedSession: ExtendedSession<typeof session> = {
         ...session,
         role: null,

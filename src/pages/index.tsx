@@ -97,7 +97,6 @@ const Home: NextPage<IHomeProps> = ({ monthlyIndexData, seasonalIndexData, snaps
       </Head>
       <main className="main h-screen items-center bg-slate-200">
         <div className="flex w-full flex-col self-start">
-          <NavBar title={'Macrovesta Demo'} urlPath={urlPath} user={session?.user.name} />
 
           {/* <WeglotLanguageSwitcher
             domain="macrovesta.ai"
