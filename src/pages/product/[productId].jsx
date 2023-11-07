@@ -8,10 +8,12 @@ import { Accordion, AccordionItem, Button, Avatar } from '@nextui-org/react'
 import DashboardFooter from '~/components/DashboardFooter'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
+import { useNotificationCount } from '~/context/NotificationContext'
 
 const prisma = new PrismaClient()
 
 const ProductDetail = ({ productData }) => {
+  const { notificationCount, setNotificationCount } = useNotificationCount()
   const router = useRouter()
   const url = router.pathname
   const { data: session } = useSession()
@@ -56,14 +58,15 @@ const ProductDetail = ({ productData }) => {
     const endpoint = '/api/edit-product'
     const method = 'PUT'
 
-    console.log(session?.user)
+    console.log(session?.user?.id)
     setTimeout(async () => { /* Cause button animation needs time to complete 100ms* TODO: Remove when popup confirms added */
       const answer = window.confirm(`Want to reserve ${product.product}? You will receive an email with product details.`)
       if (answer) {
+        const toastId = toast.loading('Reserving product...')
         try {
-          getSession
-          // record_id and User email for reservation // Is reserving is only for proper endpoint check
-          const data = { record_id: product.record_id, reserved_by: session?.user?.email, isReserving: true }
+          toast.update(toastId, { render: 'Reserving Product', type: 'info', isLoading: true })
+          // record_id and userId // Is reserving is only for proper endpoint check
+          const data = { record_id: product.record_id, reserved_by: session?.user?.id, isReserving: true }
           const JSONdata = JSON.stringify(data)
           console.log(JSONdata)
           const options = {
@@ -109,19 +112,23 @@ const ProductDetail = ({ productData }) => {
                 },
                 body: JSONNotificationData
               }
+
               const responseNotification = await fetch('/api/store-notification', optionsNotification)
-              console.log(responseNotification)
               const resultNotification = await responseNotification.json()
-              console.log(resultNotification)
+
               if (resultNotification.message === 'Success' && !toast.isActive()) {
-                toast('Product Reserved!')
+                toast.update(toastId, { render: `${product.product} reserved successfully!`, type: 'success', isLoading: false, autoClose: 5000 })
+                setNotificationCount(notificationCount + 1)
+                router.push('/marketplace')
               }
             }
           } else {
-            toast('Ops! Something goes wrong.')
+            toast.update(toastId, { render: 'Something goes wrong!', type: 'error', isLoading: false, autoClose: 5000 })
+            toast.dismiss(toastId.current)
           }
         } catch (error) {
-          console.log(error)
+          toast.update(toastId, { render: 'Something goes wrong!', type: 'error', isLoading: false, autoClose: 5000 })
+          toast.dismiss(toastId.current)
         }
       }
     }, 100)

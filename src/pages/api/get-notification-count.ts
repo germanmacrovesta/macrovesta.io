@@ -4,8 +4,11 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '../../server/db'
 
 const getNotificationCount = async (req: NextApiRequest, res: NextApiResponse) => {
+  const id = req.query?.id as string
   if (req.method === 'GET') {
-    const data = await prisma.notification.count({})
+    const data = await prisma.notification.count({
+      where: { user_id: id, is_read: '0' }
+    })
     console.log(data)
     res.status(200).json(data)
   } else {

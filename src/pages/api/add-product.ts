@@ -19,7 +19,8 @@ const AddProduct = async (req: NextApiRequest, res: NextApiResponse) => {
           payment_terms: req.body.payment_terms,
           hvi_file: req.body.hvi_file,
           image_url: req.body.image_url,
-          added_by: req.body.added_by
+          added_by: req.body.added_by,
+          expiry_date: new Date(req.body.expiry_date)
         }
       })
 

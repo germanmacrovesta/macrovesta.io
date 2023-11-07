@@ -93,7 +93,7 @@ model User {
     agents              MarketplaceAgent[]
     buyers              MarketplaceBuyer[]
     Marketplace         Marketplace[]
-    Notification       Notification[]
+    Notification        Notification[]
 
     @@index([selected_company_id])
     @@index([company_id])
@@ -128,8 +128,9 @@ model Marketplace {
     shipment         String
     payment_terms    String
     date_created     DateTime           @default(now())
+    expiry_date      DateTime           @default(now())
     reserved_by      String?
-    reserved_by_user User?              @relation(fields: [reserved_by], references: [email])
+    reserved_by_user User?              @relation(fields: [reserved_by], references: [id])
     agents           MarketplaceAgent[]
     buyers           MarketplaceBuyer[]
 

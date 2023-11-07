@@ -9,6 +9,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
   const [agents, setAgents] = useState([])
   const [buyers, setBuyers] = useState([])
   const [loading, setLoading] = useState(true)
+  console.log(objectToValidate)
 
   useEffect(() => {
     if (modalSection !== 'Edit Product') {
@@ -299,6 +300,29 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
       {(modalSection === 'Add Product' || (modalSection === 'Edit Product')) && (
         <form className='mt-4 flex flex-col gap-x-4 w-full' id='modal-form' onSubmit={handleSubmit}>
           <div className='flex gap-4 mb-4'>
+            {modalSection === 'Edit Product' && (
+              <div className='flex gap-2 items-center '>
+                <Avatar alt='A' name='A' className='flex-shrink-0' size='sm' src={objectToValidate.reserved_by_user} />
+                <div className='flex flex-col'>
+                  <span className='text-small'>{objectToValidate.reserved_by_user}</span>
+                  <span className='text-tiny text-default-400'>{objectToValidate.reserved_by_user}</span>
+                </div>
+              </div>
+            )}
+            <label
+              htmlFor='expiry_date'
+              className='block text-gray-700 text-sm font-bold mb-2'
+            >
+              Select an Expiry Date
+            </label>
+            <input
+              type='date'
+              name='expiry_date'
+              value={objectToValidate.expiry_date}
+              min='2023-11-07'
+              onChange={handleChange}
+              className='rounded-md border p-2 mb-2'
+            />
             <div className='w-[50%]'>
               <label
                 htmlFor='product'
@@ -419,7 +443,6 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
           <FileUploader value={objectToValidate.hvi_file} classes='!border-dotted !border-gray-300 !p-14 !w-full !max-w-full !mb-4' label='Drop here your HVI file' className='bg-red-400' handleChange={handleChange} name='hvi_file' types={['PDF']} />
 
           <div className='flex'>
-
             {agents.length && (
               <Select
                 items={agents}

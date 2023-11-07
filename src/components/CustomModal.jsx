@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem } from '@nextui-org/react'
-import { parseDateString } from '~/utils/dateUtils'
 import Alert from './Alert'
 import useValidate from '~/hooks/useValidation'
 import { useCustomModal } from '~/context/ModalContext'
 import ModalForm from './ModalForm'
 import ModalInfo from './ModalInfo'
+import { parseDateStringFullYear } from '~/utils/dateUtils'
 
 // TODO: Modal for FutureEvents, RecentEvents & InCountryNews. Have to split Validations and Submit into CHook or Functions
 const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavior = 'inside' }) => {
@@ -52,7 +52,8 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
           hvi_file: '',
           payment_terms: '',
           agents: [],
-          buyers: []
+          buyers: [],
+          expiry_date: ''
         }
         return objectShape
       default:
@@ -131,6 +132,7 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
           const product = await response.json()
           product.agents = product.agents.map(item => item.agent.id)
           product.buyers = product.buyers.map(item => item.buyer.id)
+          product.expiry_date = parseDateStringFullYear(product.expiry_date)
           console.log(product)
           setObjectToValidate(product)
         } catch (error) {
@@ -260,7 +262,6 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
               )}
 
               {modalType === 'form' && (
-
                 <div className='w-full'>
                   {(validationAlert.msg) && <Alert alert={validationAlert} />}
                   <ModalForm modalSection={modalSection} handleChange={handleChange} handleSubmit={handleSubmit} objectToValidate={modalSection === 'Edit Product' && objectToValidate} />

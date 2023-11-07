@@ -18,6 +18,7 @@ import DashboardFooter from '~/components/DashboardFooter'
 import { Divider } from '@nextui-org/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { today } from '~/utils/dateUtils'
 
 const Home: NextPage = ({ marketplaceData }) => {
   const router = useRouter()
@@ -339,9 +340,13 @@ export const getServerSideProps = async (context: any) => {
 
   const marketplace = await prisma?.marketplace.findMany({
     where: {
-      reserved_by: null
+      reserved_by: null,
+      expiry_date: {
+        gt: today
+      }
     }
   })
+
   const marketplaceData = JSON.stringify(marketplace)
 
   return {

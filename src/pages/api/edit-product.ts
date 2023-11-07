@@ -41,7 +41,8 @@ const EditProduct = async (req: NextApiRequest, res: NextApiResponse) => {
           shipment: req.body.shipment,
           payment_terms: req.body.payment_terms,
           hvi_file: req.body.hvi_file,
-          image_url: req.body.image_url
+          image_url: req.body.image_url,
+          expiry_date: new Date(req.body.expiry_date)
         }
       })
 

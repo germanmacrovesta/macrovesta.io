@@ -36,6 +36,7 @@ const MyNotifications = ({ notificationsData }) => {
     const newNotifications = notifications.map(notification => {
       if (notificationId === notification.record_id) {
         notification.is_read = notification.is_read === '1' ? '0' : '1'
+        setNotificationCount(prevCount => notification.is_read === '1' ? prevCount - 1 : prevCount + 1)
         return notification
       }
       return notification
@@ -73,6 +74,11 @@ const MyNotifications = ({ notificationsData }) => {
       const answer = window.confirm(`${notificationId} is going to be deleted. Are you sure?`)
       if (answer) {
         const response = await fetch(`/api/delete-notification?id=${notificationId}`, { method: 'DELETE' })
+        const notificationToDelete = notifications.filter(notification => notificationId === notification.record_id)
+        console.log(notificationToDelete);
+        if (notificationToDelete[0].is_read === '0') {
+          setNotificationCount(prevCount => prevCount - 1)
+        }
         console.log(response)
       }
     } catch (error) {
