@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
+import Spinner from './Spinner'
 
 const ModalInfo = ({ modalSection, handleChange, handleSubmit, modalData }) => {
   const [product, setProduct] = useState({})
+  const [loading, setLoading] = useState(true)
+
   // SHOW INTERFACE PRODUCT DATA
   useEffect(() => {
     async function getProductInfo () {
@@ -18,6 +21,20 @@ const ModalInfo = ({ modalSection, handleChange, handleSubmit, modalData }) => {
       getProductInfo()
     }
   }, [])
+
+  useEffect(() => {
+    if (Object.keys(product).length > 0) {
+      setLoading(false)
+    }
+  }, [product])
+
+  if (loading) {
+    return (
+      <div className='flex justify-center'>
+        <Spinner />
+      </div>
+    )
+  }
 
   return (
     <>

@@ -131,7 +131,7 @@ model Marketplace {
     expiry_date      DateTime           @default(now())
     reserved_by      String?
     reserved_by_user User?              @relation(fields: [reserved_by], references: [id])
-    agents           MarketplaceAgent[]
+    agents           MarketplaceAgent[] @collate("utf8mb4_unicode_ci")
     buyers           MarketplaceBuyer[]
 
     @@index([reserved_by])

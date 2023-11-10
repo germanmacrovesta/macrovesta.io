@@ -8,11 +8,30 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { NotificationProvider } from '~/context/NotificationContext'
 import NavBar from '~/components/NavBar'
-
+import { useEffect } from 'react'
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps }
 }) => {
+  // Must include in each page render
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://cdn.weglot.com/weglot.min.js'
+    script.async = true
+
+    script.onload = () => {
+      Weglot.initialize({
+        api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
+      })
+    }
+
+    document.body.appendChild(script)
+
+    return () => {
+      document.body.removeChild(script)
+    }
+  }, [])
+
   return (
     <Providers>
       <SessionProvider session={session}>

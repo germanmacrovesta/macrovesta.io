@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem } from '@nextui-org/react'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react'
 import Alert from './Alert'
 import useValidate from '~/hooks/useValidation'
 import { useCustomModal } from '~/context/ModalContext'
@@ -7,7 +7,6 @@ import ModalForm from './ModalForm'
 import ModalInfo from './ModalInfo'
 import { parseDateStringFullYear } from '~/utils/dateUtils'
 
-// TODO: Modal for FutureEvents, RecentEvents & InCountryNews. Have to split Validations and Submit into CHook or Functions
 const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavior = 'inside' }) => {
   const { modalType, modalSection, modalData } = useCustomModal()
 
@@ -133,7 +132,6 @@ const CustomModal = ({ onOpenChange, isOpen, session, size = 'md', scrollBehavio
           product.agents = product.agents.map(item => item.agent.id)
           product.buyers = product.buyers.map(item => item.buyer.id)
           product.expiry_date = parseDateStringFullYear(product.expiry_date)
-          console.log(product)
           setObjectToValidate(product)
         } catch (error) {
           console.log(error)

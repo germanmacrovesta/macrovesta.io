@@ -1361,24 +1361,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
     return array[0] / array[1]
   }
 
-  React.useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://cdn.weglot.com/weglot.min.js'
-    script.async = true
-
-    script.onload = () => {
-      Weglot.initialize({
-        api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
-      })
-    }
-
-    document.body.appendChild(script)
-
-    return () => {
-      document.body.removeChild(script)
-    }
-  }, [])
-
   const [selectedCostType, setSelectedCostType] = React.useState('FOB')
 
   return (
@@ -1393,12 +1375,6 @@ const Home: NextPage = ({ monthlyIndexData, seasonalIndexData, snapshotsData, co
         <link rel="alternate" hrefLang="es" href="https://es.macrovesta.ai" />
         <link rel="alternate" hrefLang="tr" href="https://tr.macrovesta.ai" />
         <link rel="alternate" hrefLang="th" href="https://th.macrovesta.ai" />
-        {/* <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
-        <script>
-          {Weglot.initialize({
-            api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
-          })}
-        </script> */}
       </Head>
       <main className="main grid grid-cols-[160px_auto] h-screen items-center bg-slate-200">
         <Sidebar />

@@ -42,7 +42,8 @@ const EditProduct = async (req: NextApiRequest, res: NextApiResponse) => {
           payment_terms: req.body.payment_terms,
           hvi_file: req.body.hvi_file,
           image_url: req.body.image_url,
-          expiry_date: new Date(req.body.expiry_date)
+          expiry_date: new Date(req.body.expiry_date),
+          reserved_by: req.body.reserved_by || null
         }
       })
 

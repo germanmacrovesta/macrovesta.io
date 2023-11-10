@@ -168,7 +168,7 @@ export default function NavBar (session) {
               content='&#9733;'
               color='danger'
               size='sm'
-              className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30'
+              className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30 border-none'
             >
               <Link href='/position' className='text-black relative'>
                 Position
@@ -184,7 +184,7 @@ export default function NavBar (session) {
                 content='&#9733;'
                 color='danger'
                 size='sm'
-                className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30'
+                className='absolute -top-1 right-0 bg-gradient-to-br from-indigo-500 to-pink-500 border-small border-white shadow-pink-500/30 border-none'
               >
 
                 <div className='text-black relative hover:cursor-pointer px-4 '>
@@ -214,11 +214,11 @@ export default function NavBar (session) {
 
         <NavbarContent justify='end'>
           <NavbarItem>
-            <Badge content={notificationCount} shape='circle' color='danger'>
+            <Badge content={notificationCount || 0} shape='circle' color='danger' className='border-none'>
               <Button
                 radius='full'
                 isIconOnly
-                aria-label='more than 99 notifications'
+                aria-label='notifications'
                 variant='light'
                 as={Link}
                 href='/my-notifications'

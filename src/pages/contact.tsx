@@ -112,12 +112,6 @@ export default function ContactPage () {
                 <link rel="alternate" hrefLang="es" href="https://es.macrovesta.ai" />
                 <link rel="alternate" hrefLang="tr" href="https://tr.macrovesta.ai" />
                 <link rel="alternate" hrefLang="th" href="https://th.macrovesta.ai" />
-                {/* <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
-        <script>
-          {Weglot.initialize({
-            api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
-          })}
-        </script> */}
             </Head>
             <Header />
             <CookieConsent />

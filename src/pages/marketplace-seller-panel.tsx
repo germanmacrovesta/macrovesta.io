@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import NavBar from '~/components/NavBar'
 import { useSession, getSession } from 'next-auth/react'
 import { Button, Link } from '@nextui-org/react'
@@ -8,6 +8,7 @@ import { useCallback } from 'react'
 import { useCustomModal } from '~/context/ModalContext'
 import { useDisclosure } from '@nextui-org/react'
 import dynamic from 'next/dynamic'
+import Swal from 'sweetalert2'
 
 const CustomModal = dynamic(() => import('../components/CustomModal'), { ssr: false })
 // Only needs product + available properties
@@ -29,16 +30,24 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
     onOpen()
   }
 
-  const handleDeleteProduct = async (productId) => {
-    console.log(productId)
-    try {
-      const answer = window.confirm(`${productId} is going to be deleted. Are you sure?`)
-      if (answer) {
-        const response = await fetch(`/api/delete-product?id=${productId}`, { method: 'DELETE' })
+  const handleDeleteProduct = async (product) => {
+    Swal.fire({
+      title: `Do you want to reserve ${product.product}`,
+      text: 'Agent will contact with you after that',
+      showCancelButton: true,
+      confirmButtonColor: '#051D6D',
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Yes, I want it!',
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`/api/delete-product?id=${product.record_id}`, { method: 'DELETE' })
+        } catch (error) {
+          console.log(error)
+        }
       }
-    } catch (error) {
-      console.log(error);
-    }
+    })
   }
 
   const renderCell = useCallback((item, columnKey) => {
@@ -57,7 +66,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
             {item.reserved_by
               ? (
                 <div className='flex gap-2 items-center '>
-                  <Avatar alt='A' name='A' className='flex-shrink-0' size='sm' src={item.reserved_by_user.image} />
+                  <Avatar alt='A' name='A' className='flex-shrink-0' size='md' src={item.reserved_by_user.image} />
                   <div className='flex flex-col'>
                     <span className='text-small'>{item.reserved_by_user.name}</span>
                     <span className='text-tiny text-default-400'>{item.reserved_by_user.email}</span>
@@ -75,7 +84,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
       case 'agents':
         return (
           <div className='flex flex-col' >
-            <AvatarGroup isBordered>
+            <AvatarGroup >
               {item.agents.length !== 0 &&
                 item.agents.map(agent => (
                   <Avatar name={agent.agent.name} key={agent.agent.email} src={agent.agent.image}></Avatar>
@@ -111,7 +120,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
             </Tooltip>
 
             <Tooltip color='danger' content='Delete Product'>
-              <button className='outline-none' onClick={() => handleDeleteProduct(item.record_id)}>
+              <button className='outline-none' onClick={() => handleDeleteProduct(item)}>
                 <span className='text-lg text-danger cursor-pointer active:opacity-50'>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -129,10 +138,10 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
   return (
     <main>
       <div className='p-6 mx-8'>
-        <Button className='mb-4' color='secondary' variant='flat' onPress={() => handleOpenModal('form', 'Add Product')}>
+        <Button className='bg-deep_blue bg-opacity-20 text-deep_blue mb-4 rounded-md' variant='flat' onPress={() => handleOpenModal('form', 'Add Product')}>
           Register new product
         </Button>
-        <Table>
+        <Table classNames={{ wrapper: 'rounded-md' }}>
           <TableHeader columns={columns} className='flex justify-between'>
             {(column) => (
               <TableColumn key={column.uid} className={`${column.uid === 'product' ? 'text-left' : 'text-center'}`}>

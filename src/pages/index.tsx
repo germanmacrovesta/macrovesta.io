@@ -57,25 +57,6 @@ const Home: NextPage<IHomeProps> = ({ monthlyIndexData, seasonalIndexData, snaps
 
   const { data: session } = useSession()
 
-  // Weglot Initialize
-  React.useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://cdn.weglot.com/weglot.min.js'
-    script.async = true
-
-    script.onload = () => {
-      Weglot.initialize({
-        api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
-      })
-    }
-
-    document.body.appendChild(script)
-
-    return () => {
-      document.body.removeChild(script)
-    }
-  }, [])
-
   return (
     <>
       <Head>
@@ -88,12 +69,6 @@ const Home: NextPage<IHomeProps> = ({ monthlyIndexData, seasonalIndexData, snaps
         <link rel="alternate" hrefLang="es" href="https://es.macrovesta.ai" />
         <link rel="alternate" hrefLang="tr" href="https://tr.macrovesta.ai" />
         <link rel="alternate" hrefLang="th" href="https://th.macrovesta.ai" />
-        {/* <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
-        <script>
-          {Weglot.initialize({
-            api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
-          })}
-        </script> */}
       </Head>
       <main className="main h-screen items-center bg-slate-200">
         <div className="flex w-full flex-col self-start">

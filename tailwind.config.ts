@@ -7,6 +7,9 @@ export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}", "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      screens: {
+        '3xl': '1920px'
+      },
       gridTemplateColumns: {
         'auto-cols-min': 'repeat(auto-fill, minmax(min-content, 1fr))',
       },
@@ -454,7 +457,7 @@ export default {
         }
       },
       fontFamily: {
-        'sans': ['Montserrat', 'Inter var', 'SF Compact', ...defaultTheme.fontFamily.sans]
+        sans: ['Montserrat', 'Inter var', 'SF Compact', ...defaultTheme.fontFamily.sans]
       },
       boxShadow: {
         'center-sm': '0 0 2px 0 #00000050)',
@@ -467,5 +470,8 @@ export default {
     },
   },
   darkMode: 'class',
-  plugins: [nextui(), require('tailwindcss-animated')]
-} satisfies Config;
+  plugins: [
+    nextui(),
+    require('tailwindcss-animated')
+  ]
+} satisfies Config

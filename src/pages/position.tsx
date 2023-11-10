@@ -84,24 +84,6 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
   }
   splitUrl(urlArray, 1)
 
-  React.useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://cdn.weglot.com/weglot.min.js'
-    script.async = true
-
-    script.onload = () => {
-      Weglot.initialize({
-        api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
-      })
-    }
-
-    document.body.appendChild(script)
-
-    return () => {
-      document.body.removeChild(script)
-    }
-  }, [])
-
   const [strategyPopup, setStrategyPopup] = React.useState(null)
 
   const [openProductionForm, setOpenProductionForm] = React.useState(false)
@@ -565,12 +547,6 @@ const Home: NextPage = ({ companyData, productionData, costData, commercialisati
         <link rel="alternate" hrefLang="es" href="https://es.macrovesta.ai" />
         <link rel="alternate" hrefLang="tr" href="https://tr.macrovesta.ai" />
         <link rel="alternate" hrefLang="th" href="https://th.macrovesta.ai" />
-        {/* <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
-        <script>
-          {Weglot.initialize({
-            api_key: 'wg_60b49229f516dee77edb3109e6a46c379'
-          })}
-        </script> */}
       </Head>
       <main>
         <div className="flex w-full flex-col self-start">

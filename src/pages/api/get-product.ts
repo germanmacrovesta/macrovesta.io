@@ -10,6 +10,7 @@ const getProduct = async (req: NextApiRequest, res: NextApiResponse) => {
     const data = await prisma.marketplace.findUnique({
       where: { record_id: productId },
       include: {
+        reserved_by_user: true,
         buyers: {
           select: {
             buyer: {

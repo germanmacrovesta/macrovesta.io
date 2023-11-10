@@ -8,6 +8,10 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
   // Add Product/Edit Product Needs to fetch agents and buyers for selector
   const [agents, setAgents] = useState([])
   const [buyers, setBuyers] = useState([])
+
+  const [client, setClient] = useState(null)
+  const [removeClient, setRemoveClient] = useState(false)
+
   const [loading, setLoading] = useState(true)
   console.log(objectToValidate)
 
@@ -19,9 +23,18 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
 
     if (Object.keys(objectToValidate).length > 0) {
       setLoading(false)
-      console.log('object')
+      setClient(objectToValidate.reserved_by)
+      console.log(objectToValidate)
     }
   }, [objectToValidate])
+
+  useEffect(() => {
+    if (removeClient && modalSection === 'Edit Product') {
+      objectToValidate.reserved_by = null
+    } else if (!removeClient && modalSection === 'Edit Product') {
+      objectToValidate.reserved_by = client
+    }
+  }, [removeClient])
 
   useEffect(() => {
     async function getAgents () {
@@ -33,7 +46,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
         setAgents(agents)
       } catch (error) {
         // Manejar errores de red u otros errores
-        console.error('Error en la solicitud:', error)
+        console.error('Error:', error)
       }
     }
 
@@ -46,7 +59,7 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
         setBuyers(buyers)
       } catch (error) {
         // Manejar errores de red u otros errores
-        console.error('Error en la solicitud:', error)
+        console.error('Error:', error)
       }
     }
 
@@ -300,29 +313,67 @@ const ModalForm = ({ modalSection, handleChange, handleSubmit, objectToValidate 
       {(modalSection === 'Add Product' || (modalSection === 'Edit Product')) && (
         <form className='mt-4 flex flex-col gap-x-4 w-full' id='modal-form' onSubmit={handleSubmit}>
           <div className='flex gap-4 mb-4'>
-            {modalSection === 'Edit Product' && (
-              <div className='flex gap-2 items-center '>
-                <Avatar alt='A' name='A' className='flex-shrink-0' size='sm' src={objectToValidate.reserved_by_user} />
-                <div className='flex flex-col'>
-                  <span className='text-small'>{objectToValidate.reserved_by_user}</span>
-                  <span className='text-tiny text-default-400'>{objectToValidate.reserved_by_user}</span>
-                </div>
+            <div className='w-[50%]'>
+              <label
+                htmlFor='expiry_date'
+                className='block text-gray-700 text-sm font-bold mb-2'
+              >
+                Select an Expiry Date
+              </label>
+              <input
+                type='date'
+                name='expiry_date'
+                value={objectToValidate.expiry_date}
+                min='2023-11-07'
+                onChange={handleChange}
+                className='rounded-md border p-2 mb-2 w-full'
+              />
+            </div>
+            {/* Only when editing - Show Client if someone has reserved */}
+            {(modalSection === 'Edit Product' && objectToValidate?.reserved_by_user?.image) && (
+              <div className='flex flex-col w-[50%]'>
+                <>
+                  <label
+                    className='block text-gray-700 text-sm font-bold mb-2'
+                  >
+                    Reserved by:
+                  </label>
+                  <div className='flex gap-4 justify-between items-center'>
+                    {!removeClient
+                      ? (
+                        <div className='flex gap-2'>
+                          <Avatar alt='A' name='A' className='' size='md' src={objectToValidate.reserved_by_user.image} />
+                          <div className='flex flex-col'>
+                            <span className='text-small'>{objectToValidate.reserved_by_user.name}</span>
+                            <span className='text-tiny text-default-400'>{objectToValidate.reserved_by_user.email}</span>
+                          </div>
+                        </div>
+                        )
+                      : (
+                        <p className='mx-auto'>Client removed, submit to save changes</p>
+                        )}
+
+                    <button type='button' className='outline-none text-lg text-default-400 cursor-pointer active:opacity-50' onClick={() => setRemoveClient(!removeClient)}>
+                      {!removeClient
+                        ? (
+                          <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-6 h-6'>
+                            <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+                          </svg>
+                          )
+                        : (
+                          <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-6 h-6'>
+                            <path strokeLinecap='round' strokeLinejoin='round' d='M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99' />
+                          </svg>
+                          )}
+                    </button>
+                  </div>
+                </>
               </div>
             )}
-            <label
-              htmlFor='expiry_date'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Select an Expiry Date
-            </label>
-            <input
-              type='date'
-              name='expiry_date'
-              value={objectToValidate.expiry_date}
-              min='2023-11-07'
-              onChange={handleChange}
-              className='rounded-md border p-2 mb-2'
-            />
+          </div>
+
+          <div className='flex gap-4 mb-4'>
+
             <div className='w-[50%]'>
               <label
                 htmlFor='product'

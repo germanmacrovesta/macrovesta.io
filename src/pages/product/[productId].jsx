@@ -9,6 +9,8 @@ import DashboardFooter from '~/components/DashboardFooter'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
 import { useNotificationCount } from '~/context/NotificationContext'
+import Swal from 'sweetalert2'
+import { useEffect } from 'react'
 
 const prisma = new PrismaClient()
 
@@ -22,29 +24,6 @@ const ProductDetail = ({ productData }) => {
     return <div>Loading...</div>
   }
 
-  const baseUrlArray = url.split('/')
-  const urlArray = []
-  baseUrlArray.forEach((urlCrumb) => {
-    if (urlCrumb.startsWith('[')) {
-      urlArray.push(router.query[`${urlCrumb.slice(1, -1)}`])
-    } else {
-      urlArray.push(urlCrumb)
-    }
-  })
-  let root = ''
-  let urlPath = ''
-  const splitUrl = (urlcrumbs, number) => {
-    for (let i = 1; i < urlcrumbs.length; i++) {
-      if (i < number) {
-        root += '/'
-        root += urlcrumbs[i]
-      } else {
-        urlPath += '/'
-        urlPath += urlcrumbs[i]
-      }
-    }
-  }
-  console.log(splitUrl(urlArray, 1))
   const product = JSON.parse(productData)
   console.log(product)
   const slides = [
@@ -53,15 +32,23 @@ const ProductDetail = ({ productData }) => {
     '/product-mock-3.jpeg'
   ]
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
     const endpoint = '/api/edit-product'
     const method = 'PUT'
 
     console.log(session?.user?.id)
-    setTimeout(async () => { /* Cause button animation needs time to complete 100ms* TODO: Remove when popup confirms added */
-      const answer = window.confirm(`Want to reserve ${product.product}? You will receive an email with product details.`)
-      if (answer) {
+    Swal.fire({
+      title: `Do you want to reserve ${product.product}`,
+      text: 'Agent will contact with you after that',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#051D6D',
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Yes, I want it!',
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
         const toastId = toast.loading('Reserving product...')
         try {
           toast.update(toastId, { render: 'Reserving Product', type: 'info', isLoading: true })
@@ -131,7 +118,7 @@ const ProductDetail = ({ productData }) => {
           toast.dismiss(toastId.current)
         }
       }
-    }, 100)
+    })
   }
 
   return (
@@ -199,6 +186,12 @@ const ProductDetail = ({ productData }) => {
                 Price:
                 <span className='font-normal not-italic'>
                   {product.price_usd}$ on CTZ23
+                </span>
+              </p>
+              <p className='flex gap-2 items-baseline italic font-medium'>
+                Available until:
+                <span className='font-normal not-italic'>
+                  {product.expiry_date}
                 </span>
               </p>
             </div>

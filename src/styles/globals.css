@@ -2,11 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+
 body {
   background-color: rgb(226 232 240);
-  height: 100vh;
+  height: 100vh !important;
   margin: 0;
   padding: 0;
+}
+
+.swal2-height-auto {
+  height: 100vh !important;
+  background-color: rgb(226 232 240);
+  height: 100vh !important;
+  margin: 0;
+  padding: 0;
+}
+
+.text-shadow-blue {
+  color: white;
+  text-shadow: 0 0 1rem #007aff, 0 0 1rem #007aff, 0 0 1rem #007aff, 0 0 1rem #007aff, 0 0 1rem #007aff, 0 0 1rem #007aff, 0 0 1rem #007aff, 0 0 1rem #007aff, 0 0 1rem #007aff;
+}
+
+.text-shadow-blue {
+  color: white;
+  text-shadow: 0 0 1rem #0a9159, 0 0 1rem #0a9159, 0 0 1rem #0a9159, 0 0 1rem #0a9159, 0 0 1rem #0a9159, 0 0 1rem #0a9159, 0 0 1rem #0a9159, 0 0 1rem #0a9159, 0 0 1rem #0a9159, 0 0 1rem #0a9159;
+}
+
+.swal2-icon.swal2-info {
+  border-color: #A14CAC !important;
+}
+
+.swal2-icon-content {
+  color: #A14CAC !important;
+}
+
+.swal2-cancel {
+  color: #f31260 !important;
+  background-color: transparent !important;
+}
+
+.swal2-cancel:hover {
+  background-color: rgba(243, 18, 96, 0.2) !important;
 }
 
 .tooltip {
