@@ -1,0 +1,647 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["referentialIntegrity"]
+    output          = "./generated/client"
+    dateTimeMode = "iso8601"
+}
+
+datasource db {
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
+}
+
+model Example {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? // @db.Text
+    access_token      String? // @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? // @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Company {
+    record_id                            String                                 @id @default(cuid())
+    name                                 String
+    type                                 String
+    tier                                 String
+    access_to_marketplace                Boolean?
+    company_manager                      User?                                  @relation("CompanyManagerRelation", fields: [company_manager_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    macrovesta_manager                   User?                                  @relation("MacrovestaManagerRelation", fields: [macrovesta_manager_id], references: [id])
+    users                                User[]                                 @relation("UserCompanyRelation")
+    selected_users                       User[]                                 @relation("UserSelectedCompanyRelation")
+    created_at                           DateTime                               @default(now())
+    producer_production_estimates        producer_production_estimates[]
+    producer_cost_estimates              producer_cost_estimates[]
+    producer_commercialisation_estimates producer_commercialisation_estimates[]
+    strategy_log                         strategy_log[]
+    company_manager_id                   String?                                @unique
+    macrovesta_manager_id                String?
+    fixed_cotton                         fixed_cotton[]
+    unfixed_cotton                       unfixed_cotton[]
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model User {
+    id                  String             @id @default(cuid())
+    name                String?
+    email               String?            @unique
+    emailVerified       DateTime?
+    role                String?
+    company_id          String?
+    company             Company?           @relation(name: "UserCompanyRelation", fields: [company_id], references: [record_id], map: "UserCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    selected_company_id String?
+    selected_company    Company?           @relation(name: "UserSelectedCompanyRelation", fields: [selected_company_id], references: [record_id], map: "UserSelectedCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    company_managing    Company?           @relation("CompanyManagerRelation")
+    macrovesta_managing Company[]          @relation("MacrovestaManagerRelation")
+    submittedSurvey     Boolean?           @default(false)
+    image               String?
+    accounts            Account[]
+    sessions            Session[]
+    agents              MarketplaceAgent[]
+    buyers              MarketplaceBuyer[]
+    Marketplace         Marketplace[]
+    Notification        Notification[]
+
+    @@index([selected_company_id])
+    @@index([company_id])
+}
+
+model Notification {
+    record_id    String   @id @default(cuid())
+    title        String
+    description  String
+    is_read      Boolean
+    user_id      String
+    user         User?    @relation(fields: [user_id], references: [id])
+    date_created DateTime @default(now())
+
+    @@index([user_id])
+    @@map("notification")
+}
+
+//Below is the table marketplace TODO: maketplace_agent, marketplace_client_list
+
+model Marketplace {
+    record_id        String             @id @default(cuid())
+    product          String
+    category         String
+    quantity         Float
+    quality          String
+    description      String
+    image_url        String?
+    price_usd        Float
+    added_by         String
+    hvi_file         String
+    shipment         String
+    payment_terms    String
+    date_created     DateTime           @default(now())
+    expiry_date      DateTime           @default(now())
+    reserved_by      String?
+    reserved_by_user User?              @relation(fields: [reserved_by], references: [id])
+    agents           MarketplaceAgent[]
+    buyers           MarketplaceBuyer[]
+
+    @@index([reserved_by])
+    @@map("marketplace")
+}
+
+//Below is the table marketplace_agent
+
+model MarketplaceAgent {
+    record_id      String      @id @default(cuid())
+    marketplace_id String
+    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id], onDelete: Cascade)
+    agent_id       String
+    agent          User        @relation(fields: [agent_id], references: [id])
+    date_created   DateTime    @default(now())
+
+    @@index([agent_id])
+    @@index([marketplace_id])
+    @@map("marketplace_agent")
+}
+
+//Below is the table marketplace_buyer
+
+model MarketplaceBuyer {
+    record_id      String      @id @default(cuid())
+    marketplace_id String
+    buyer_id       String
+    buyer          User        @relation(fields: [buyer_id], references: [id])
+    date_created   DateTime    @default(now())
+    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id], onDelete: Cascade)
+
+    @@index([buyer_id])
+    @@index([marketplace_id])
+    @@map("marketplace_buyer")
+}
+
+//Below is the table a_index
+
+model a_index {
+    record_id                           String   @id @default(cuid())
+    date                                DateTime @db.Date
+    a_index                             Decimal
+    ice_highest_open_interest_17_months Decimal?
+    cc_index                            Decimal?
+    mcx                                 Decimal?
+    cepea                               Decimal?
+}
+
+//Below is the table Fixed Cotton
+
+model fixed_cotton {
+    company_id                String
+    record_id                 String   @id @default(cuid())
+    company                   Company  @relation(fields: [company_id], references: [record_id])
+    contract_number           String   @unique
+    futures_month             String
+    basis                     Decimal?
+    fixed_price_without_basis Decimal?
+    amount_fixed              Decimal?
+    added_by                  String
+    date_created              DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table Unfixed Cotton
+
+model unfixed_cotton {
+    record_id        String   @id @default(cuid())
+    company_id       String
+    company          Company  @relation(fields: [company_id], references: [record_id])
+    contract_number  String   @unique
+    futures_month    String
+    basis            Decimal?
+    fix_by           DateTime
+    total_amount     Decimal?
+    amount_remaining Decimal?
+    added_by         String
+    date_created     DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table strategy_log
+
+model strategy_log {
+    record_id    String   @id @default(cuid())
+    company_id   String
+    company      Company  @relation(fields: [company_id], references: [record_id])
+    title        String?
+    text         String?  @db.Text
+    added_by     String?
+    date_created DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table producer_production_estimates
+
+model producer_production_estimates {
+    record_id           String   @id @default(cuid())
+    company_id          String
+    company             Company  @relation(fields: [company_id], references: [record_id])
+    season              String
+    production_estimate Decimal
+    yield_estimate      Decimal
+    added_by            String?
+    date_created        DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table producer_cost_estimates
+
+model producer_cost_estimates {
+    record_id                        String   @id @default(cuid())
+    company_id                       String
+    company                          Company  @relation(fields: [company_id], references: [record_id])
+    season                           String
+    cost_estimate_dollar_per_hectare Decimal
+    cost_estimate_cent_per_pound     Decimal
+    added_by                         String?
+    date_created                     DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table producer_commercialisation_estimates
+
+model producer_commercialisation_estimates {
+    record_id       String   @id @default(cuid())
+    company_id      String
+    company         Company  @relation(fields: [company_id], references: [record_id])
+    season          String
+    percentage_sold Decimal
+    added_by        String?
+    date_created    DateTime @default(now())
+
+    @@index([company_id])
+}
+
+//Below is the table bug_report
+
+model bug_report {
+    record_id    String   @id @default(cuid())
+    type         String?
+    title        String?
+    text         String?  @db.Text
+    added_by     String?
+    date_created DateTime @default(now())
+}
+
+//Below is the table suggestions
+
+model suggestions {
+    record_id    String   @id @default(cuid())
+    type         String?
+    text         String?  @db.Text
+    added_by     String?
+    date_created DateTime @default(now())
+}
+
+//Below is the table upcoming_changes
+
+model upcoming_changes {
+    record_id             String    @id @default(cuid())
+    type                  String?
+    title                 String?
+    text                  String    @db.Text
+    image                 String?
+    planned_released_date DateTime?
+}
+
+//Below is the table conclusion
+
+model conclusion {
+    record_id    String   @id @default(cuid())
+    text         String   @db.Text
+    date_created DateTime @default(now())
+}
+
+//Below is the table Demo Requests
+
+model Demo_Requests {
+    record_id      String    @id @default(cuid())
+    first_name     String
+    last_name      String
+    email          String
+    company_name   String?
+    company_type   String?
+    preferred_date DateTime? @db.Date()
+    preferred_time DateTime? @db.Time()
+    date_created   DateTime  @default(now())
+}
+
+//Below is the table General Inquiries
+
+model General_Inquiries {
+    record_id    String   @id @default(cuid())
+    name         String?
+    email        String?
+    company      String?
+    message      String?
+    date_created DateTime @default(now())
+}
+
+//Below is the table Things to Review
+
+model things_to_review {
+    record_id    String   @id @default(cuid())
+    added_by     String
+    table        String
+    type         String
+    thing_id     String?
+    information  String   @db.Text
+    date_created DateTime @default(now())
+}
+
+//Below is the table External Links
+
+model External_Links {
+    record_id    String   @id @default(cuid())
+    type         String
+    url          String
+    language     String?  @default("en")
+    date_created DateTime @default(now())
+}
+
+//Below is the table Supply and Demand
+
+model supply_and_demand {
+    record_id             String   @id @default(cuid())
+    date                  DateTime @db.Date
+    season                String?
+    country               String?
+    beginning_stocks_usda Decimal? @default(0) @db.Decimal(16, 4)
+    beginning_stocks_eap  Decimal? @default(0) @db.Decimal(16, 4)
+    production_usda       Decimal? @default(0) @db.Decimal(16, 4)
+    production_eap        Decimal? @default(0) @db.Decimal(16, 4)
+    imports_usda          Decimal? @default(0) @db.Decimal(16, 4)
+    imports_eap           Decimal? @default(0) @db.Decimal(16, 4)
+    domestic_use_usda     Decimal? @default(0) @db.Decimal(16, 4)
+    domestic_use_eap      Decimal? @default(0) @db.Decimal(16, 4)
+    exports_usda          Decimal? @default(0) @db.Decimal(16, 4)
+    exports_eap           Decimal? @default(0) @db.Decimal(16, 4)
+    ending_stocks_usda    Decimal? @default(0) @db.Decimal(16, 4)
+    ending_stocks_eap     Decimal? @default(0) @db.Decimal(16, 4)
+    projected             Boolean?
+    // area_harvested_usda             Decimal? @default(0) @db.Decimal(16, 4)
+    // area_harvested_eap              Decimal? @default(0) @db.Decimal(16, 4)
+    // yield_usda                      Decimal? @default(0) @db.Decimal(16, 4)
+    // yield_eap                       Decimal? @default(0) @db.Decimal(16, 4)
+    // total_supply_usda               Decimal? @default(0) @db.Decimal(16, 4)
+    // total_supply_eap                Decimal? @default(0) @db.Decimal(16, 4)
+    // total_demand_usda               Decimal? @default(0) @db.Decimal(16, 4)
+    // total_demand_eap                Decimal? @default(0) @db.Decimal(16, 4)
+    // stocks_to_usage_usda            Decimal? @default(0) @db.Decimal(16, 4)
+    // stocks_to_usage_eap             Decimal? @default(0) @db.Decimal(16, 4)
+    // carry_out_months_of_supply_usda Decimal? @default(0) @db.Decimal(16, 4)
+    // carry_out_months_of_supply_eap  Decimal? @default(0) @db.Decimal(16, 4)
+}
+
+//Below is the table US Export Sales
+
+model us_export_sales {
+    record_id                             String   @id @default(cuid())
+    week_ending                           DateTime @db.Date
+    weekly_exports                        Int?
+    accumulated_exports                   Int?
+    net_sales                             Int?
+    outstanding_sales                     Int?
+    next_marketing_year_net_sales         Int?
+    next_marketing_year_outstanding_sales Int?
+}
+
+//Below is the table Commitment of Traders
+
+model commitment_of_traders {
+    record_id                 String   @id @default(cuid())
+    calendar_year             Int
+    crop_year                 String
+    month                     String
+    week                      Int?
+    report_date_as_dd_mm_yyyy DateTime @db.Date()
+    open_interest_all         Int?
+    producer_merchant_net     Int?
+    swap_position_net         Int?
+    managed_money_long        Int?
+    managed_money_short       Int?
+    managed_money_net         Int?
+    other_reportables_net     Int?
+    total_reportables_net     Int?
+    non_reportables_net       Int?
+    specs_net                 Int?
+}
+
+//Below is the table cotton_on_call
+
+model cotton_on_call {
+    record_id               String   @id @default(cuid())
+    date                    DateTime @db.Date
+    season_week             Int?
+    week                    Int
+    season                  String
+    october_sales           Int?
+    december_sales          Int?
+    march_sales             Int?
+    may_sales               Int?
+    july_sales              Int?
+    total_on_call_sales     Int?
+    october_purchases       Int?
+    december_purchases      Int?
+    march_purchases         Int?
+    may_purchases           Int?
+    july_purchases          Int?
+    total_on_call_purchases Int?
+    total_net_u_oc_position Int?
+    total_net_change        Int?
+}
+
+//Below is the table comments
+
+model comments {
+    record_id       String   @id @default(cuid())
+    comment         String   @db.Text
+    section         String   @db.VarChar(255)
+    date_of_comment DateTime @db.Date
+    added_by        String   @db.VarChar(255)
+}
+
+//Below is the table future_contracts_study
+
+model future_contracts_study {
+    record_id                        String    @id @default(cuid())
+    year                             String
+    month_of_high                    Int?
+    date_of_high                     DateTime? @db.Date()
+    high                             Decimal?  @default(0) @db.Decimal(16, 4)
+    month_of_low                     Int?
+    date_of_low                      DateTime? @db.Date()
+    low                              Decimal?  @default(0) @db.Decimal(16, 4)
+    price_range_between_high_and_low Decimal?  @default(0) @db.Decimal(16, 4)
+    day_range_between_high_and_low   Decimal?  @default(0) @db.Decimal(16, 4)
+    inverse                          String?
+    comments                         String?   @db.Text
+}
+
+//Below is the table Cotton Contracts
+
+model cotton_contracts {
+    record_id               String   @id @default(cuid())
+    datetime                DateTime @db.DateTime(0)
+    contract                String   @db.VarChar(255)
+    high                    Decimal? @default(0) @db.Decimal(16, 4)
+    low                     Decimal? @default(0) @db.Decimal(16, 4)
+    open                    Decimal? @default(0) @db.Decimal(16, 4)
+    close                   Decimal? @default(0) @db.Decimal(16, 4)
+    change                  Decimal? @default(0) @db.Decimal(16, 4)
+    rolling_average_200_day Decimal? @default(0) @db.Decimal(16, 4)
+    rolling_average_100_day Decimal? @default(0) @db.Decimal(16, 4)
+    rolling_average_50_day  Decimal? @default(0) @db.Decimal(16, 4)
+}
+
+//Below is the table Monthly Index 
+
+model monthly_index {
+    record_id        String @id @default(cuid())
+    month            String @db.VarChar(255) //example for this: January 
+    year             Int    @default(0) //example for this: every row of this column will display the same year 
+    inverse_month    String @db.VarChar(255)
+    probability_rate String @db.VarChar(255) // Int    @default(0) //this is a percentage number 
+}
+
+//Below is the Seasonal Index 
+
+model seasonal_index {
+    record_id        String @id @default(cuid())
+    season           String @db.VarChar(255) //One example for this would be 2022/2023 season and I wanted to treat this as a String as I don't have to do any calculations with it
+    inverse_year     String @db.VarChar(255)
+    probability_rate String @db.VarChar(255) // Int    @default(0)
+}
+
+//Below is the Comparison Chart 
+
+model comparison_chart {
+    record_id                String   @id @default(cuid())
+    date_of_close            DateTime @db.Date
+    cotton_spot_price        Decimal? @default(0) @db.Decimal(16, 4)
+    dollar_basket_spot_price Decimal? @default(0) @db.Decimal(16, 4)
+    crude_oil_spot_price     Decimal? @default(0) @db.Decimal(16, 4)
+
+    //Example for price of cotton is 61.24 (two decimal points);
+    //Example for price dollar basket is 93.682 (three decimal points);
+    //Example for price crude oil is 42.45 (two decimal points):
+}
+
+//Below is the 30 Seconds Snapshot Strategy 
+
+model snapshot_strategy {
+    record_id                  String   @id @default(cuid())
+    title_of_snapshot_strategy String   @db.VarChar(255)
+    image_of_snapshot_strategy String?  @db.VarChar(255) //here i wanted to upload an image or pull in-house graph similar to this - https://www.tradingview.com/chart/USDBRL/W62o6aQ2-Gold-China-BRICS-vs-US-Dollar-Hegemony/
+    text_of_snapshot_strategy  String   @db.Text
+    date_of_snapshot_strategy  DateTime @default(now())
+    valid                      Boolean  @default(true)
+    news_type                  String   @default("Recent Events") @db.VarChar(255)
+    impact                     String?  @default("Low")
+    added_by                   String   @default("Error") @db.VarChar(255)
+    verified                   Boolean  @default(false)
+}
+
+//Below is the Basis Cost 
+
+model basis_comparison {
+    record_id              String   @id @default(cuid())
+    date_of_basis_report   DateTime @db.Date
+    country                String   @db.VarChar(255)
+    cost_type              String   @db.VarChar(255)
+    contract_december_2023 Int      @default(0)
+    contract_december_2024 Int      @default(0)
+    added_by               String   @default("Vic") @db.VarChar(255)
+}
+
+//Below is In Country News 
+
+model in_country_news {
+    record_id                String   @id @default(cuid())
+    country                  String?
+    image_of_in_country_news String?  @db.VarChar(255)
+    title_of_in_country_news String   @db.VarChar(255)
+    text_of_in_country_news  String   @db.Text
+    date_of_in_country_news  DateTime @db.Date
+    impact                   String?  @default("Low")
+    added_by                 String   @default("Error") @db.VarChar(255)
+    verified                 Boolean  @default(false)
+}
+
+//Below is Macrovesta Sentiment Survey
+
+model sentiment_survey {
+    record_id                String    @id @default(cuid())
+    bullish_or_bearish       String    @db.VarChar(255)
+    bullish_or_bearish_value Decimal?  @default(0) @db.Decimal(16, 4)
+    high                     Decimal?  @default(0) @db.Decimal(16, 4)
+    low                      Decimal?  @default(0) @db.Decimal(16, 4)
+    intraday_average_points  Decimal?  @default(0) @db.Decimal(16, 4)
+    open_interest            Decimal?  @default(0) @db.Decimal(16, 4)
+    date_of_survey           DateTime? @db.Date
+    added_by                 String    @default("Vic") @db.VarChar(255)
+}
+
+//Below is the Comparison Charts with 17 Months Year 
+
+model comparison_charts_with_17_months_year {
+    record_id                  String   @id @default(cuid())
+    season                     String   @db.VarChar(255)
+    low_price                  Decimal? @default(0) @db.Decimal(16, 4)
+    date_of_low                DateTime @db.Date
+    month_of_low               Int      @default(0)
+    calendar_week_of_low       Int      @default(0)
+    high_price                 Decimal? @default(0) @db.Decimal(16, 4)
+    date_of_high               DateTime @db.Date
+    month_of_high              Int      @default(0)
+    calendar_week_of_high      Int      @default(0)
+    range_between_high_low     Decimal? @default(0) @db.Decimal(16, 4)
+    rank_of_price_range        Int      @default(0)
+    percentage_rate_to_low     Decimal? @default(0) @db.Decimal(16, 4) //this is a percentage move from high to low during the season 
+    day_range_between_high_low Int      @default(0)
+    rank_between_high_low      Int      @default(0)
+    inverse_season             String   @db.VarChar(255)
+    us_seasonal_inflation      Decimal? @default(0) @db.Decimal(16, 4)
+    us_inflation_cumm          Decimal? @default(0) @db.Decimal(16, 4)
+    us_interest_rate_mov       Decimal? @default(0) @db.Decimal(16, 4)
+    us_interest_cumm           Decimal? @default(0) @db.Decimal(16, 4)
+    world_population_cumm      Int      @default(0)
+    world_population_mov       Int      @default(0)
+    world_acreage              Int      @default(0)
+    world_acreage_movement     Int      @default(0)
+}
+
+model Temporary_Storage {
+    record_id  String   @id @default(cuid())
+    data       String   @db.Text
+    created_at DateTime @default(now())
+}
+
+model Report_Templates {
+    record_id  String   @id @default(cuid())
+    name       String
+    data       String   @db.Text
+    company    String
+    created_at DateTime @default(now())
+}
+
+model Dashboard_Templates {
+    record_id  String   @id @default(cuid())
+    data       String   @db.Text
+    company    String   @unique
+    created_at DateTime @default(now())
+}
+
+model Document {
+    id         String  @id @default(cuid())
+    company    String  @db.VarChar(255)
+    user_id    String?
+    filetype   String
+    linkedType String
+    fileName   String?
+
+    createdAt DateTime? @default(now())
+}

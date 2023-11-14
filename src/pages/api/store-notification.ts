@@ -13,7 +13,8 @@ const StoreNotification = async (req: NextApiRequest, res: NextApiResponse) => {
         data: {
           title,
           description,
-          user_id: userId
+          user_id: userId,
+          is_read: false
         }
       })
       console.log(storedNotification)

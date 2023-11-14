@@ -5,3 +5,10 @@ export const COUNTRIES = [{ country: 'Brazil' }, { country: 'USA' }, { country: 
 export const TERMS = [{ parameter: 'Long Term' }, { parameter: 'Short Term' }]
 
 export const PRODUCT_CATEGORIES = [{ name: 'Cotton', parameter: 'cotton' }, { name: 'Cotton Waste', parameter: 'waste' }]
+
+export const MARKETPLACE_SELLER_PANEL_COLUMNS = [
+  { name: 'PRODUCT', uid: 'product' },
+  { name: 'RELATED AGENTS', uid: 'agents' },
+  { name: 'RESERVED BY', uid: 'reserved' },
+  { name: 'ACTIONS', uid: 'actions' }
+]

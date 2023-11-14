@@ -1,4 +1,4 @@
-import { type AppType } from 'next/app'
+import type { AppType } from 'next/app'
 import { type Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import '~/styles/globals.css'
@@ -9,11 +9,12 @@ import 'react-toastify/dist/ReactToastify.css'
 import { NotificationProvider } from '~/context/NotificationContext'
 import NavBar from '~/components/NavBar'
 import { useEffect } from 'react'
+
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps }
 }) => {
-  // Must include in each page render
+
   useEffect(() => {
     const script = document.createElement('script')
     script.src = 'https://cdn.weglot.com/weglot.min.js'

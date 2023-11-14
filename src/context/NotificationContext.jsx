@@ -18,7 +18,7 @@ export const NotificationProvider = ({ children }) => {
     async function obtainNotificationCount () {
       if (session?.user.id) {
         try {
-          const response = await fetch(`/api/get-notification-count?id=${session.user.id}`)
+          const response = await fetch(`/api/notification?id=${session.user.id}`)
           console.log(response)
           const result = await response.json()
           setNotificationCount(result)

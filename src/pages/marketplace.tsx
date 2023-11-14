@@ -1,13 +1,17 @@
 import { type NextPage } from 'next'
 import Head from 'next/head'
 import { prisma } from '../server/db'
-import { useSession, getSession } from 'next-auth/react'
+import { getSession } from 'next-auth/react'
 import DashboardFooter from '~/components/DashboardFooter'
 import { today } from '~/utils/dateUtils'
 import ExclusiveForYou from '~/components/MarketPlace/ExclusiveForYou'
 import FeaturedProducts from '~/components/MarketPlace/FeaturedProducts'
+import type { Product } from '@prisma/client'
 
-const Home: NextPage = ({ allProductsData }) => {
+const Marketplace: NextPage<{
+  featuredProducts: Product[]
+  exclusiveForYouProducts: Product[]
+}> = ({ featuredProducts, exclusiveForYouProducts }) => {
   return (
     <>
       <Head>
@@ -22,8 +26,8 @@ const Home: NextPage = ({ allProductsData }) => {
         <link rel="alternate" hrefLang="th" href="https://th.macrovesta.ai" />
       </Head>
       <main className="main h-full items-center bg-slate-200 ">
-        <ExclusiveForYou allProductsData={allProductsData}></ExclusiveForYou>
-        <FeaturedProducts allProductsData={allProductsData}></FeaturedProducts>
+        <ExclusiveForYou exclusiveForYouProducts={exclusiveForYouProducts}></ExclusiveForYou>
+        <FeaturedProducts featuredProducts={featuredProducts}></FeaturedProducts>
         <DashboardFooter />
       </main >
     </>
@@ -42,37 +46,31 @@ export const getServerSideProps = async (context: any) => {
     }
   }
 
-  // Featured Products
-  const allProducts = await prisma?.marketplace.findMany({
+  const featuredProducts = JSON.parse(JSON.stringify(await prisma?.product.findMany({
     where: {
       reserved_by: null,
       expiry_date: {
         gt: today
       }
     }
-  })
+  })))
 
-  /*
-  Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_general_ci,IMPLICIT) for operation '='
-  */
+  console.log(featuredProducts)
 
-  // Exclusive for you
-  const productsAssignedToUser = await prisma.marketplaceBuyer.findMany({
+  const exclusiveForYouProducts = JSON.parse(JSON.stringify(await prisma?.productBuyer.findMany({
     where: {
       buyer_id: session?.user?.id
     },
     include: {
-      marketplace: true
+      product: true
     }
-  })
+  }))).map((item: { product: Product }) => item.product)
 
-  console.log(productsAssignedToUser)
-
-  const allProductsData = JSON.stringify(allProducts)
+  console.log(exclusiveForYouProducts)
 
   return {
-    props: { allProductsData }
+    props: { featuredProducts, exclusiveForYouProducts }
   }
 }
 
-export default Home
+export default Marketplace

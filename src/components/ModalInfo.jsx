@@ -9,7 +9,7 @@ const ModalInfo = ({ modalSection, handleChange, handleSubmit, modalData }) => {
   useEffect(() => {
     async function getProductInfo () {
       try {
-        const response = await fetch(`/api/get-product?id=${modalData}`)
+        const response = await fetch(`/api/product?id=${modalData}`)
         const product = await response.json()
         setProduct(product)
       } catch (error) {

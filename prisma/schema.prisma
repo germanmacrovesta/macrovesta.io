@@ -75,24 +75,24 @@ model VerificationToken {
 }
 
 model User {
-    id                  String             @id @default(cuid())
+    id                  String         @id @default(cuid())
     name                String?
-    email               String?            @unique
+    email               String?        @unique
     emailVerified       DateTime?
     role                String?
     company_id          String?
-    company             Company?           @relation(name: "UserCompanyRelation", fields: [company_id], references: [record_id], map: "UserCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    company             Company?       @relation(name: "UserCompanyRelation", fields: [company_id], references: [record_id], map: "UserCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
     selected_company_id String?
-    selected_company    Company?           @relation(name: "UserSelectedCompanyRelation", fields: [selected_company_id], references: [record_id], map: "UserSelectedCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
-    company_managing    Company?           @relation("CompanyManagerRelation")
-    macrovesta_managing Company[]          @relation("MacrovestaManagerRelation")
-    submittedSurvey     Boolean?           @default(false)
+    selected_company    Company?       @relation(name: "UserSelectedCompanyRelation", fields: [selected_company_id], references: [record_id], map: "UserSelectedCompany_Constraint", onDelete: NoAction, onUpdate: NoAction)
+    company_managing    Company?       @relation("CompanyManagerRelation")
+    macrovesta_managing Company[]      @relation("MacrovestaManagerRelation")
+    submittedSurvey     Boolean?       @default(false)
     image               String?
     accounts            Account[]
     sessions            Session[]
-    agents              MarketplaceAgent[]
-    buyers              MarketplaceBuyer[]
-    Marketplace         Marketplace[]
+    agents              ProductAgent[]
+    buyers              ProductBuyer[]
+    products            Product[]
     Notification        Notification[]
 
     @@index([selected_company_id])
@@ -100,10 +100,10 @@ model User {
 }
 
 model Notification {
-    record_id    String   @id @default(cuid())
+    id           String   @id @default(cuid())
     title        String
-    description  String?
-    is_read      Decimal?
+    description  String
+    is_read      Boolean
     user_id      String
     user         User?    @relation(fields: [user_id], references: [id])
     date_created DateTime @default(now())
@@ -112,60 +112,60 @@ model Notification {
     @@map("notification")
 }
 
-//Below is the table marketplace TODO: maketplace_agent, marketplace_client_list
+//Below is the table product
 
-model Marketplace {
-    record_id        String             @id @default(cuid())
-    product          String
-    category         String?
-    quantity         Decimal?
+model Product {
+    id               String         @id @default(cuid())
+    name             String
+    category         String
+    quantity         Float
     quality          String
-    description      String?
+    description      String
     image_url        String?
-    price_usd        Decimal?
-    added_by         String?
+    price_usd        Float
+    added_by         String
     hvi_file         String
     shipment         String
     payment_terms    String
-    date_created     DateTime           @default(now())
-    expiry_date      DateTime           @default(now())
+    date_created     DateTime       @default(now())
+    expiry_date      DateTime       @default(now())
     reserved_by      String?
-    reserved_by_user User?              @relation(fields: [reserved_by], references: [id])
-    agents           MarketplaceAgent[] @collate("utf8mb4_unicode_ci")
-    buyers           MarketplaceBuyer[]
+    reserved_by_user User?          @relation(fields: [reserved_by], references: [id])
+    agents           ProductAgent[]
+    buyers           ProductBuyer[]
 
     @@index([reserved_by])
-    @@map("marketplace")
+    @@map("product")
 }
 
-//Below is the table marketplace_agent
+//Below is the table product_agent
 
-model MarketplaceAgent {
-    record_id      String      @id @default(cuid())
-    marketplace_id String
-    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id], onDelete: Cascade)
-    agent_id       String
-    agent          User        @relation(fields: [agent_id], references: [id])
-    date_created   DateTime    @default(now())
+model ProductAgent {
+    id           String   @id @default(cuid())
+    product_id   String
+    product      Product?  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    agent_id     String
+    agent        User?     @relation(fields: [agent_id], references: [id])
+    date_created DateTime @default(now())
 
     @@index([agent_id])
-    @@index([marketplace_id])
-    @@map("marketplace_agent")
+    @@index([product_id])
+    @@map("product_agent")
 }
 
-//Below is the table marketplace_buyer
+//Below is the table product_buyer
 
-model MarketplaceBuyer {
-    record_id      String      @id @default(cuid())
-    marketplace_id String
-    buyer_id       String
-    buyer          User        @relation(fields: [buyer_id], references: [id])
-    date_created   DateTime    @default(now())
-    marketplace    Marketplace @relation(fields: [marketplace_id], references: [record_id], onDelete: Cascade)
+model ProductBuyer {
+    id           String   @id @default(cuid())
+    product_id   String
+    product      Product?  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    buyer_id     String
+    buyer        User?     @relation(fields: [buyer_id], references: [id])
+    date_created DateTime @default(now())
 
     @@index([buyer_id])
-    @@index([marketplace_id])
-    @@map("marketplace_buyer")
+    @@index([product_id])
+    @@map("product_buyer")
 }
 
 //Below is the table a_index

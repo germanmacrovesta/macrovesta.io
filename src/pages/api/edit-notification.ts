@@ -10,7 +10,7 @@ const editNotification = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       await prisma.notification.update({
         where: {
-          record_id: id
+          id: id
         },
         data: {
           is_read: isRead

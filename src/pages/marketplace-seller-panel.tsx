@@ -1,27 +1,28 @@
-import React, { useEffect } from 'react'
-import NavBar from '~/components/NavBar'
 import { useSession, getSession } from 'next-auth/react'
-import { Button, Link } from '@nextui-org/react'
+import { Button } from '@nextui-org/react'
 import { prisma } from '../server/db'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, User, Chip, Tooltip, getKeyValue, Avatar, AvatarGroup } from "@nextui-org/react"
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Avatar, AvatarGroup } from "@nextui-org/react"
 import { useCallback } from 'react'
 import { useCustomModal } from '~/context/ModalContext'
 import { useDisclosure } from '@nextui-org/react'
 import dynamic from 'next/dynamic'
 import Swal from 'sweetalert2'
+import type { Product, User } from '@prisma/client'
+import type { NextPage } from 'next'
+import { MARKETPLACE_SELLER_PANEL_COLUMNS } from '~/constants/constants'
+
+interface ProductWithAgents extends Product {
+  reserved_by_user: User,
+  agents: User[],
+  [key: string]: any;
+}
 
 const CustomModal = dynamic(() => import('../components/CustomModal'), { ssr: false })
-// Only needs product + available properties
-const MarketPlaceSellerPanel = ({ marketplaceData }) => {
+
+const MarketplaceSellerPanel: NextPage<{
+  products: ProductWithAgents[]
+}> = ({ products }) => {
   const { data: session } = useSession()
-
-  const columns = [
-    { name: 'PRODUCT', uid: 'product' },
-    { name: 'RELATED AGENTS', uid: 'agents' },
-    { name: 'RESERVED BY', uid: 'reserved' },
-    { name: 'ACTIONS', uid: 'actions' }
-  ]
-
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const { openModal } = useCustomModal()
 
@@ -30,19 +31,24 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
     onOpen()
   }
 
-  const handleDeleteProduct = async (product) => {
+  console.log(products)
+
+  const handleDeleteProduct = async (product: Product) => {
     Swal.fire({
-      title: `Do you want to reserve ${product.product}`,
-      text: 'Agent will contact with you after that',
+      title: `Do you want to delete ${product.name}`,
+      text: 'This action is permanent!',
+      imageUrl: '/logo-small.png',
+      imageWidth: 100,
+      imageHeight: 90,
       showCancelButton: true,
       confirmButtonColor: '#051D6D',
       cancelButtonText: 'Cancel',
-      confirmButtonText: 'Yes, I want it!',
+      confirmButtonText: 'Yes, delete it!',
       reverseButtons: true
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`/api/delete-product?id=${product.record_id}`, { method: 'DELETE' })
+          const response = await fetch(`/api/product?id=${product.id}`, { method: 'DELETE' })
         } catch (error) {
           console.log(error)
         }
@@ -50,26 +56,26 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
     })
   }
 
-  const renderCell = useCallback((item, columnKey) => {
-    const cellValue = item[columnKey]
+  const renderCell = useCallback((product: ProductWithAgents, columnKey: string) => {
+    const cellValue = product[columnKey]
 
     switch (columnKey) {
       case 'product':
         return (
-          <p className=''>
-            {item.product}
+          <p>
+            {product.name}
           </p>
         )
       case 'reserved':
         return (
           <div className='flex flex-col items-center justify-center'>
-            {item.reserved_by
+            {product.reserved_by
               ? (
                 <div className='flex gap-2 items-center '>
-                  <Avatar alt='A' name='A' className='flex-shrink-0' size='md' src={item.reserved_by_user.image} />
+                  <Avatar alt='A' name='A' className='flex-shrink-0' size='md' src={product.reserved_by_user.image ?? undefined} />
                   <div className='flex flex-col'>
-                    <span className='text-small'>{item.reserved_by_user.name}</span>
-                    <span className='text-tiny text-default-400'>{item.reserved_by_user.email}</span>
+                    <span className='text-small'>{product.reserved_by_user.name}</span>
+                    <span className='text-tiny text-default-400'>{product.reserved_by_user.email}</span>
                   </div>
                 </div>
               )
@@ -85,9 +91,13 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
         return (
           <div className='flex flex-col' >
             <AvatarGroup >
-              {item.agents.length !== 0 &&
-                item.agents.map(agent => (
-                  <Avatar name={agent.agent.name} key={agent.agent.email} src={agent.agent.image}></Avatar>
+              {product.agents.length !== 0 &&
+                product.agents.map(agent => (
+                  <Avatar
+                    name={agent.name ?? undefined}
+                    key={agent.email ?? undefined}
+                    src={agent.image ?? undefined}>
+                  </Avatar>
                 ))}
             </AvatarGroup>
 
@@ -98,7 +108,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
           <div className='relative flex items-center justify-center gap-2'>
 
             <Tooltip content='See Details' >
-              <button className='outline-none' onClick={() => handleOpenModal('info', 'Info Product', item.record_id)}>
+              <button className='outline-none' onClick={() => handleOpenModal('info', 'Info Product', product.id)}>
                 <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -109,7 +119,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
             </Tooltip>
 
             <Tooltip content='Edit Product'>
-              <button className='outline-none' onClick={() => handleOpenModal('form', 'Edit Product', item.record_id)}>
+              <button className='outline-none' onClick={() => handleOpenModal('form', 'Edit Product', product.id)}>
                 <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                     <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
@@ -120,7 +130,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
             </Tooltip>
 
             <Tooltip color='danger' content='Delete Product'>
-              <button className='outline-none' onClick={() => handleDeleteProduct(item)}>
+              <button className='outline-none' onClick={() => handleDeleteProduct(product)}>
                 <span className='text-lg text-danger cursor-pointer active:opacity-50'>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -138,20 +148,20 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
   return (
     <main>
       <div className='p-6 mx-8'>
-        <Button className='bg-deep_blue bg-opacity-20 text-deep_blue mb-4 rounded-md' variant='flat' onPress={() => handleOpenModal('form', 'Add Product')}>
+        <Button className='bg-deep_blue shadow-md border-sm text-white mb-4 rounded-md' onPress={() => handleOpenModal('form', 'Add Product')}>
           Register new product
         </Button>
         <Table classNames={{ wrapper: 'rounded-md' }}>
-          <TableHeader columns={columns} className='flex justify-between'>
+          <TableHeader columns={MARKETPLACE_SELLER_PANEL_COLUMNS} className='flex justify-between'>
             {(column) => (
               <TableColumn key={column.uid} className={`${column.uid === 'product' ? 'text-left' : 'text-center'}`}>
                 {column.name}
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody items={marketplaceData}>
+          <TableBody items={products}>
             {(item) => (
-              <TableRow key={item.record_id}>
+              <TableRow key={item.id}>
                 {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
               </TableRow>
             )}
@@ -175,7 +185,7 @@ const MarketPlaceSellerPanel = ({ marketplaceData }) => {
 export const getServerSideProps = async (context: any) => {
   const session = await getSession({ req: context.req })
 
-  if (!session || session?.access_to_marketplace !== true) { // Typescript eslint warning
+  if (!session || session?.access_to_marketplace !== true) {
     return {
       redirect: {
         permanent: false,
@@ -184,11 +194,11 @@ export const getServerSideProps = async (context: any) => {
     }
   }
 
-  const marketplace = await prisma.marketplace.findMany({
+  const products: ProductWithAgents[] = JSON.parse(JSON.stringify(await prisma.product.findMany({
     include: {
       reserved_by_user: true,
       agents: {
-        select: {
+        include: {
           agent: {
             select: {
               id: true,
@@ -200,13 +210,13 @@ export const getServerSideProps = async (context: any) => {
         }
       }
     }
-  })
+  }))).map(({ agents, ...rest }) => ({ ...rest, agents: agents.map((agent) => agent.agent) }));
 
-  const marketplaceData = JSON.parse(JSON.stringify(marketplace))
-  console.log(marketplaceData)
+  console.log(products)
+
   return {
-    props: { marketplaceData }
+    props: { products }
   }
 }
 
-export default MarketPlaceSellerPanel
+export default MarketplaceSellerPanel

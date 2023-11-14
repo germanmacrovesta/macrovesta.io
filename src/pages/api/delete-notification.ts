@@ -9,7 +9,7 @@ const deleteNotification = async (req: NextApiRequest, res: NextApiResponse) => 
     try {
       await prisma.notification.delete({
         where: {
-          record_id: notificationId
+          id: notificationId
         }
       })
       res.status(200).json({ message: 'Success' })
