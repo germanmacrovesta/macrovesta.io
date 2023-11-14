@@ -34,9 +34,11 @@ const MyNotifications = ({ notificationsData }) => {
   const handleMarkAsRead = async (notificationId) => {
     // Frontend
     const newNotifications = notifications.map(notification => {
+      console.log(notification, notificationId);
       if (notificationId === notification.id) {
-        notification.is_read = notification.is_read === '1' ? '0' : '1'
-        setNotificationCount(prevCount => notification.is_read === '1' ? prevCount - 1 : prevCount + 1)
+        notification.is_read = notification.is_read === true ? false : true
+        console.log(notification.is_read);
+        setNotificationCount(prevCount => notification.is_read === true ? prevCount - 1 : prevCount + 1)
         return notification
       }
       return notification
@@ -46,7 +48,6 @@ const MyNotifications = ({ notificationsData }) => {
     // Backend
     const notificationToUpdate = newNotifications.filter(notification => notificationId === notification.id)[0]
     const JSONData = JSON.stringify({ id: notificationToUpdate.id, isRead: notificationToUpdate.is_read })
-
     try {
       const options = {
         // The method is POST because we are sending data.
@@ -76,7 +77,7 @@ const MyNotifications = ({ notificationsData }) => {
         const response = await fetch(`/api/notification?id=${notificationId}`, { method: 'DELETE' })
         const notificationToDelete = notifications.filter(notification => notificationId === notification.id)
         console.log(notificationToDelete);
-        if (notificationToDelete[0].is_read === '0') {
+        if (notificationToDelete[0].is_read === false) {
           setNotificationCount(prevCount => prevCount - 1)
         }
         console.log(response)
@@ -90,7 +91,7 @@ const MyNotifications = ({ notificationsData }) => {
       <div className='p-6 mx-8 mt-10 bg-slate-50  rounded-md'>
         <ul>
           {isClient && notifications.map((notification) => (
-            <li key={notification.id} className={`${notification.is_read === '1' ? 'bg-slate-200' : 'bg-slate-50'} rounded-md p-2`}>
+            <li key={notification.id} className={`${notification.is_read ? 'bg-slate-200' : 'bg-slate-50'} rounded-md p-2`}>
               <div className='flex justify-between items-center'>
                 <div className='flex flex-col'>
                   <h2>{notification.title}</h2>
@@ -163,13 +164,12 @@ export const getServerSideProps = async (context: any) => {
     }
   }
 
-  const notifications = await prisma.notification.findMany({
+  const notificationsData = JSON.parse(JSON.stringify(await prisma.notification.findMany({
     where: {
       user_id: session?.user?.id
     }
-  })
+  })))
 
-  const notificationsData = JSON.parse(JSON.stringify(notifications))
 
   return {
     props: { notificationsData }

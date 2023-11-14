@@ -45,7 +45,7 @@ const Notification = async (req: NextApiRequest, res: NextApiResponse) => {
           id: id
         },
         data: {
-          is_read: false
+          is_read: isRead
         }
       })
       res.status(200).json({ message: 'Success' })

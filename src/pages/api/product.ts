@@ -29,11 +29,11 @@ const Product = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const createdProduct = await prisma?.product.create({
         data: {
-          name: req.body.name,
+          name: req.body.product,
           category: req.body.category,
-          quantity: req.body.quantity,
+          quantity: parseInt(req.body.quantity),
           description: req.body.description,
-          price_usd: req.body.price_usd,
+          price_usd: parseInt(req.body.price_usd),
           quality: req.body.quality,
           shipment: req.body.shipment,
           payment_terms: req.body.payment_terms,
@@ -43,7 +43,7 @@ const Product = async (req: NextApiRequest, res: NextApiResponse) => {
           expiry_date: new Date(req.body.expiry_date)
         }
       })
-
+      console.log(createdProduct);
       const productId = createdProduct.id
 
       req.body.agents.forEach(async (agentId) => {

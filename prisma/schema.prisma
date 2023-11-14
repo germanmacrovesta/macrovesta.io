@@ -142,10 +142,10 @@ model Product {
 
 model ProductAgent {
     id           String   @id @default(cuid())
-    product_id   String
-    product      Product?  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    product_id   String     
+    product      Product? @relation(fields: [product_id], references: [id], onDelete: Cascade)
     agent_id     String
-    agent        User?     @relation(fields: [agent_id], references: [id])
+    agent        User?    @relation(fields: [agent_id], references: [id])
     date_created DateTime @default(now())
 
     @@index([agent_id])
@@ -158,9 +158,9 @@ model ProductAgent {
 model ProductBuyer {
     id           String   @id @default(cuid())
     product_id   String
-    product      Product?  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    product      Product? @relation(fields: [product_id], references: [id], onDelete: Cascade)
     buyer_id     String
-    buyer        User?     @relation(fields: [buyer_id], references: [id])
+    buyer        User?    @relation(fields: [buyer_id], references: [id])
     date_created DateTime @default(now())
 
     @@index([buyer_id])
